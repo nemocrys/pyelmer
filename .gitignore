@@ -1,0 +1,10 @@
+*.msh
+*.msh2
+**/*simdata*/*
+**/.vscode/*
+*.pyc
+*.pvsm
+*.sif
+**/.ipynb_checkpoints/*
+*.dat
+*.names

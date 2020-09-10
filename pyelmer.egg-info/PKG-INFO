@@ -1,0 +1,19 @@
+Metadata-Version: 2.1
+Name: pyelmer
+Version: 0.1
+Summary: A python interface to Elmer
+Home-page: https://github.com/nemocrys/pyelmer
+Author: Arved Enders-Seidlitz
+Author-email: arved.enders-seidlitz@ikz-berlin.de
+License: UNKNOWN
+Description: # Example Package
+        
+        This is a simple example package. You can use
+        [Github-flavored Markdown](https://guides.github.com/features/mastering-markdown/)
+        to write your content.
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
