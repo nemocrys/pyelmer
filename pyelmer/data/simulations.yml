@@ -1,0 +1,12 @@
+axi-symmetric_steady:
+  Max Output Level: 4
+  Coordinate System: 'Axi Symmetric'
+  Simulation Type: 'Steady state'
+  Steady State Max Iterations: 3
+  Timestepping Method: BDF
+  BDF Order: 2
+  Output Intervals: 1
+  Timestep Intervals: 10
+  Timestep Sizes: 100
+
+
