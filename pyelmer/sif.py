@@ -1,27 +1,26 @@
-# created by Arved Enders-Seidlitz on 14.07.2020
-#
-# Wrapper for Elmer simulation input file (sif-file).
-#
-# The sif file is represented by a Simulation object, which contains
-# dictionaries of objects for each section (i.e. Solvers, Bodies, 
-# Materials, etc.).
-# Each of these objects contains the data required in the sif in form
-# of a dictionary called data.
-# For some objects (e.g. Bodies) this dictionary is written
-# automatically, provided that the required member variables of the
-# object are set.
+
+"""Wrapper for Elmer simulation input file (sif-file).
+
+The sif file is represented by a Simulation object, which contains
+dictionaries of objects for each section (i.e. Solvers, Bodies, 
+Materials, etc.).
+Each of these objects contains the data required in the sif in form
+of a dictionary called data.
+For some objects (e.g. Bodies) this dictionary is written
+automatically, provided that the required member variables of the
+object are set.
+"""
 
 import os
 import yaml
 
-
-path = os.path.dirname(os.path.realpath(__file__))
 
 class Simulation:
     """Main wrapper for the sif file. The simulation class is used to
     collect all information.
     In the end, it writes the sif-file.
     """
+
     def __init__(self):
         self.materials = {}
         self.bodies = {}
@@ -100,16 +99,16 @@ class Simulation:
         Args:
             simulation_dir (str): Path of simulation directory
         """
-        data = {name: boundary.id for name, boundary in self.boundaries.items()}
+        data = {boundary.id: name for name, boundary in self.boundaries.items()}
         with open(simulation_dir + '/boundaries.yml', 'w') as f:
-            yaml.dump(data, f)
+            yaml.dump(data, f, sort_keys=False)
 
     def _dict_to_str(self, dictionary):
         text = ''
         for key, value in dictionary.items():
             text = ''.join([text, '  ', key, ' = ', str(value), '\n'])
         return text
-    
+
     def _set_ids(self):
         objects = [self.solvers, self.equations, self.materials, self.bodies, self.boundaries,
                    self.body_forces, self.initial_conditions]
@@ -122,19 +121,19 @@ class Simulation:
 
 
 class Body:
-    """Wrapper for bodies in sif-file.
-    """
-    def __init__(self, simulation, name, body_id=0):
+    """Wrapper for bodies in sif-file."""
+
+    def __init__(self, simulation, name, body_ids=[]):
         """Create body object.
 
         Args:
             simulation (Simulation Object): The body is added to this
                                             simulation object.
             name (str): Name of the body
-            body_id (int): Id of body in mesh.
+            body_ids (list of int): Ids of bodies in mesh.
         """
         self.id = 0
-        self.body_id = body_id
+        self.body_ids = body_ids
         self.equation = None
         self.initial_condition = None
         self.material = None
@@ -144,35 +143,38 @@ class Body:
         simulation.bodies.update({name: self})
 
     def get_data(self):
-        """Write dictionary with data for sif-file.
-        """
-        d = {'Target Bodies(1)': self.body_id}
-        if not self.equation is None:
+        """Generate dictionary with data for sif-file."""
+        key = 'Target Bodies(' + str(len(self.body_ids)) + ')'
+        value = ''
+        for body_id in self.body_ids:
+            value += str(body_id) + ' '
+        d = {key: value}
+        if self.equation is not None:
             d.update({'Equation': self.equation.id})
-        if not self.initial_condition  is None:
+        if self.initial_condition is not None:
             d.update({'Initial Condition': self.initial_condition.id})
-        if not self.material is None:
+        if self.material is not None:
             d.update({'Material': self.material.id})
-        if not self.body_force is None:
+        if self.body_force is not None:
             d.update({'Body Force': self.body_force.id})
         d.update(self.data)
         return d
 
 
 class Boundary:
-    """Wrapper for boundaries in sif-file.
-    """
-    def __init__(self, simulation, name, surf_id=0):
+    """Wrapper for boundaries in sif-file."""
+
+    def __init__(self, simulation, name, surf_ids=[]):
         """Create boundary object.
 
         Args:
             simulation (Simulation Object): The boundary is added to
                                             this simulation object.
             name (str): Name of the body
-            surf_id (int): Id of boundary in mesh.
+            surf_ids (list of int): Ids of boundaries in mesh.
         """
         self.id = 0
-        self.surface_id = surf_id
+        self.surface_ids = surf_ids
         self.radiation = False
         self.fixed_temperature = None
         self.zero_potential = False
@@ -189,16 +191,18 @@ class Boundary:
         self.name = name
         self.data = {}
         simulation.boundaries.update({name: self})
-    
+
     def get_data(self):
-        """Write dictionary with data for sif-file.
-        """
-        d = {}
-        d.update({'Target Boundaries(1)': self.surface_id})
+        """Generate dictionary with data for sif-file."""
+        key = 'Target Boundaries(' + str(len(self.surface_ids)) + ')'
+        value = ''
+        for surf_id in self.surface_ids:
+            value += str(surf_id) + ' '
+        d = {key: value}
         if self.radiation:
             d.update({'Heat Flux BC': 'True'})
             d.update({'Radiation': 'Diffuse Gray'})
-        if not self.fixed_temperature is None:
+        if self.fixed_temperature is not None:
             d.update({'Temperature': self.fixed_temperature})
         if self.zero_potential:
             d.update({'Potential 1': 0, 'Potential 2': 0})
@@ -227,8 +231,7 @@ class Boundary:
 
 
 class Material:
-    """Wrapper for materials in sif-file.
-    """
+    """Wrapper for materials in sif-file."""
     def __init__(self, simulation, name, data={}):
         """Create material object
 
@@ -241,20 +244,20 @@ class Material:
         self.id = 0
         self.data = data
         self.name = name
-        if not simulation is None:
+        if simulation is not None:
             simulation.materials.update({name: self})
 
     def get_data(self):
-        """Write dictionary with data for sif-file.
+        """Generate dictionary with data for sif-file.
         """
         return self.data
 
 
 class BodyForce:
-    """Wrapper for body forces in sif-file.
-    """
+    """Wrapper for body forces in sif-file."""
+
     def __init__(self, simulation, name, data={}):
-        """Create body force object
+        """Create body force object.
 
         Args:
             simulation (Simulation Object): The body force is added to
@@ -272,9 +275,9 @@ class BodyForce:
         self.smart_heater_T = 0
         self.name = name
         simulation.body_forces.update({name: self})
+
     def get_data(self):
-        """Write dictionary with data for sif-file.
-        """
+        """Generate dictionary with data for sif-file."""
         d = {}
         if self.joule_heat:
             d.update({'Joule Heat': 'Logical True'})
@@ -290,16 +293,16 @@ class BodyForce:
                 d.update({'Heat Source': '0'})
         if self.smart_heater_control_point != []:
             cp = self.smart_heater_control_point
-            d.update({'Smart Heater Control Point(3)': str(cp[0]) + ' ' + str(cp[1]) + ' ' + str(cp[2]),
+            d.update({'Smart Heater Control Point(3)': str(cp[0]) + ' ' + str(cp[1]) + ' '
+                                                       + str(cp[2]),
                       'Smart Heater Temperature': self.smart_heater_T})
         return d
 
 
 class InitialCondition:
-    """Wrapper for initial condition in sif-file.
-    """
+    """Wrapper for initial condition in sif-file."""
     def __init__(self, simulation, name, data={}):
-        """Create initial condition object
+        """Create initial condition object.
 
         Args:
             simulation (Simulation Object): The initial condition is
@@ -314,14 +317,13 @@ class InitialCondition:
         simulation.initial_conditions.update({name: self})
 
     def get_data(self):
-        """Write dictionary with data for sif-file.
-        """
+        """Generate dictionary with data for sif-file."""
         return self.data
 
 
 class Solver:
-    """Wrapper for solver in sif-file.
-    """
+    """Wrapper for solver in sif-file."""
+
     def __init__(self, simulation, name, data={}):
         """Create solver object
 
@@ -334,18 +336,18 @@ class Solver:
         self.id = 0
         self.data = data
         self.name = name
-        if not simulation is None:
+        if simulation is not None:
             simulation.solvers.update({name: self})
-    
+
     def get_data(self):
-        """Write dictionary with data for sif-file.
+        """Generate dictionary with data for sif-file.
         """
         return self.data
 
 
 class Equation:
-    """Wrapper for equations in sif-file.
-    """
+    """Wrapper for equations in sif-file."""
+
     def __init__(self, simulation, name, solvers):
         """Create equation object
 
@@ -361,13 +363,13 @@ class Equation:
         simulation.equations.update({name: self})
 
     def get_data(self):
-        """Write dictionary with data for sif-file.
-        """
+        """Generate dictionary with data for sif-file."""
         n_solvers = len(self.solvers)
         solver_id_str = ''
         for solver in self.solvers:
             solver_id_str += str(solver.id) + ' '
         return {'Active Solvers(' + str(n_solvers) + ')': solver_id_str}
+
 
 def load_simulation(name):
     """Load simulation settings from database.
@@ -378,11 +380,13 @@ def load_simulation(name):
     Returns:
         Simulation object.
     """
+    path = os.path.dirname(os.path.realpath(__file__))
     with open(path + './data/simulations.yml') as f:
         settings = yaml.safe_load(f)[name]
     sim = Simulation()
     sim.settings = settings
     return sim
+
 
 def load_material(name, simulation=None):
     """Load material from data base and add it to simulation.
@@ -394,6 +398,7 @@ def load_material(name, simulation=None):
     Returns:
         Material object.
     """
+    path = os.path.dirname(os.path.realpath(__file__))
     with open(path + './data/materials.yml') as f:
         data = yaml.safe_load(f)[name]
     return Material(simulation, name, data)
@@ -409,6 +414,7 @@ def load_solver(name, simulation=None):
     Returns:
         Solver object.
     """
+    path = os.path.dirname(os.path.realpath(__file__))
     with open(path + '/data/solvers.yml') as f:
         data = yaml.safe_load(f)
         data = data[name]

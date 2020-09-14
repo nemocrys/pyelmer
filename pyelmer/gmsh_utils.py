@@ -1,62 +1,10 @@
-# created by Arved Enders-Seidlitz on 14.07.2020
-#
-# utilities for gmsh
+"""Utility functions for gmsh"""
 
 import gmsh
 import numpy as np
 factory = gmsh.model.occ
+field = gmsh.model.mesh.field
 
-def get_boundary(dim, tag, coordinate, min_max, boundaries=[], sym=False, filter_y=False):
-    """find the boundary with minimum / maximum location in selected coordinate
-
-    Args:
-        dim (int): dimension of element
-        tag (int): tag of element
-        coordinate (int): 0 - x coordinate, 1 - y coordinate, 2 - z coordinate
-        min_max (str): 'min' or 'max' - minimum or maximum in coordinate.
-        boundaries (list): use these boundaries instead of those given by tag
-
-    Returns:
-        int: tag of boundary element or 0 in case of an error
-    """
-    if min_max != 'min' and min_max != 'max':
-        raise ValueError("Select between 'min' or 'max'")
-    if boundaries == []:
-        boundaries = gmsh.model.getBoundary([dim, tag], oriented=False)
-    coord_min = []
-    coord_max = []
-    dy = []
-    for boundary in boundaries:
-        xmin, ymin, zmin, xmax, ymax, zmax = gmsh.model.getBoundingBox(boundary[0], boundary[1])
-        x_min = np.round([xmin, ymin, zmin], 6)
-        x_max = np.round([xmax, ymax, zmax], 6)
-        coord_min.append(x_min[coordinate])
-        coord_max.append(x_max[coordinate])
-        dy.append(x_max[1] - x_min[1])
-    if min_max == 'min':
-        if sym:
-            if filter_y:
-                for i in range(len(coord_min)):
-                    if dy[i] == 0:
-                        coord_min[i] = 1e6
-            i = [i for i, x in enumerate(coord_min) if x == min(coord_min)]
-        else:
-            i = [i for i, x in enumerate(coord_max) if x == min(coord_max)]
-        if len(i) != 1:
-            return 0
-        return boundaries[i[0]][1]
-    else:
-        if dim == 3 and sym:
-            if filter_y:
-                for i in range(len(coord_max)):
-                    if dy[i] == 0:
-                        coord_max[i] = -1e6
-            i = [i for i, x in enumerate(coord_max) if x == max(coord_max)]
-        else:
-            i = [i for i, x in enumerate(coord_min) if x == max(coord_min)]
-        if len(i) != 1:
-            return 0
-        return boundaries[i[0]][1]
 
 def cylinder(x, y, z, r, h, dim):
     """create cylinder (in 3D) or rectangle (in 2D) and return tag.
@@ -77,6 +25,7 @@ def cylinder(x, y, z, r, h, dim):
     if dim == 3:
         return factory.addCylinder(x, y, z, 0, h, 0, r)
 
+
 def rotate(tag):
     """Extrusion by rotation around y-axis. Returns tag.
 
@@ -92,21 +41,60 @@ def rotate(tag):
             return dimtag[1]
     return 0  # if nothing was found; this should never happen.
 
+
 def get_boundaries(dim, tag):
+    """Get boundaries of gmsh entity.
+
+    Args:
+        dim (int): dimension of entity
+        tag (int): tag of entity
+
+    Returns:
+        list[int]: boundary tags
+    """
     dim_tags = gmsh.model.getBoundary([(dim, tag)], False, False, False)
     boundaries = []
     for dim_tag in dim_tags:
         boundaries.append(dim_tag[1])
     return boundaries
 
+
 def add_physical_group(dim, tag_list, name):
+    """Add physical group and set name.
+
+    Args:
+        dim (int): dimension
+        tag_list (list[int]): geometry tags
+        name (str): name to set
+
+    Returns:
+        int: geometry id
+    """
     tag = gmsh.model.addPhysicalGroup(dim, tag_list)
     gmsh.model.setPhysicalName(dim, tag, name)
     return tag
 
+
 def get_cylinder_boundary(dim, body_tag, r, h, y0, eps=1e-6):
-    dimtags = gmsh.model.getEntitiesInBoundingBox(-r - eps, y0 - eps, -r - eps,
-        r + eps, y0 + h + eps, r + eps, dim-1)
+    """Get boundary of a cylinder aligned with x-axis.
+    Most useful in axi-symmetric cases.
+
+    Args:
+        dim (int): dimension
+        body_tag (int): tag of entity to which cylinder belongs
+        r (float): cylinder radius
+        h (float): cylinder height
+        y0 (float): y-coordinate of cylinder origin
+        eps (float, optional): Sensitivity. Defaults to 1e-6.
+
+    Raises:
+        ValueError: if no or more than one boundary was found
+
+    Returns:
+        Int: Boundary tag
+    """
+    dimtags = gmsh.model.getEntitiesInBoundingBox(-r - eps, y0 - eps, -r - eps, r + eps,
+                                                  y0 + h + eps, r + eps, dim-1)
     boundaries = get_boundaries(dim, body_tag)
     dimtags_filtered = [dimtag for dimtag in dimtags if dimtag[1] in boundaries]
     tags = []
@@ -121,8 +109,24 @@ def get_cylinder_boundary(dim, body_tag, r, h, y0, eps=1e-6):
     return tags[0]
 
 def get_ring_boundary(dim, body_tag, r_out, y0, eps=1e-6):
+    """Get boundary of a circle or ring around y-axis (with extent in
+    x-z-plane).
+
+    Args:
+        dim (int): dimension
+        body_tag (int): tag of entity to which circle / ring belongs.
+        r_out (float): outer radius
+        y0 (float): y-coordinate
+        eps (float, optional): Sensitivity. Defaults to 1e-6.
+
+    Raises:
+        ValueError: If no or more than one boundary was found.
+
+    Returns:
+        Int: Boundary tag
+    """
     dimtags = gmsh.model.getEntitiesInBoundingBox(-r_out -eps, y0 - eps, -r_out - eps,
-        r_out + eps, y0 + eps, r_out + eps, dim-1)
+                                                  r_out + eps, y0 + eps, r_out + eps, dim-1)
     boundaries = get_boundaries(dim, body_tag)
     dimtags_filtered = [dimtag for dimtag in dimtags if dimtag[1] in boundaries]
     tags = []
@@ -137,10 +141,33 @@ def get_ring_boundary(dim, body_tag, r_out, y0, eps=1e-6):
     return tags[0]
 
 
-        
-def get_element_in_box(x_min, y_min, z_min, x_max, y_max, z_max, dim, tag, multiple=False, eps = 1e-6):
-    tags = gmsh.model.getEntitiesInBoundingBox(x_min - eps, y_min - eps, z_min - eps,
-        x_max + eps, y_max + eps, z_max + eps, dim-1)
+def get_boundaries_in_box(x_min, y_min, z_min, x_max, y_max, z_max, dim, tag, multiple=False,
+                          eps=1e-6):
+    """Find boundaries belonging to a given entity by searching in a
+    box.
+
+    Args:
+        x_min (float): min x-coordinate
+        y_min (float): min y-coordinate
+        z_min (float): min z-coordinate
+        x_max (float): max x-coordinate
+        y_max (float): max y-coordinate
+        z_max (float): max z-coordinate
+        dim (int): dimension of parent-entity
+        tag (int): tag of parent-entity
+        multiple (bool, optional): Searching for more than one boundary.
+        Defaults to False.
+        eps (Float, optional): Sensitivity. Defaults to 1e-6.
+
+    Raises:
+        ValueError: If more than one boundary was found (multiple=False)
+        ValueError: If no boundary was found
+
+    Returns:
+        Int or list[int]: boundary tag
+    """
+    tags = gmsh.model.getEntitiesInBoundingBox(x_min - eps, y_min - eps, z_min - eps, x_max + eps,
+                                               y_max + eps, z_max + eps, dim-1)
     boundaries = get_boundaries(dim, tag)
     tags_filtered = []
     for tag in tags:
@@ -155,13 +182,38 @@ def get_element_in_box(x_min, y_min, z_min, x_max, y_max, z_max, dim, tag, multi
     else:
         return tags_filtered[0][1]
 
+
 def set_lc(tag, lc, dim=2):
+    """Set characteristic length.
+
+    Args:
+        tag (int): Tag of entity for which lc is to by set
+        lc (float): Characteristic length
+        dim (int, optional): Dimension. Defaults to 2.
+    """
     boundary = gmsh.model.getBoundary([(dim, tag)], False, False, True)
     gmsh.model.mesh.setSize(boundary, lc)
 
+
 def threshold_field(tag, lc_min, lc_max, min_dist=-1, max_dist=-1, NNodesByEdge=1000):
-    # function works in 2D only
-    field = gmsh.model.mesh.field
+    """Add threshold field for mesh size control. Works in 2D only.
+
+    Args:
+        tag (int): Threshold field is applied to boundaries of the
+        entity with this tag
+        lc_min (float): Minimum characteristic length (applies at
+        boundary)
+        lc_max (float): Maximum characteristic length (far away from
+        boundary)
+        min_dist (int, optional): Distance to boundary where linear
+        increase in element size starts. Defaults to -1.
+        max_dist (int, optional): Distance to boundary where maximum
+        characteristic length is reached. Defaults to -1.
+        NNodesByEdge (int, optional): Resolution. Defaults to 1000.
+
+    Returns:
+        Int: Tag of threshold field.
+    """
     if min_dist == -1:
         min_dist = 0
     if max_dist == -1:
@@ -177,8 +229,25 @@ def threshold_field(tag, lc_min, lc_max, min_dist=-1, max_dist=-1, NNodesByEdge=
     field.setNumber(threshold_field, 'DistMax', max_dist)
     return threshold_field
 
+
 def exp_field(tag, lc, exp=1.8, fact=1, boundaries=[], NNodesByEdge=1000):
-    field = gmsh.model.mesh.field
+    """Add exponential field for mesh size control. Works in 2D only.
+
+    Args:
+        tag (int): Exponential field is applied to boundaries of the
+        entity with this tag.
+        lc (in): Characteristic length on boundary.
+        exp (float, optional): Exponent with which characteristic length
+        increases. Defaults to 1.8.
+        fact (float, optional): Factor in front of exponential term.
+        Defaults to 1.
+        boundaries (list, optional): Tags of boundaries to which
+        exp-field is applied. Defaults to [].
+        NNodesByEdge (int, optional): Resolution. Defaults to 1000.
+
+    Returns:
+        Int: Tag of threshold field.
+    """
     if boundaries == []:
         boundaries = get_boundaries(2, tag)
     dist_field = gmsh.model.mesh.field.add('Distance')
@@ -189,16 +258,37 @@ def exp_field(tag, lc, exp=1.8, fact=1, boundaries=[], NNodesByEdge=1000):
     field.setString(math_field, 'F', math_str)
     return math_field
 
+
 def restricted_field(base_field, faces_list=[], edges_list=[]):
-    field = gmsh.model.mesh.field
+    """Restrict filed to certrain faces and/or edges. Works in 2D only.
+
+    Args:
+        base_field (int): Tag of the field to be restricted
+        faces_list (list, optional): Tags of faces. Defaults to [].
+        edges_list (list, optional): Tags of lines. Defaults to [].
+
+    Returns:
+        Int: Tag of restricted field.
+    """
     restrict_field = field.add('Restrict')
     field.setNumber(restrict_field, 'IField', base_field)
     field.setNumbers(restrict_field, 'FacesList', faces_list)
     field.setNumbers(restrict_field, 'EdgesList', edges_list)
     return restrict_field
 
+
 def restricted_const_field(surf_tag, lc, NNodesByEdge=1000):
-    field = gmsh.model.mesh.field
+    """Add constant field that is restricted to a certain surface.
+    Works in 2D only.
+
+    Args:
+        surf_tag (int): Tag of surface.
+        lc (float): Characteristic length
+        NNodesByEdge (int, optional): Resolution. Defaults to 1000.
+
+    Returns:
+        Int: Tag of the resticted constant field.
+    """
     math_field = field.add('MathEval')
     field.setString(math_field, 'F', str(lc))
     restrict_field = field.add('Restrict')
@@ -206,4 +296,3 @@ def restricted_const_field(surf_tag, lc, NNodesByEdge=1000):
     field.setNumbers(restrict_field, 'FacesList', [surf_tag])
     field.setNumbers(restrict_field, 'EdgesList', get_boundaries(2, surf_tag))
     return restrict_field
-

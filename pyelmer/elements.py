@@ -1,6 +1,4 @@
-# created by Arved Enders-Seidlitz on 04.09.2020
-#
-# Element shape functions
+"""Element shape functions, used for post processing."""
 
 import numpy as np
 from dataclasses import dataclass
@@ -8,24 +6,32 @@ from dataclasses import dataclass
 
 @dataclass
 class Node:
+    """Node, contains its coordinates and Temperature."""
     x: float
     y: float
     z: float = 0
     T: float = 0
-    
+
     @property
     def X(self):
+        """Coordinate vector"""
         return np.array([self.x, self.y])
 
 
 class Triangle:
+    """Base class for triangle elements.
+    """
     def __init__(self, nodes):
         self.n1 = nodes[0]
         self.n2 = nodes[1]
         self.n3 = nodes[2]
+
     @property
     def A(self):
-        return 0.5 * ((self.n2.x * self.n3.y - self.n3.x * self.n2.y) - (self.n1.x * self.n3.y - self.n3.x * self.n1.y) + (self.n1.x * self.n2.y - self.n2.x * self.n1.y))
+        """Surface of the triangle"""
+        return 0.5 * ((self.n2.x * self.n3.y - self.n3.x * self.n2.y)
+                      - (self.n1.x * self.n3.y - self.n3.x * self.n1.y)
+                      + (self.n1.x * self.n2.y - self.n2.x * self.n1.y))
 
 
 class Triangle1st(Triangle):
@@ -40,6 +46,16 @@ class Triangle1st(Triangle):
     n1---------n2
     """
     def B_e(self, x, y):
+        """Derivative of shape functions.
+
+        Args:
+            x (float): coordinate (unused for elements of this order)
+            y (float): coordinate (unused for elements of this order)
+
+        Returns:
+            numpy.array: derivative matrix
+        """
+        del x, y
         # according to Ottosen1992 p.124 eqn 7.99
         B_e = np.array([[self.n2.y - self.n3.y, self.n3.y - self.n1.y, self.n1.y - self.n2.y],
                         [self.n3.x - self.n2.x, self.n1.x - self.n3.x, self.n2.x - self.n1.x]])
@@ -48,8 +64,10 @@ class Triangle1st(Triangle):
 
     @property
     def T(self):
+        """Temperature vector"""
         T = [self.n1.T, self.n2.T, self.n3.T]
         return np.array(T)
+
 
 class Triangle2nd(Triangle):
     """Triangle second order.
@@ -62,7 +80,7 @@ class Triangle2nd(Triangle):
     |        `\ 
     n1---n4----n2
 
-    Formulas following Zienkiewicz2005 p.116 ff.
+    Formulas according to Zienkiewicz2005 p.116 ff.
     """
     def __init__(self, nodes):
         self.n1 = nodes[0]
@@ -120,7 +138,7 @@ class Triangle2nd(Triangle):
     def N1(self, x, y):
         L1 = self.L1(x, y)
         return (2*L1 - 1) * L1
-    
+
     def N2(self, x, y):
         L2 = self.L2(x, y)
         return (2*L2 - 1) * L2
@@ -187,7 +205,7 @@ class Triangle2nd(Triangle):
         L2 = self.L2(x, y)
         L2_y = self.L2_y
         return 4 * L2 * L2_y - L2_y
-    
+
     def N3_x(self, x, y):
         L3 = self.L3(x, y)
         L3_x = self.L3_x
@@ -241,19 +259,30 @@ class Triangle2nd(Triangle):
         return 4 * (L3_y * L1 + L3 * L1_y)
 
     def B_e(self, x, y):
+        """Derivative of shape functions.
+
+        Args:
+            x (float): coordinate
+            y (float): coordinate
+
+        Returns:
+            numpy array: Derivative matrix at (x, y)
+        """
         B_e = [
             [self.N1_x(x, y), self.N2_x(x, y), self.N3_x(x, y), self.N4_x(x, y), self.N5_x(x, y), self.N6_x(x, y)],
             [self.N1_y(x, y), self.N2_y(x, y), self.N3_y(x, y), self.N4_y(x, y), self.N5_y(x, y), self.N6_y(x, y)]
         ]
         return np.array(B_e)
-    
+
     @property
     def T(self):
+        """Temperature vector"""
         T = [self.n1.T, self.n2.T, self.n3.T, self.n4.T, self.n5.T, self.n6.T]
         return np.array(T)
 
     @T.setter
     def T(self, T):
+        """Temperature vector"""
         self.n1.T = T[0]
         self.n2.T = T[1]
         self.n3.T = T[2]
@@ -263,6 +292,9 @@ class Triangle2nd(Triangle):
 
 
 class Line1st:
+    """Line element of first order:
+    n1----n2
+    """
     def __init__(self, nodes):
         self.n1 = nodes[0]
         self.n2 = nodes[1]
@@ -274,14 +306,9 @@ class Line1st:
 
 
 class Line2nd(Line1st):
+    """Line element of second order:
+    n1----n3----n2
+    """
     def __init__(self, nodes):
         super().__init__(nodes[:-1])
         self.n3 = nodes[2]
-
-
-if __name__ == "__main__":
-    n1 = Node(0, 0, 0)
-    n2 = Node(1, 0, 0)
-    n3 = Node(2, 0, 0)
-    l = Line2nd([n1, n2, n3])
-    l.invert_normal()
