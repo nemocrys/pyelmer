@@ -36,14 +36,6 @@ graphite_FU8957:  # heater
   Heat Conductivity: 105  # averaged over different given values
   Relative Permeability: 1
   Relative Permittivity: 1
-insulation:
-  Density: 220.0
-  Electric Conductivity: 195
-  Emissivity: 0.81  # 250°C
-  Heat Capacity: 1237.0
-  Heat Conductivity: 0.2
-  Relative Permeability: 1
-  Relative Permittivity: 1
 steel_1.4541:
   Density: 7900.0  # 20°C
   Electric Conductivity: 1370
@@ -72,23 +64,3 @@ tin_solid:
   Solid: 'Logical True'
   Melting Point: 505
   Latent Heat: 59600
-bismuth_liquid:
-  Density: 10050
-  Electric Conductivity: 768000
-  Emissivity: 0.366  # set equal to solid
-  Heat Capacity: 146.3
-  Heat Conductivity: 10.23
-  Relative Permeability: 1
-  Relative Permittivity: 1
-  Liquid: 'Logical True'
-bismuth_solid:
-  Density: 9832
-  Electric Conductivity: 344000
-  Emissivity: 0.366
-  Heat Capacity: 147
-  Heat Conductivity: 7.5
-  Relative Permeability: 1
-  Relative Permittivity: 1
-  Solid: 'Logical True'
-  Melting Point: 544.1
-  Latent Heat: 52100  # J / kg

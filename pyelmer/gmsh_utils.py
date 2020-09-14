@@ -2,6 +2,8 @@
 
 import gmsh
 import numpy as np
+
+
 factory = gmsh.model.occ
 field = gmsh.model.mesh.field
 

@@ -1,4 +1,4 @@
-heat:
+HeatSolver:
   Equation: 'Heat Equation'
   Procedure: '"HeatSolve" "HeatSolver"'
   Variable: '"Temperature"'
@@ -22,7 +22,7 @@ heat:
   Linear System Abort Not Converged: False
   Linear System Residual Output: 0
   Smart Heater Control After Tolerance: 1.0e-4
-mgdyn:
+MagnetoDynamics2DHarmonic:
   Equation: MgDyn2DHarmonic
   Procedure: '"MagnetoDynamics2D" "MagnetoDynamics2DHarmonic"'
   Variable: 'Potential[Potential Re:1 Potential Im:1]'
@@ -44,7 +44,7 @@ mgdyn:
   Linear System Convergence Tolerance: 1.0e-10
   Linear System Abort Not Converged: False
   Linear System Residual Output: 0
-calcfields:
+MagnetoDynamicsCalcFields:
   Equation: CalcFields
   Procedure: '"MagnetoDynamics" "MagnetoDynamicsCalcFields"'
   Potential Variable: Potential
@@ -53,38 +53,29 @@ calcfields:
   Calculate Magnetic Field Strength: True
   Calculate Electric Field: True
   Exec Solver: Always
-statmag:
+StatMagSolver:
   Equation: StatMagSolver
   Procedure: '"StatMagSolve" "StatMagSolver"'
   Variable: Potential
   Variable DOFs: 2
   Calculate Joule Heating: 'Logical True'
   Calculate Magnetic Flux: 'Logical True'
-  # Linear System Solver: Direct  # settings from induction heating elmer test case
-  # Linear System Direct Method: umfpack
-  # Nonlinear System Max Iterations: 1
-  # Nonlinear System Convergence Tolerance: 1.0e-6
-  # Nonlinear System Relaxation Factor: 1
-save_materials: 
+  Linear System Solver: Direct
+  Linear System Direct Method: umfpack
+  Nonlinear System Max Iterations: 1
+  Nonlinear System Convergence Tolerance: 1.0e-6
+  Nonlinear System Relaxation Factor: 1
+SaveMaterials: 
   Exec Solver: 'After timestep'
   Procedure: 'File "SaveData" "SaveMaterials"'
   Parameter 1: 'String "Heat Conductivity"'
-output:
+ResultOutputSolver:
   Exec Solver: 'After timestep'
   Equation: '"ResultOutput"'
   Procedure: '"ResultOutputSolve" "ResultOutputSolver"'
   VTU Format: True
   Save Geometry Ids: 'Logical True'
-  Scalar Field 1: '"Temperature"'
-  Scalar Field 2: '"Heat Conductivity"'
-  Scalar Field 3: '"Temperature Loads"'
-  Scalar Field 4: '"Temperature Flux"'
-  Scalar Field 5: '"Potential"'
-  Scalar Field 6: '"Joule Heating"'
-  Scalar Field 7: '"Magnetic Field Strength"'
-  Scalar Field 8: '"Electric Field"'
-  Scalar Field 9: '"Temperature Grad"'
-flux:
+FluxSolver:
   Exec Solver: 'After timestep'
   Equation: 'String "Flux Solver"'
   Procedure: '"FluxSolver" "FluxSolver"'
@@ -99,7 +90,7 @@ flux:
   Linear System Preconditioning: ILU
   Linear System Residual Output: 0
   Linear System Abort Not Converged: False
-boundary_scalars:
+SaveScalars:
   Exec Solver: 'After timestep'
   Equation: SaveScalars
   Procedure: '"SaveData" "SaveScalars"'
@@ -110,9 +101,7 @@ boundary_scalars:
   Operator 2: 'diffusive flux'
   Variable 2: Temperature
   Coefficient 2: 'Heat Conductivity'
-  # Operator 2: 'boundary int'
-  # Variable 2: 'temperature flux'
-boundary_lines:
+SaveLine:
   Exec Solver: 'After timestep'
   Equation: '"SaveLine"'
   Procedure: '"SaveData" "SaveLine"'
@@ -120,14 +109,7 @@ boundary_lines:
   Output Directory: './results'
   Variable 1: Temperature Grad
   Variable 2: Temperature Loads
-  # Variable 1: 'temperature flux'
-probe_scalars:
-  Exec Solver: 'After timestep'
-  Procedure: '"SaveData" "SaveScalars"'
-  Filename: '"probes.dat"'
-  Output Directory: './results'
-  Exact Coordinates: True
-phase_change:
+SteadyPhaseChange:
   Equation: PhaseSurface
   Variable: '"Phase Surface"'
   Procedure: '"SteadyPhaseChange" "SteadyPhaseChange"'

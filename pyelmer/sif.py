@@ -15,6 +15,9 @@ import os
 import yaml
 
 
+DATA_DIR =  os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
+
+
 class Simulation:
     """Main wrapper for the sif file. The simulation class is used to
     collect all information.
@@ -380,8 +383,7 @@ def load_simulation(name):
     Returns:
         Simulation object.
     """
-    path = os.path.dirname(os.path.realpath(__file__))
-    with open(path + './data/simulations.yml') as f:
+    with open(DATA_DIR + '/simulations.yml') as f:
         settings = yaml.safe_load(f)[name]
     sim = Simulation()
     sim.settings = settings
@@ -398,8 +400,7 @@ def load_material(name, simulation=None):
     Returns:
         Material object.
     """
-    path = os.path.dirname(os.path.realpath(__file__))
-    with open(path + './data/materials.yml') as f:
+    with open(DATA_DIR + '/materials.yml') as f:
         data = yaml.safe_load(f)[name]
     return Material(simulation, name, data)
 
@@ -414,8 +415,7 @@ def load_solver(name, simulation=None):
     Returns:
         Solver object.
     """
-    path = os.path.dirname(os.path.realpath(__file__))
-    with open(path + '/data/solvers.yml') as f:
+    with open(DATA_DIR + '/solvers.yml') as f:
         data = yaml.safe_load(f)
         data = data[name]
     return Solver(simulation, name, data)
