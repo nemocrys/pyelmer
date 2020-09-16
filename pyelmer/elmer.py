@@ -230,6 +230,7 @@ class Boundary:
                 'Heat Transfer Coefficient': self.heat_transfer_coefficient,
                 'External Temperature': self.T_ext
             })
+        d.update(self.data)
         return d
 
 
@@ -277,6 +278,7 @@ class BodyForce:
         self.smart_heater_control_point = []
         self.smart_heater_T = 0
         self.name = name
+        self.data = data
         simulation.body_forces.update({name: self})
 
     def get_data(self):
@@ -299,6 +301,7 @@ class BodyForce:
             d.update({'Smart Heater Control Point(3)': str(cp[0]) + ' ' + str(cp[1]) + ' '
                                                        + str(cp[2]),
                       'Smart Heater Temperature': self.smart_heater_T})
+        d.update(self.data)
         return d
 
 

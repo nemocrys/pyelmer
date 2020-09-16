@@ -17,7 +17,7 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid='win'):
     if elmergrid == 'win':
         elmergrid = 'C:/Program Files/Elmer 8.4-Release/bin/ElmerGrid.exe'
 
-    args = [elmergrid, '14', '2', sim_dir + '/' + meshfile]
+    args = [elmergrid, '14', '2', meshfile]
     with open(sim_dir + '/elmergrid.log', 'w') as f:
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
 
@@ -26,7 +26,7 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid='win'):
     for f in files:
         if os.path.exists(sim_dir + '/' + f):
             os.remove(sim_dir + '/' + f)
-        shutil.move(mesh_dir + f, sim_dir)
+        shutil.move(mesh_dir + '/' + f, sim_dir)
     shutil.rmtree(mesh_dir)
 
 
@@ -42,6 +42,12 @@ def run_elmer_solver(sim_dir, elmersolver='win'):
     if elmersolver == 'win':
         elmersolver = 'C:/Program Files/Elmer 8.4-Release/bin/ElmerSolver.exe'
 
-    args = [elmersolver, sim_dir + '/case.sif']
+    args = [elmersolver, 'case.sif']
     with open(sim_dir + '/elmersolver.log', 'w') as f:
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
+
+
+def scan_logfile(sim_dir):
+    err = []
+    warn = []
+    return err, warn
