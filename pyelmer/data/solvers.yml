@@ -5,22 +5,20 @@ HeatSolver:
   Variable Dofs: 1
   Calculate Loads: True
   Exec Solver: Always
-  Nonlinear System Convergence Tolerance: 1.0e-10
-  Nonlinear System Max Iterations: 50
-  Nonlinear System Newton After Iterations: 1
-  Nonlinear System Newton After Tolerance: 1.0e-6
+  Nonlinear System Convergence Tolerance: 1.0e-6
+  Nonlinear System Max Iterations: 1000
   Nonlinear System Relaxation Factor: 0.7
-  Steady State Convergence Tolerance: 1.0e-10
-  Stabilize: True
+  Steady State Convergence Tolerance: 1.0e-6
+  Stabilize: True  # Necessary in convection-dominated systems
   Optimize Bandwidth: True
-  Linear System Solver: Iterative
+  Linear System Solver: Iterative  
   Linear System Iterative Method: BiCGStab
-  Linear System Max Iterations: 500
+  Linear System Max Iterations: 1000
   Linear System Preconditioning: ILU
-  Linear System Precondition Recompute: 0
-  Linear System Convergence Tolerance: 1.0e-10
-  Linear System Abort Not Converged: False
-  Linear System Residual Output: 0
+  Linear System Precondition Recompute: 1
+  Linear System Convergence Tolerance: 1.0e-8
+  Linear System Abort Not Converged: True
+  Linear System Residual Output: 1
   Smart Heater Control After Tolerance: 1.0e-4
 MagnetoDynamics2DHarmonic:
   Equation: MgDyn2DHarmonic
@@ -28,22 +26,19 @@ MagnetoDynamics2DHarmonic:
   Variable: 'Potential[Potential Re:1 Potential Im:1]'
   Variable Dofs: 2
   Exec Solver: Always
-  Nonlinear System Convergence Tolerance: 1.0e-10
-  Nonlinear System Max Iterations: 50
-  Nonlinear System Newton After Iterations: 1
-  Nonlinear System Newton After Tolerance: 1.0e-6
+  Nonlinear System Convergence Tolerance: 1.0e-6
+  Nonlinear System Max Iterations: 1000
   Nonlinear System Relaxation Factor: 0.7
-  Steady State Convergence Tolerance: 1.0e-10
-  Stabilize: True
+  Steady State Convergence Tolerance: 1.0e-6
   Optimize Bandwidth: True
-  Linear System Solver: Iterative
+  Linear System Solver: Iterative  
   Linear System Iterative Method: BiCGStab
-  Linear System Max Iterations: 500
+  Linear System Max Iterations: 1000
   Linear System Preconditioning: ILU
-  Linear System Precondition Recompute: 0
-  Linear System Convergence Tolerance: 1.0e-10
-  Linear System Abort Not Converged: False
-  Linear System Residual Output: 0
+  Linear System Precondition Recompute: 1
+  Linear System Convergence Tolerance: 1.0e-8
+  Linear System Abort Not Converged: True
+  Linear System Residual Output: 1
 MagnetoDynamicsCalcFields:
   Equation: CalcFields
   Procedure: '"MagnetoDynamics" "MagnetoDynamicsCalcFields"'
@@ -53,6 +48,19 @@ MagnetoDynamicsCalcFields:
   Calculate Magnetic Field Strength: True
   Calculate Electric Field: True
   Exec Solver: Always
+  Nonlinear System Convergence Tolerance: 1.0e-6
+  Nonlinear System Max Iterations: 1000
+  Nonlinear System Relaxation Factor: 0.7
+  Steady State Convergence Tolerance: 1.0e-6
+  Optimize Bandwidth: True
+  Linear System Solver: Iterative  
+  Linear System Iterative Method: BiCGStab
+  Linear System Max Iterations: 1000
+  Linear System Preconditioning: ILU
+  Linear System Precondition Recompute: 1
+  Linear System Convergence Tolerance: 1.0e-8
+  Linear System Abort Not Converged: True
+  Linear System Residual Output: 1
 StatMagSolver:
   Equation: StatMagSolver
   Procedure: '"StatMagSolve" "StatMagSolver"'
@@ -60,11 +68,20 @@ StatMagSolver:
   Variable DOFs: 2
   Calculate Joule Heating: 'Logical True'
   Calculate Magnetic Flux: 'Logical True'
-  Linear System Solver: Direct
-  Linear System Direct Method: umfpack
-  Nonlinear System Max Iterations: 1
+  Exec Solver: Always
   Nonlinear System Convergence Tolerance: 1.0e-6
-  Nonlinear System Relaxation Factor: 1
+  Nonlinear System Max Iterations: 1000
+  Nonlinear System Relaxation Factor: 0.7
+  Steady State Convergence Tolerance: 1.0e-6
+  Optimize Bandwidth: True
+  Linear System Solver: Iterative  
+  Linear System Iterative Method: BiCGStab
+  Linear System Max Iterations: 1000
+  Linear System Preconditioning: ILU
+  Linear System Precondition Recompute: 1
+  Linear System Convergence Tolerance: 1.0e-8
+  Linear System Abort Not Converged: True
+  Linear System Residual Output: 1
 SaveMaterials: 
   Exec Solver: 'After timestep'
   Procedure: 'File "SaveData" "SaveMaterials"'
@@ -83,13 +100,20 @@ FluxSolver:
   Calculate Flux: 'Logical True'
   Target Variable: 'String "Temperature"'
   Flux Coefficient: 'String "Heat Conductivity"'
-  Linear System Solver: '"Iterative"'
-  Linear System Convergence Tolerance: 1.0e-8
-  Linear System Iterative Method: '"BiCGStab"'
-  Linear System Max Iterations: 500
+  Exec Solver: Always
+  Nonlinear System Convergence Tolerance: 1.0e-6
+  Nonlinear System Max Iterations: 1000
+  Nonlinear System Relaxation Factor: 0.7
+  Steady State Convergence Tolerance: 1.0e-6
+  Optimize Bandwidth: True
+  Linear System Solver: Iterative  
+  Linear System Iterative Method: BiCGStab
+  Linear System Max Iterations: 1000
   Linear System Preconditioning: ILU
-  Linear System Residual Output: 0
-  Linear System Abort Not Converged: False
+  Linear System Precondition Recompute: 1
+  Linear System Convergence Tolerance: 1.0e-8
+  Linear System Abort Not Converged: True
+  Linear System Residual Output: 1
 SaveScalars:
   Exec Solver: 'After timestep'
   Equation: SaveScalars
@@ -107,8 +131,7 @@ SaveLine:
   Procedure: '"SaveData" "SaveLine"'
   Filename: '"boundary_lines.dat"'
   Output Directory: './results'
-  Variable 1: Temperature Grad
-  Variable 2: Temperature Loads
+  Variable 1: Temperature Loads
 SteadyPhaseChange:
   Equation: PhaseSurface
   Variable: '"Phase Surface"'
