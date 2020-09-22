@@ -47,28 +47,6 @@ def run_elmer_solver(sim_dir, elmersolver='win'):
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
 
 
-def scan_logfile(sim_dir):
-    """Scan log file for errors and warnings.
-
-    Args:
-        sim_dir (str): Simulation directory
-
-    Returns:
-        list[str], list[str]: error messages, warnings
-    """
-    with open(sim_dir + '/elmersolver.log', 'r') as f:
-        log = f.readlines()
-    print(log)
-    err = []
-    warn = []
-    for line in log:
-        if 'ERROR' in line:
-            err.append(line[:-1])
-        if 'WARNING' in line:
-            err.append(line[:-1])
-    return err, warn
-
-
 if __name__ == "__main__":
     err, warn = scan_logfile('./simdata')
     print(err)
