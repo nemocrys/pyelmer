@@ -1,18 +1,20 @@
+import os
+import re
 import numpy as np
 import matplotlib.pyplot as plt
-import re
 from dataclasses import dataclass
 
 @dataclass
 class LinearIteration:
-    lines: list
+    idx: list
+    relc: list
 
 
 @dataclass
 class NonlinearIteration:
-    linear_iterations: list
     nrm: float = 0
     relc: float = 0
+    linear_iteration: LinearIteration = LinearIteration([], [])
 
 
 @dataclass
@@ -27,6 +29,12 @@ class SteadyStateIteration:
             relcs.append(itr.relc)
         return relcs
 
+    def nonlin_nrm(self):
+        nrms = []
+        for itr in self.nonlinear_iterations:
+            nrms.append(itr.nrm)
+        return nrms
+
 
 @dataclass
 class SolverResiduals:
@@ -37,6 +45,12 @@ class SolverResiduals:
         for itr in self.steady_state_iterations:
             relcs.append(itr.relc)
         return relcs
+
+    def ss_nrm(self):
+        nrms = []
+        for itr in self.steady_state_iterations:
+            nrms.append(itr.nrm)
+        return nrms
 
 
 def scan_logfile(sim_dir):
@@ -60,7 +74,7 @@ def scan_logfile(sim_dir):
     return err, warn
 
 
-def plot_residuals(sim_dir, solvers):
+def plot_residuals(sim_dir, solvers, save=False):
     """Plot residuals in log file
 
     Args:
@@ -68,13 +82,19 @@ def plot_residuals(sim_dir, solvers):
     """
     with open(sim_dir + '/elmersolver.log', 'r') as f:
         log = f.readlines()
-    for line in log:
-        line = line[:-1]
+    for i in range(len(log)):
+        log[i] = log[i][:-1]
     
     residuals = {}
+    linres_str = {}  # string to detect linear solver residuals
     for solver in solvers:
         residuals.update({solver: SolverResiduals([SteadyStateIteration([])])})
+        if solver == 'heat equation':
+            linres_str.update({solver: 'HeatSolve: Assembly done'})
+        if solver == 'statmagsolver':
+            linres_str.update({solver: 'StatMagSolve: Set boundaries done'})
 
+    linres_solver = ''  # currently in section with residuals of this solver
     for line in log:
         if 'ComputeChange' in line:
             txt = re.sub(' +', ' ', line.split(' ( ')[-1].split(' ) ')[0]).lstrip().split (' ')
@@ -83,42 +103,97 @@ def plot_residuals(sim_dir, solvers):
             for solver in solvers:
                 if solver.lower() in line:
                     if 'NS' in line:
-                        nli = NonlinearIteration([], nrm, relc)
+                        nli = NonlinearIteration(nrm, relc)
                         residuals[solver].steady_state_iterations[-1].nonlinear_iterations.append(nli)
                     if 'SS' in line:
                         residuals[solver].steady_state_iterations[-1].nrm = nrm
                         residuals[solver].steady_state_iterations[-1].relc = relc
                         residuals[solver].steady_state_iterations.append(SteadyStateIteration([]))
+            if linres_solver:
+                li = LinearIteration(lin_res_idx, lin_res_relc)
+                residuals[linres_solver].steady_state_iterations[-1].nonlinear_iterations[-1].linear_iteration = li
+                linres_solver = ''
+        else:
+            for solver in solvers:
+                if line == linres_str[solver]:
+                    linres_solver = solver
+                    lin_res_idx = []
+                    lin_res_relc = []
+                elif linres_solver == solver:
+                    txt = line.lstrip().split(' ')
+                    lin_res_idx.append(float(txt[0]))
+                    lin_res_relc.append(float(txt[1]))
     
     # remove empty last SteadyStateIteration
     for solver in solvers:
         if residuals[solver].steady_state_iterations[-1].nonlinear_iterations == []:
             del residuals[solver].steady_state_iterations[-1]
         else:
-            raise ValueError('Incomplete Steady State iteration in logfile.')
+            print('WARNING: Incomplete Steady State iteration in logfile.')
 
-    
-    fig, ax = plt.subplots(1, 2)
+    figs = []
+    axes = []
+
+    fig_ss, ax_ss = plt.subplots(1, 2, figsize=(5.75, 4))
+    figs.append(fig_ss)
+    axes.append(ax_ss)
+    #ax_ss.set_title('Steady State Iterations')
+    fig_ss.title = 'residuals_ss'
+
+    fig_ns, ax_ns = plt.subplots(1, 2, figsize=(5.75, 4))
+    figs.append(fig_ns)
+    axes.append(ax_ns)
+    #ax_ns.set_title('Nonlinear Iterations')
+    fig_ns.title = 'residuals_ns'
+
+    fig_li, ax_li = plt.subplots(1, len(linres_str), figsize=(5.75, 4))
+    for i, solver in enumerate(linres_str):
+        ax_li[i].set_title(solver)
+    figs.append(fig_li)
+    fig_li.title = 'residuals_li'
+
     for solver in solvers:
         res = residuals[solver]
         # steady state iterations
-        line, = ax[0].plot(res.ss_relc(), '-x')
+        line, = ax_ss[0].plot(res.ss_relc(), '-x')
+        line.set_label(solver)
+        line, = ax_ss[1].plot(res.ss_nrm(), '-x')
         line.set_label(solver)
         # nonlinear iterations
         for i, ss_iter in enumerate(res.steady_state_iterations):
-            line, = ax[1].plot(ss_iter.nonlin_relc(), '-x')
+            line, = ax_ns[0].plot(ss_iter.nonlin_relc(), '-x')
+            line.set_label(solver + ' ss ' + str(i))
+            line, = ax_ns[1].plot(ss_iter.nonlin_nrm(), '-x')
             line.set_label(solver + ' ss ' + str(i))
 
-    ax[0].set_title('Steady State Iterations')
-    ax[0].legend()
-    ax[0].set_yscale('log')
+    for i, solver in enumerate(linres_str):
+        for i_ss, ss_iter in enumerate(residuals[solver].steady_state_iterations):
+            for i_nl, nl_iter in enumerate(ss_iter.nonlinear_iterations):
+                li = nl_iter.linear_iteration
+                line, = ax_li[i].plot(li.idx, li.relc)
+                line.set_label('ss ' + str(i_ss) + ' nl ' + str(i_nl))
 
-    ax[1].set_title('Nonlinear Iterations')
-    ax[1].legend()
-    ax[1].set_yscale('log')
-    plt.show()
+    for ax in axes:
+        ax[1].legend()
+        ax[0].set_yscale('log')
+        ax[0].set_xlabel('iteration')
+        ax[1].set_xlabel('iteration')
+        ax[0].set_ylabel('RELC')
+        ax[1].set_ylabel('NRM')
+    for ax in ax_li:
+        # ax.legend()
+        ax.set_yscale('log')
+        ax.set_xlabel('iteration')
+        ax.set_ylabel('RELC')
 
-if __name__ == "__main__":
-    sim_dir = r'C:\Users\enders-seidlitz\Documents\GitHub\sim-elmerthermo\simdata\2020-09-21_14-01_vacuum-1st'
-    sim_dir = r'C:\Users\enders-seidlitz\Documents\GitHub\sim-elmerthermo\simdata\2020-09-21_16-45_vacuum-2nd_modparams'
-    plot_residuals(sim_dir, ['heat equation', 'statmagsolver'])
+    fig_dir = sim_dir + '/results/'
+    if not os.path.exists(fig_dir):
+        os.mkdir(fig_dir)
+
+    for fig in figs:
+        fig.tight_layout()
+        if save:
+            fig.savefig(fig_dir + fig.title + '.pdf')
+            fig.savefig(fig_dir + fig.title + '.png')
+
+    return figs, axes

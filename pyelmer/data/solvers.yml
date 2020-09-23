@@ -1,5 +1,5 @@
 HeatSolver:
-  Equation: 'Heat Equation'
+  Equation: HeatSolver
   Procedure: '"HeatSolve" "HeatSolver"'
   Variable: '"Temperature"'
   Variable Dofs: 1
@@ -21,7 +21,7 @@ HeatSolver:
   Linear System Residual Output: 1
   Smart Heater Control After Tolerance: 1.0e-4
 MagnetoDynamics2DHarmonic:
-  Equation: MgDyn2DHarmonic
+  Equation: MagnetoDynamics2DHarmonic
   Procedure: '"MagnetoDynamics2D" "MagnetoDynamics2DHarmonic"'
   Variable: 'Potential[Potential Re:1 Potential Im:1]'
   Variable Dofs: 2
@@ -40,7 +40,7 @@ MagnetoDynamics2DHarmonic:
   Linear System Abort Not Converged: True
   Linear System Residual Output: 1
 MagnetoDynamicsCalcFields:
-  Equation: CalcFields
+  Equation: MagnetoDynamicsCalcFields
   Procedure: '"MagnetoDynamics" "MagnetoDynamicsCalcFields"'
   Potential Variable: Potential
   Angular Frequency: 8.48e4
@@ -88,13 +88,13 @@ SaveMaterials:
   Parameter 1: 'String "Heat Conductivity"'
 ResultOutputSolver:
   Exec Solver: 'After timestep'
-  Equation: '"ResultOutput"'
+  Equation: ResultOutputSolver
   Procedure: '"ResultOutputSolve" "ResultOutputSolver"'
   VTU Format: True
   Save Geometry Ids: 'Logical True'
 FluxSolver:
   Exec Solver: 'After timestep'
-  Equation: 'String "Flux Solver"'
+  Equation: 'Flux Solver'
   Procedure: '"FluxSolver" "FluxSolver"'
   Calculate Grad: 'Logical True'
   Calculate Flux: 'Logical True'
@@ -133,7 +133,7 @@ SaveLine:
   Output Directory: './results'
   Variable 1: Temperature Loads
 SteadyPhaseChange:
-  Equation: PhaseSurface
+  Equation: SteadyPhaseChange
   Variable: '"Phase Surface"'
   Procedure: '"SteadyPhaseChange" "SteadyPhaseChange"'
   Internal Mesh Movement: 'Logical True'
