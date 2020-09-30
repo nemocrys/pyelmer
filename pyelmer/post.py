@@ -66,12 +66,18 @@ def scan_logfile(sim_dir):
         log = f.readlines()
     err = []
     warn = []
+    stats = {}
     for line in log:
         if 'ERROR' in line:
             err.append(line[:-1])
         if 'WARNING' in line:
             err.append(line[:-1])
-    return err, warn
+        if 'SOLVER TOTAL TIME(CPU,REAL):' in line:
+            s = ' '.join(line[:-1].split()).split(' ')
+            cpu_time = float(s[3])
+            real_time = float(s[4])
+            stats.update({'CPU-time': cpu_time, 'real-time': real_time})
+    return err, warn, stats
 
 
 def plot_residuals(sim_dir, solvers, save=False):
