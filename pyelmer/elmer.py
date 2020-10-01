@@ -181,7 +181,8 @@ class Boundary:
         self.radiation = False
         self.fixed_temperature = None
         self.zero_potential = False
-        self.save_flux = True
+        self.save_scalars = False
+        self.save_line = False
         self.smart_heater = False
         self.smart_heater_T = 0
         self.phase_change = False
@@ -203,14 +204,15 @@ class Boundary:
             value += str(surf_id) + ' '
         d = {key: value}
         if self.radiation:
-            d.update({'Heat Flux BC': 'True'})
             d.update({'Radiation': 'Diffuse Gray'})
         if self.fixed_temperature is not None:
             d.update({'Temperature': self.fixed_temperature})
         if self.zero_potential:
             d.update({'Potential 1': 0, 'Potential 2': 0})
-        if self.save_flux:
-            d.update({'Save Scalars': 'Logical True', 'Save Line': 'Logical True'})
+        if self.save_scalars:
+            d.update({'Save Scalars': 'Logical True'})
+        if self.save_line:
+            d.update({'Save Line': 'Logical True'})
         if self.smart_heater:
             d.update({'Smart Heater Boundary': 'Logical True',
                       'Smart Heater Temperature': self.smart_heater_T})

@@ -10,7 +10,7 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid='win'):
     Args:
         sim_dir (str): Simulation directory
         meshfile (str): Filename of .msh file
-        elmergrid (str, optional): ElmerGrid executable
+        elmergrid (str): ElmerGrid executable
     """
     # On Windows ElmerGrid.exe is not found once gmsh.initialize() was executed.
     # Use abs-path instead.
@@ -35,7 +35,7 @@ def run_elmer_solver(sim_dir, elmersolver='win'):
 
     Args:
         sim_dir (str): Simulation directory
-        elmersolver (str, optional): ElmerSolver executable
+        elmersolver (str): ElmerSolver executable
     """
     # On Windows ElmerSolver.exe is not found once gmsh.initialize() was executed.
     # Use abs-path instead.
@@ -45,9 +45,3 @@ def run_elmer_solver(sim_dir, elmersolver='win'):
     args = [elmersolver, 'case.sif']
     with open(sim_dir + '/elmersolver.log', 'w') as f:
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
-
-
-if __name__ == "__main__":
-    err, warn = scan_logfile('./simdata')
-    print(err)
-    print(warn)
