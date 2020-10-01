@@ -4,11 +4,11 @@
 
 The pyelmer package provides a simple object-oriented way to set up [Elmer FEM](http://www.elmerfem.org/) simulations from python.
 
-Some utility-functions for pre-processing with [pygmsh](https://pypi.org/project/pygmsh/), execution of ElmerGrid and ElmerSolver, and some post-processing routines are provided. Some default simulation settings, solvers, and basic materials are provided.
+Some utility-functions for pre-processing using the [gmsh python API](https://pypi.org/project/gmsh/), execution of ElmerGrid and ElmerSolver, and some post-processing routines are provided. Some default simulation settings, solvers, and materials are available.
 
 ## Prerequisites
 
-Pyelmer is written in Python 3. To run simulations, an Elmer executable is required. As pyelmer was developed to be used with pygmsh, an installation of this package is required. Simulation settings, solver, and materials are stored in yaml-files. Therefore pyelmer depends on pyyaml.
+Pyelmer is written in Python 3.7. To run simulations, an Elmer executable is required. As pyelmer was developed to be used with gmsh, an installation of this package is required. Simulation settings, solver, and materials are stored in yaml-files. Therefore pyelmer depends on pyyaml.
 
 ```
 pip install --upgrade gmsh
