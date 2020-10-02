@@ -48,19 +48,8 @@ MagnetoDynamicsCalcFields:
   Calculate Magnetic Field Strength: True
   Calculate Electric Field: True
   Exec Solver: Always
-  Nonlinear System Convergence Tolerance: 1.0e-6
-  Nonlinear System Max Iterations: 1000
-  Nonlinear System Relaxation Factor: 0.7
-  Steady State Convergence Tolerance: 1.0e-6
-  Optimize Bandwidth: True
-  Linear System Solver: Iterative  
-  Linear System Iterative Method: BiCGStab
-  Linear System Max Iterations: 1000
-  Linear System Preconditioning: ILU
-  Linear System Precondition Recompute: 1
-  Linear System Convergence Tolerance: 1.0e-8
-  Linear System Abort Not Converged: True
-  Linear System Residual Output: 1
+  Calculate Nodal Fields: Logical False
+  Calculate Elemental Fields: Logical True
 StatMagSolver:
   Equation: StatMagSolver
   Procedure: '"StatMagSolve" "StatMagSolver"'
