@@ -208,7 +208,8 @@ class Boundary:
         if self.fixed_temperature is not None:
             d.update({'Temperature': self.fixed_temperature})
         if self.zero_potential:
-            d.update({'Potential 1': 0, 'Potential 2': 0})
+            # d.update({'Potential 1': 0, 'Potential 2': 0})
+            d.update({'Potential Re': 0, 'Potential Im': 0})
         if self.save_scalars:
             d.update({'Save Scalars': 'Logical True'})
         if self.save_line:

@@ -64,16 +64,18 @@ def scan_logfile(sim_dir):
     """
     with open(sim_dir + '/elmersolver.log', 'r') as f:
         log = f.readlines()
+    for i in range(len(log)):
+        log[i] = log[i][:-1]
     err = []
     warn = []
     stats = {}
     for line in log:
-        if 'ERROR' in line:
-            err.append(line[:-1])
-        if 'WARNING' in line:
-            err.append(line[:-1])
+        if 'ERROR' in line and line not in err:
+            err.append(line)
+        if 'WARNING' in line and line not in warn:
+            warn.append(line)
         if 'SOLVER TOTAL TIME(CPU,REAL):' in line:
-            s = ' '.join(line[:-1].split()).split(' ')
+            s = ' '.join(line.split()).split(' ')
             cpu_time = float(s[3])
             real_time = float(s[4])
             stats.update({'CPU-time': cpu_time, 'real-time': real_time})
