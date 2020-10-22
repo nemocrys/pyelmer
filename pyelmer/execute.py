@@ -1,9 +1,10 @@
 import os
 import shutil
 import subprocess
+import platform
 
 
-def run_elmer_grid(sim_dir, meshfile, elmergrid='win'):
+def run_elmer_grid(sim_dir, meshfile, elmergrid=None):
     """Run ElmerGrid on gmsh meshfile and move everithing into main
     directory.
 
@@ -12,10 +13,13 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid='win'):
         meshfile (str): Filename of .msh file
         elmergrid (str): ElmerGrid executable
     """
-    # On Windows ElmerGrid.exe is not found once gmsh.initialize() was executed.
-    # Use abs-path instead.
-    if elmergrid == 'win':
-        elmergrid = 'C:/Program Files/Elmer 8.4-Release/bin/ElmerGrid.exe'
+    if elmergrid is None:
+        # On Windows ElmerGrid.exe is not found once gmsh.initialize() was executed.
+        # Try to use abs-path instead.
+        if os.path.exists('C:/Program Files/Elmer 8.4-Release/bin/ElmerGrid.exe'):
+            elmergrid = 'C:/Program Files/Elmer 8.4-Release/bin/ElmerGrid.exe'
+        else:
+            elmergrid = 'ElmerGrid'
 
     args = [elmergrid, '14', '2', meshfile]
     with open(sim_dir + '/elmergrid.log', 'w') as f:
@@ -30,17 +34,20 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid='win'):
     shutil.rmtree(mesh_dir)
 
 
-def run_elmer_solver(sim_dir, elmersolver='win'):
+def run_elmer_solver(sim_dir, elmersolver=None):
     """Run ElmerSolver with input file case.sif
 
     Args:
         sim_dir (str): Simulation directory
         elmersolver (str): ElmerSolver executable
     """
-    # On Windows ElmerSolver.exe is not found once gmsh.initialize() was executed.
-    # Use abs-path instead.
-    if elmersolver == 'win':
-        elmersolver = 'C:/Program Files/Elmer 8.4-Release/bin/ElmerSolver.exe'
+    if elmersolver is None:
+        # On Windows ElmerSolver.exe is not found once gmsh.initialize() was executed.
+        # Try to use abs-path instead.
+        if os.path.exists('C:/Program Files/Elmer 8.4-Release/bin/ElmerSolver.exe'):
+            elmersolver = 'C:/Program Files/Elmer 8.4-Release/bin/ElmerSolver.exe'
+        else:
+            elmersolver = 'ElmerSolver'
 
     args = [elmersolver, 'case.sif']
     with open(sim_dir + '/elmersolver.log', 'w') as f:
