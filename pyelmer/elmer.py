@@ -95,6 +95,17 @@ class Simulation:
                 f.write('End\n\n')
         print('Wrote sif-file.')
 
+    def write_startinfo(self, simulation_dir):
+        """Write ELMERSOLVER_STARTINFO file in simulation directory.
+
+        Args:
+            simulation_dir (str): simulation directory
+        """
+        with open(simulation_dir + '/ELMERSOLVER_STARTINFO', 'w') as f:
+            f.write('case.sif\n')
+            f.write('1\n')
+        
+
     def write_boundary_ids(self, simulation_dir):
         """Write yaml-file containing the boundary names and the
         assigned elmer body-ids.

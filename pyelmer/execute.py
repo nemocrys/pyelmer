@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import multiprocessing
 import platform
 
 
@@ -25,7 +26,7 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid=None):
     with open(sim_dir + '/elmergrid.log', 'w') as f:
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
 
-    mesh_dir = sim_dir + '/' + meshfile.split('.')[0]
+    mesh_dir = sim_dir + '/' + '.'.join(meshfile.split('.')[:-1])
     files = os.listdir(mesh_dir)
     for f in files:
         if os.path.exists(sim_dir + '/' + f):
@@ -52,3 +53,29 @@ def run_elmer_solver(sim_dir, elmersolver=None):
     args = [elmersolver, 'case.sif']
     with open(sim_dir + '/elmersolver.log', 'w') as f:
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
+
+def run_multicore(count, sim_dirs, meshfiles, elmergrid=None, elmersolver=None):
+    """Run multiple instances of ElmerGrid, ElmerSolver on multiple
+    cores.
+
+    Args:
+        count (int): Number of processes
+        sim_dirs (list): Simulation directories
+        meshfiles (list): Mesh files for ElmerGrid
+        elmergrid (str, optional): Path to executable. Defaults to None.
+        elmersolver (str, optional): Path to executable. Defaults to
+        None.
+    """
+    pool = multiprocessing.Pool(processes=count)
+    args = []
+    for i in range(len(sim_dirs)):
+        args.append( (sim_dirs[i], meshfiles[i], elmergrid, elmersolver) )
+    pool.starmap(_run_grid_solver, args)
+
+
+def _run_grid_solver(sim_dir, meshfile, elmergrid, elmersolver):
+        print('Starting ElmerGrid for', meshfile)
+        run_elmer_grid(sim_dir, meshfile, elmergrid)
+        print('Starting ElmerSolver in', sim_dir)
+        run_elmer_solver(sim_dir, elmersolver)
+        print('Finished ElmerSolver in', sim_dir)
