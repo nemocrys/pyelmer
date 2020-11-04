@@ -129,8 +129,12 @@ def plot_residuals(sim_dir, solvers, save=False):
                     lin_res_relc = []
                 elif linres_solver == solver:
                     txt = line.lstrip().split(' ')
-                    lin_res_idx.append(float(txt[0]))
-                    lin_res_relc.append(float(txt[1]))
+                    try:
+                        lin_res_idx.append(float(txt[0]))
+                        lin_res_relc.append(float(txt[1]))
+                    except ValueError:
+                        print('Problem in evaluation of linear residuals.')
+                        print('Could not read the following line:\n', line)
     
     # remove empty last SteadyStateIteration
     for solver in solvers:
