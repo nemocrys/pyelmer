@@ -104,15 +104,15 @@ water.data = {
 heat_solver = elmer.Solver(sim, 'heat')
 heat_solver.data = {
     'Equation': 'Heat Equation',
-    'Procedure': '''"HeatSolve" "HeatSolver"''',
-    'Variable': '''"Temperature"''',
+    'Procedure': '"HeatSolve" "HeatSolver"',
+    'Variable': '"Temperature"',
     'Variable Dofs': 1
 }
 output_solver = elmer.Solver(sim, 'output')
 output_solver.data = {
     'Exec Solver': 'After timestep',
-    'Equation': '''"ResultOutput"''',
-    'Procedure': '''"ResultOutputSolve" "ResultOutputSolver"''',
+    'Equation': '"ResultOutput"',
+    'Procedure': '"ResultOutputSolve" "ResultOutputSolver"',
     'VTU Format': True
 }
 # equation
@@ -263,7 +263,7 @@ Pyelmer is published under the [GPLv3 license](https://www.gnu.org/licenses/gpl-
 
 ## Acknowledgements
 
-This package was developed in the [Nemocrys project](https://cordis.europa.eu/project/id/851768/) which is founded by the [ERC](https://erc.europa.eu/).
+This package was developed in the [Nemocrys project](https://www.researchgate.net/project/NEMOCRYS-Next-Generation-Multiphysical-Models-for-Crystal-Growth-Processes) which is founded by the [ERC](https://erc.europa.eu/).
 
 ## Contribution
 

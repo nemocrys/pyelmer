@@ -23,15 +23,15 @@ water.data = {
 heat_solver = elmer.Solver(sim, 'heat')
 heat_solver.data = {
     'Equation': 'Heat Equation',
-    'Procedure': '''"HeatSolve" "HeatSolver"''',
-    'Variable': '''"Temperature"''',
+    'Procedure': '"HeatSolve" "HeatSolver"',
+    'Variable': '"Temperature"',
     'Variable Dofs': 1
 }
 output_solver = elmer.Solver(sim, 'output')
 output_solver.data = {
     'Exec Solver': 'After timestep',
-    'Equation': '''"ResultOutput"''',
-    'Procedure': '''"ResultOutputSolve" "ResultOutputSolver"''',
+    'Equation': '"ResultOutput"',
+    'Procedure': '"ResultOutputSolve" "ResultOutputSolver"',
     'VTU Format': True
 }
 # equation
