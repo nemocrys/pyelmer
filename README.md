@@ -76,7 +76,7 @@ sim.write_sif('./simulation_directory/')
 
 ## Examples
 
-The following example shows the setup of a simple heat transfer simulation. The domain consists of two quadratic bodies stacked on top of each other, the lower one is water an the upper one is air. At the bottom a constant temperature of 80°C, and at the top a constant temperature of 20°C is set. You may consider this as a very simple model of the heat distribution when boiling water in a pot:
+The following example shows the setup of a simple heat transfer simulation. The domain consists of two quadratic bodies stacked on top of each other, the lower one is water and the upper one is air. At the bottom a constant temperature of 80°C, and at the top a constant temperature of 20°C is set. You may consider this as a very simple model of the heat distribution when boiling water in a pot:
 
 ![setup](./examples/heat_transfer_setup.png)
 
@@ -165,7 +165,7 @@ execute.run_elmer_grid(sim_dir, 'case.msh2')
 execute.run_elmer_solver(sim_dir)
 ```
 
-An alternative version of the same example, without using the pre-defined materials and solvers, can be found in the examples folder.
+An alternative version of this example, without using the pre-defined materials and solvers, can be found in the examples folder.
 
 Further examples, e.g. for the postprocessing or using more complex setups, will hopefully follow soon.
 
