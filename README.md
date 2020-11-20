@@ -25,7 +25,7 @@ cd pyelmer
 pip install -e ./
 ```
 
-Alternatively, you can build your own wheel and install it with the tool of your choice (more information about this can be found [here](https://python-packaging-tutorial.readthedocs.io/en/latest/setup_py.html)).
+Alternatively, you can build your own wheel and install it with the tool of your choice. More information about this can be found [here](https://python-packaging-tutorial.readthedocs.io/en/latest/setup_py.html).
 
 ## Basic principles
 
@@ -76,186 +76,98 @@ sim.write_sif('./simulation_directory/')
 
 ## Examples
 
-### Set up simulation from scratch
+The following example shows the setup of a simple heat transfer simulation. The domain consists of two quadratic bodies stacked on top of each other, the lower one is water an the upper one is air. At the bottom a constant temperature of 80°C, and at the top a constant temperature of 20°C is set. You may consider this as a very simple model of the heat distribution when boiling water in a pot:
 
-```python
-from pyelmer import elmer
-
-# set up simulation
-sim = elmer.Simulation()
-sim.settings = {
-    'Coordinate System': 'Axi Symmetric',
-    'Simulation Type': 'Steady state'
-}
-# materials
-air = elmer.Material(sim, 'air')
-air.data = {
-    'Density': 1.1885,
-    'Heat Capacity': 1006.4,
-    'Heat Conductivity': 0.025873
-}
-water = elmer.Material(sim, 'water')
-water.data = {
-    'Density': 1000,
-    'Heat Capacity': 4184,
-    'Heat Conductivity': 0.6
-}
-# solvers
-heat_solver = elmer.Solver(sim, 'heat')
-heat_solver.data = {
-    'Equation': 'Heat Equation',
-    'Procedure': '"HeatSolve" "HeatSolver"',
-    'Variable': '"Temperature"',
-    'Variable Dofs': 1
-}
-output_solver = elmer.Solver(sim, 'output')
-output_solver.data = {
-    'Exec Solver': 'After timestep',
-    'Equation': '"ResultOutput"',
-    'Procedure': '"ResultOutputSolve" "ResultOutputSolver"',
-    'VTU Format': True
-}
-# equation
-main_eqn = elmer.Equation(sim, 'main', [heat_solver, output_solver])
-
-# initial condition
-t0 = elmer.InitialCondition(sim, 'T0')
-t0.data = {
-    'Temperature': 293.15
-}
-
-# body force
-heating = elmer.BodyForce(sim, 'heating')
-heating.heat_source = 100  # W / kg
-# or alternatively:
-heating.data = {
-    'Heat Source': 100
-}
-
-# body with id 1 in mesh
-atm = elmer.Body(sim, 'atmosphere')
-atm.body_ids = [1]
-# or alternatively:
-atm = elmer.Body(sim, 'atmosphere', [1])
-# set dependencies
-atm.material = air
-atm.equation = main_eqn
-atm.initial_condition = t0
-
-# body with id 2, 3 in mesh
-wtr = elmer.Body(sim, 'body2', [2, 3])
-wtr.material = water
-wtr.equation = main_eqn
-wtr.initial_condition = t0
-wtr.body_force = heating
-
-# boundary with id 1, 2 in mesh
-t1 = elmer.Boundary(sim, 'T1', [1, 2])
-t1.fixed_temperature = 293.15
-# or:
-t1.data ={
-    'Temperature': 293.15
-}
-
-# write sif file
-sim.write_sif('./simulation_directory/')
-```
-
-### Execute simulation
-
-```python
-from pyelmer import execute
-
-execute.run_elmer_solver('./simulation_directory/', 'ElmerSolver.exe')
-```
-
-### Load settings
-
-It is possible to load some default setups for simulations, solvers and materials:
-
-```python
-import pyelmer.sif as elmer
-
-# load settings for steady state axi symmetric simulation
-sim = elmer.load_simulation('axi-symmetric_steady')
-print(sim.settings)
-
-# load heat solver and add it to sim
-heat_solver = elmer.load_solver('HeatSolver', sim)
-print(heat_solver.data)
-
-# load material and add it to sim
-air = elmer.load_material('air', sim)
-print(air.data)
-```
-
-Unfortunately, there are only very few setups available. You can find them in pyelmer/data.
-
-### Working with gmsh
-
-Pyelmer was developed to facilitate the workflow for geometry generation with gmsh and simulation with elmer. Some utility functions for gmsh (mostly for axi-symmetric cases) are provided.
+![setup](./examples/heat_transfer_setup.png)
 
 ```python
 import os
 import gmsh
-from pyelmer import elmer, execute
-from pyelmer.gmsh_utils import add_physical_group
+from pyelmer import elmer
+from pyelmer import execute
+from pyelmer.gmsh_utils import add_physical_group, get_boundaries_in_box
 
-# geometry modeling
+###############
+# set up working directory
+sim_dir = './examples/simdata'
+
+if not os.path.exists(sim_dir):
+    os.mkdir(sim_dir)
+
+###############
+# geometry modeling using gmsh
 gmsh.initialize()
 gmsh.option.setNumber("General.Terminal", 1)
-gmsh.model.add('heat flux')
+gmsh.model.add('heat-transfer-2d')
+factory = gmsh.model.occ
 
-rect =  gmsh.model.occ.addRectangle(0, 0, 0, 1, 1)
-gmsh.model.occ.synchronize()
+# main bodies
+water =  factory.addRectangle(0, 0, 0, 1, 1)
+air = factory.addRectangle(0, 1, 0, 1, 1)
 
-ph_rect = add_physical_group(2, [rect], 'rect1')
-bndry_left = add_physical_group(1, [4], 'left')
-bndry_right = add_physical_group(1, [2], 'right')
-# Here, the IDs of the boundaries (4 - left, 2 - right) were taken from
-# the visualization. More advanced functions are available in
-# pyelmer.gmsh_utils. 
+# create connection between the two bodies
+factory.synchronize()
+factory.fragment([(2, water)], [(2, air)])
 
-# mesh
+# add physical groups
+factory.synchronize()
+ph_water = add_physical_group(2, [water], 'water')
+ph_air = add_physical_group(2, [air], 'air')
+
+# detect boundaries 
+line = get_boundaries_in_box(0, 0, 0, 1, 0, 0, 2, water)
+ph_bottom = add_physical_group(1, [line], 'bottom')
+line = get_boundaries_in_box(0, 2, 0, 1, 2, 0, 2, air)
+ph_top = add_physical_group(1, [line], 'top')
+
+# create mesh
 gmsh.model.mesh.setSize(gmsh.model.getEntities(0), 0.1)
 gmsh.model.mesh.generate(2)
-gmsh.write('first_order.msh2')
 
-# visualize
+# show mesh & export
 gmsh.fltk.run()
+gmsh.write(sim_dir + '/case.msh2')  # use legacy file format msh2 for elmer grid
 
-# export
-if not os.path.exists('./simdata'):
-    os.mkdir('./simdata')
-gmsh.write('./simdata/rectangle.msh2')
-
-# convert
-execute.run_elmer_grid('./simdata', 'rectangle.msh2')
-
+###############
 # elmer setup
 sim = elmer.load_simulation('2D_steady')
+
 air = elmer.load_material('air', sim)
-heat_solver = elmer.load_solver('HeatSolver', sim)
-output_solver = elmer.load_solver('ResultOutputSolver', sim)
-eqn = elmer.Equation(sim, 'main', [heat_solver])
-t0 = elmer.InitialCondition(sim, 'T0', {'Temperature': 273.15})
+water = elmer.load_material('water', sim)
 
-rect = elmer.Body(sim, 'rect', [ph_rect])
-rect.material = air
-rect.initial_condition = t0
-rect.equation = eqn
+solver_heat = elmer.load_solver('HeatSolver', sim)
+solver_output = elmer.load_solver('ResultOutputSolver', sim)
+eqn = elmer.Equation(sim, 'main', [solver_heat])
 
-left = elmer.Boundary(sim, 'left', [bndry_left])
-left.fixed_temperature = 293.15
-right = elmer.Boundary(sim, 'right', [bndry_right])
-right.fixed_temperature = 273.15
+T0 = elmer.InitialCondition(sim, 'T0', {'Temperature': 273.15})
 
-sim.write_sif('./simdata')
+bdy_water = elmer.Body(sim, 'water', [ph_water])
+bdy_water.material = water
+bdy_water.initial_condition = T0
+bdy_water.equation = eqn
 
-# run elmer solver
-execute.run_elmer_solver('./simdata')
+bdy_air = elmer.Body(sim, 'air', [ph_air])
+bdy_air.material = air
+bdy_air.initial_condition = T0
+bdy_air.equation = eqn
 
+bndry_bottom = elmer.Boundary(sim, 'bottom', [ph_bottom])
+bndry_bottom.fixed_temperature = 353.15  # 80 °C
+bndry_top = elmer.Boundary(sim, 'top', [ph_top])
+bndry_top.fixed_temperature = 293.15  # 20 °C
+
+sim.write_startinfo(sim_dir)
+sim.write_sif(sim_dir)
+
+##############
+# execute ElmerGrid & ElmerSolver
+execute.run_elmer_grid(sim_dir, 'case.msh2')
+execute.run_elmer_solver(sim_dir)
 ```
+
+An alternative version of the same example, without using the pre-defined materials and solvers, can be found in the examples folder.
+
+Further examples, e.g. for the postprocessing or using more complex setups, will hopefully follow soon.
 
 ## License
 
@@ -263,7 +175,7 @@ Pyelmer is published under the [GPLv3 license](https://www.gnu.org/licenses/gpl-
 
 ## Acknowledgements
 
-This package was developed in the [Nemocrys project](https://www.researchgate.net/project/NEMOCRYS-Next-Generation-Multiphysical-Models-for-Crystal-Growth-Processes) which is founded by the [ERC](https://erc.europa.eu/).
+This package was developed in the [Nemocrys project](https://www.researchgate.net/project/NEMOCRYS-Next-Generation-Multiphysical-Models-for-Crystal-Growth-Processes) which is founded by the [European Research Council](https://erc.europa.eu/).
 
 ## Contribution
 
