@@ -60,7 +60,7 @@ def scan_logfile(sim_dir):
         sim_dir (str): Simulation directory
 
     Returns:
-        list[str], list[str]: error messages, warnings
+        list[str], list[str], dict: error messages, warnings, statistics
     """
     with open(sim_dir + '/elmersolver.log', 'r') as f:
         log = f.readlines()
@@ -87,6 +87,8 @@ def plot_residuals(sim_dir, solvers, save=False):
 
     Args:
         sim_dir (str): Simulation directory
+        solvers (list): solvers to analyze - currently works only for
+        'heat equation' and 'statmagsolver'
     """
     with open(sim_dir + '/elmersolver.log', 'r') as f:
         log = f.readlines()

@@ -2,6 +2,7 @@ import os
 import gmsh
 from pyelmer import elmer
 from pyelmer import execute
+from pyelmer.post import scan_logfile
 from pyelmer.gmsh_utils import add_physical_group, get_boundaries_in_box
 
 
@@ -81,3 +82,10 @@ sim.write_sif(sim_dir)
 # execute ElmerGrid & ElmerSolver
 execute.run_elmer_grid(sim_dir, 'case.msh2')
 execute.run_elmer_solver(sim_dir)
+
+###############
+# scan log for errors and warnings
+err, warn, stats = scan_logfile(sim_dir)
+print('Errors:', err)
+print('Warnings:', warn)
+print('Statistics:', stats)
