@@ -203,6 +203,7 @@ class Boundary:
         self.phase_change_body = None
         self.heat_transfer_coefficient = 0
         self.T_ext = 0
+        self.mesh_update = []
         self.name = name
         self.data = {}
         simulation.boundaries.update({name: self})
@@ -244,6 +245,12 @@ class Boundary:
                 'Heat Transfer Coefficient': self.heat_transfer_coefficient,
                 'External Temperature': self.T_ext
             })
+        if self.mesh_update:
+            if len(self.mesh_update) >= 2:
+                d.update({'Mesh Update 1': self.mesh_update[0]})
+                d.update({'Mesh Update 2': self.mesh_update[1]})
+            if len(self.mesh_update) == 3:
+                d.update({'Mesh Update 3': self.mesh_update[2]})
         d.update(self.data)
         return d
 
