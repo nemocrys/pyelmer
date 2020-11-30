@@ -49,7 +49,7 @@ gmsh.model.mesh.setSize(gmsh.model.getEntities(0), 0.1)
 gmsh.model.mesh.generate(2)
 
 # show mesh & export
-gmsh.fltk.run()
+gmsh.fltk.run()  # comment this line out if your system doesn't support the gmsh GUI
 gmsh.write(sim_dir + '/case.msh2')  # use legacy file format msh2 for elmer grid
 
 ###############

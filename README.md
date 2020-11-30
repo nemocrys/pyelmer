@@ -126,7 +126,7 @@ gmsh.model.mesh.setSize(gmsh.model.getEntities(0), 0.1)
 gmsh.model.mesh.generate(2)
 
 # show mesh & export
-gmsh.fltk.run()
+gmsh.fltk.run()  # comment this line out if your system doesn't support the gmsh GUI
 gmsh.write(sim_dir + '/case.msh2')  # use legacy file format msh2 for elmer grid
 
 ###############
@@ -164,6 +164,13 @@ sim.write_sif(sim_dir)
 # execute ElmerGrid & ElmerSolver
 execute.run_elmer_grid(sim_dir, 'case.msh2')
 execute.run_elmer_solver(sim_dir)
+
+###############
+# scan log for errors and warnings
+err, warn, stats = scan_logfile(sim_dir)
+print('Errors:', err)
+print('Warnings:', warn)
+print('Statistics:', stats)
 ```
 
 An alternative version of this example, without using the pre-defined materials and solvers, can be found in the examples folder.
