@@ -8,18 +8,19 @@ Some utility-functions for pre-processing using the [gmsh python API](https://py
 
 ## Prerequisites
 
-Pyelmer is written in Python 3.7. To run simulations, an Elmer executable is required. As pyelmer was developed to be used with gmsh, an installation of this package is required. Simulation settings, solver, and materials are stored in yaml-files. Therefore pyelmer depends on pyyaml.
+Pyelmer is written in Python 3.7. To run simulations, an Elmer executable is required. As pyelmer was developed to be used with gmsh, an installation of this package is required. Simulation settings, solver, and materials are stored in yaml-files. Therefore pyelmer depends on pyyaml. Furthermore, matplotlib is used for visualization.
 
-```
+```shell
 pip install --upgrade gmsh
 pip install --upgrade pyyaml
+pip install --upgrade matplotlib
 ```
 
 ## Installation
 
 The package is not yet listed on [pypi](https://pypi.org/), so pip install pyelmer does not work. To install pyelmer you need to clone this repository and install it in development mode. This is done with the following commands:
 
-```
+```shell
 git clone https://github.com/nemocrys/pyelmer
 cd pyelmer
 pip install -e ./

@@ -1,3 +1,9 @@
+"""
+This is an alternative version of the example heat_transfer_2d.py
+
+Instead of loading pre defined solvers and material data, the whole case
+is set up manually.
+"""
 import os
 import gmsh
 from pyelmer import elmer
@@ -8,7 +14,7 @@ from pyelmer.gmsh_utils import add_physical_group, get_boundaries_in_box
 
 ###############
 # set up working directory
-sim_dir = './examples/simdata'
+sim_dir = './simdata'
 
 if not os.path.exists(sim_dir):
     os.mkdir(sim_dir)

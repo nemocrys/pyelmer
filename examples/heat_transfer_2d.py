@@ -1,3 +1,8 @@
+"""
+Example: Set up a simple simulation.
+
+This is the python script to the example in README.md.
+ """
 import os
 import gmsh
 from pyelmer import elmer
@@ -8,7 +13,7 @@ from pyelmer.gmsh_utils import add_physical_group, get_boundaries_in_box
 
 ###############
 # set up working directory
-sim_dir = './examples/simdata'
+sim_dir = './simdata'
 
 if not os.path.exists(sim_dir):
     os.mkdir(sim_dir)
