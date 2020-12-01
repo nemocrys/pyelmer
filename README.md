@@ -8,7 +8,9 @@ Some utility-functions for pre-processing using the [gmsh python API](https://py
 
 ## Prerequisites
 
-Pyelmer is written in Python 3.7. To run simulations, an Elmer executable is required. As pyelmer was developed to be used with gmsh, an installation of this package is required. Simulation settings, solver, and materials are stored in yaml-files. Therefore pyelmer depends on pyyaml. Furthermore, matplotlib is used for visualization.
+Pyelmer requires Python >= 3.7. To run simulations, an Elmer executable is needed. As pyelmer was developed to be used with gmsh, an installation of this package is required. Simulation settings, solver, and materials are stored in yaml-files. Therefore pyelmer depends on pyyaml. Furthermore, matplotlib is used for visualization.
+
+The required packages should be installed automatically when installing pyelmer. If you encounter any problems, try to run:
 
 ```shell
 pip install --upgrade gmsh
@@ -26,7 +28,7 @@ cd pyelmer
 pip install -e ./
 ```
 
-Alternatively, you can build your own wheel and install it with the tool of your choice. More information about this can be found [here](https://python-packaging-tutorial.readthedocs.io/en/latest/setup_py.html).
+Alternatively, you can build your own wheel and install it with the tool of your choice. A nice introduction can be found [here](https://python-packaging-tutorial.readthedocs.io/en/latest/setup_py.html).
 
 ## Basic principles
 
@@ -176,6 +178,10 @@ print('Statistics:', stats)
 An alternative version of this example, without using the pre-defined materials and solvers, can be found in the examples folder.
 
 Further examples, e.g. for the postprocessing or using more complex setups, will hopefully follow soon.
+
+## Alternative usage (pygmsh)
+
+Note, that it may be worth trying [pygmsh](https://pypi.org/project/pygmsh/), which is build on top of the [gmsh python API](https://pypi.org/project/gmsh/) that was used in the previous example.
 
 ## License
 
