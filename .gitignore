@@ -1,2 +1,4 @@
+*.pyc
 **/simdata/*
 **/.vscode/*
+pyelmer.egg-info/

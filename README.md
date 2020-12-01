@@ -117,7 +117,7 @@ factory.synchronize()
 ph_water = add_physical_group(2, [water], 'water')
 ph_air = add_physical_group(2, [air], 'air')
 
-# detect boundaries 
+# detect boundaries
 line = get_boundaries_in_box(0, 0, 0, 1, 0, 0, 2, water)
 ph_bottom = add_physical_group(1, [line], 'bottom')
 line = get_boundaries_in_box(0, 2, 0, 1, 2, 0, 2, air)
