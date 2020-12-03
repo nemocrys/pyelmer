@@ -196,7 +196,8 @@ class Boundary:
         self.save_line = False
         self.smart_heater = False
         self.smart_heater_T = 0
-        self.phase_change = False
+        self.phase_change_steady = False
+        self.phase_change_transient = False
         self.phase_change_vel = 0
         self.material = None
         self.normal_target_body = None
@@ -229,7 +230,7 @@ class Boundary:
         if self.smart_heater:
             d.update({'Smart Heater Boundary': 'Logical True',
                       'Smart Heater Temperature': self.smart_heater_T})
-        if self.phase_change:
+        if self.phase_change_steady:
             d.update({
                 'Phase Change': 'Logical True',
                 'Phase Velocity 1': 0,
@@ -238,6 +239,18 @@ class Boundary:
                 'Latent Heat': self.material.data['Latent Heat'],
                 'Normal Target Body': self.normal_target_body.id,
                 'Heat Flux': 'Variable Coordinate 1\n    Real Procedure "SteadyPhaseChange" "MeltingHeat"',
+                'Body Id': 'Integer ' + str(self.phase_change_body.id)
+            })
+        if self.phase_change_transient:
+            d.update({
+                # 'Phase Velocity 1': 0,
+                # 'Phase Velocity 2': self.phase_change_vel,
+                'Temperature': self.material.data['Melting Point'],
+                'Normal Target Body': self.normal_target_body.id,
+                # 'Latent Heat': self.material.data['Latent Heat'],
+                # 'Heat Flux': 'Variable Coordinate 1\n    Real Procedure "SteadyPhaseChange" "MeltingHeat"',
+                'Mesh Update 1': 0,
+                'Mesh Update 2': 'Equals PhaseSurface',
                 'Body Id': 'Integer ' + str(self.phase_change_body.id)
             })
         if self.heat_transfer_coefficient != 0:
