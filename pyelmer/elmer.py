@@ -239,6 +239,8 @@ class Boundary:
                 'Latent Heat': self.material.data['Latent Heat'],
                 'Normal Target Body': self.normal_target_body.id,
                 'Heat Flux': 'Variable Coordinate 1\n    Real Procedure "SteadyPhaseChange" "MeltingHeat"',
+                'Mesh Update 1': 0,
+                'Mesh Update 2': 'Equals PhaseSurface',
                 'Body Id': 'Integer ' + str(self.phase_change_body.id)
             })
         if self.phase_change_transient:
