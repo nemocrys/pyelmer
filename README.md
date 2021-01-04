@@ -8,7 +8,7 @@ Some utility-functions for pre-processing using the [gmsh python API](https://py
 
 ## Prerequisites
 
-Pyelmer requires Python >= 3.7. To run simulations, an Elmer executable is needed. As pyelmer was developed to be used with gmsh, an installation of this package is required. Simulation settings, solver, and materials are stored in yaml-files. Therefore pyelmer depends on pyyaml. Furthermore, matplotlib is used for visualization.
+Pyelmer requires Python >= 3.7. To run simulations, an Elmer executable is needed. As pyelmer was developed to be used with gmsh, an installation of this package is required (even though it may also be used without gmsh). Simulation settings, solver, and materials are stored in yaml-files. Therefore pyelmer depends on pyyaml. Furthermore, matplotlib is used for visualization.
 
 The required packages should be installed automatically when installing pyelmer. If you encounter any problems, try to run:
 
@@ -82,6 +82,8 @@ sim.write_sif('./simulation_directory/')
 The following example shows the setup of a simple heat transfer simulation. The domain consists of two quadratic bodies stacked on top of each other, the lower one is water and the upper one is air. At the bottom a constant temperature of 80°C, and at the top a constant temperature of 20°C is set. You may consider this as a very simple model of the heat distribution when boiling water in a pot:
 
 ![setup](./examples/heat_transfer_setup.png)
+
+The example uses the OpenCASCADE geometry kernel of gmsh. Note, that you may also use the build-in "geo-style" kernel in python. Alternatively, it is also possible to manually set the body-ids of the mesh created with the tool of your choice.
 
 ```python
 import os
@@ -175,13 +177,30 @@ print('Warnings:', warn)
 print('Statistics:', stats)
 ```
 
-An alternative version of this example, without using the pre-defined materials and solvers, can be found in the examples folder.
+An alternative version of this example, without using the pre-defined materials and solvers, can be found in the examples folder. There is also another example file regarding a more complex heat transfer simulation (examples/crystal_growth_2d.py).
 
-Further examples, e.g. for the postprocessing or using more complex setups, will hopefully follow soon.
+The pre-defined materials and solvers can be found in the directory pyelmer/data.
+You may define own yaml-files with settings:
 
-## Alternative usage (pygmsh)
+```python
+sim = elmer.load_simulation('simulation-name', 'my/own/simulations.yml')
+air = elmer.load_material('material-name', sim, 'my/own/materials.yml')
+```
 
-Note, that it may be worth trying [pygmsh](https://pypi.org/project/pygmsh/), which is build on top of the [gmsh python API](https://pypi.org/project/gmsh/) that was used in the previous example.
+
+Additional examples, e.g. for the postprocessing or using more complex setups, will hopefully follow soon.
+
+## Geometry generation
+
+Some utility functions for the geometry generation with gmsh are provided in pyelmer/gmsh_utils.py (e.g. add_physical_group, get_boundaries_in_box used in the example). However this part is still in development and may be subject to fundamental changes.
+
+I am currently working on an improved gmsh interface using the OpenCASCADE kernel, which facilitates the (currently very annoying) detection of the boundaries. Examples will follow soon. If you're interested in the current state just have a look at pyelmer/gmsh_objects.py!
+
+Note, that it may also be worth trying [pygmsh](https://pypi.org/project/pygmsh/), which is build on top of the rather complicated [gmsh python API](https://pypi.org/project/gmsh/) used in the example.
+
+## Documentation
+
+A simple documentation in form of doc-strings can be found in the source code. A more extensive documentation will hopefully follow soon.
 
 ## License
 

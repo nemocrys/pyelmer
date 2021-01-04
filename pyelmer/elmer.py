@@ -413,48 +413,57 @@ class Equation:
         return {'Active Solvers(' + str(n_solvers) + ')': solver_id_str}
 
 
-def load_simulation(name):
+def load_simulation(name, setup_file=None):
     """Load simulation settings from database.
 
     Args:
         name (str): Name of the simulation in database.
+        setup_file (str, optional): Path to yaml file cotaining setup.
 
     Returns:
         Simulation object.
     """
-    with open(DATA_DIR + '/simulations.yml') as f:
+    if setup_file is None:
+        setup_file = DATA_DIR + '/simulations.yml'
+    with open(setup_file) as f:
         settings = yaml.safe_load(f)[name]
     sim = Simulation()
     sim.settings = settings
     return sim
 
 
-def load_material(name, simulation=None):
+def load_material(name, simulation=None, setup_file=None):
     """Load material from data base and add it to simulation.
 
     Args:
         name (str): material name
         simulation (Simulation object)
+        setup_file (str, optional): Path to yaml file cotaining setup.
 
     Returns:
         Material object.
     """
-    with open(DATA_DIR + '/materials.yml') as f:
+    if setup_file is None:
+        setup_file = DATA_DIR + '/materials.yml'
+    with open(setup_file) as f:
         data = yaml.safe_load(f)[name]
     return Material(simulation, name, data)
 
 
-def load_solver(name, simulation=None):
+def load_solver(name, simulation=None, setup_file=None):
     """Load solver from data base and add it to simulation.
 
     Args:
         name (str): solver name
         simulation (Simulation object)
+        setup_file (str, optional): Path to yaml file cotaining setup.
 
     Returns:
         Solver object.
     """
-    with open(DATA_DIR + '/solvers.yml') as f:
+    if setup_file is None:
+        setup_file = DATA_DIR + '/solvers.yml'
+    with open(setup_file) as f:
         data = yaml.safe_load(f)
         data = data[name]
     return Solver(simulation, name, data)

@@ -298,3 +298,12 @@ def restricted_const_field(surf_tag, lc, NNodesByEdge=1000):
     field.setNumbers(restrict_field, 'FacesList', [surf_tag])
     field.setNumbers(restrict_field, 'EdgesList', get_boundaries(2, surf_tag))
     return restrict_field
+
+
+def cut(obj_dimtags, tool_dimtags, remove_tool=True):
+    factory.synchronize()
+    out = factory.cut(obj_dimtags, tool_dimtags, removeTool=remove_tool)
+    tags = []
+    for dimtag in out[0]:
+        tags.append(dimtag[1])
+    return tags
