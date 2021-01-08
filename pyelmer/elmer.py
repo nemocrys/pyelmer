@@ -1,4 +1,3 @@
-
 """Wrapper for Elmer simulation input file (sif-file).
 
 The sif file is represented by a Simulation object, which contains
@@ -36,6 +35,22 @@ class Simulation:
             'Stefan Boltzmann': 5.6704e-08
         }
         self.settings = {}
+
+    @property
+    def transient(self):
+        """Returns information wether simulation is transient or not.
+
+        Returns: bool
+        """
+        try:
+            if self.settings['Simulation Type'].lower() == 'transient':
+                return True
+            else:
+                return False
+        except KeyError:
+            print('Warning: Simulation type not set.')
+            return False
+
 
     def write_sif(self, simulation_dir):
         """Write sif file.

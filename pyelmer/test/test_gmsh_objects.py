@@ -19,6 +19,7 @@ def rectangles():
         rect1 = Shape(model, 2, 'r1', [r1])
         rect2 = Shape(model, 2, 'r2', [r2])
         rect3 = Shape(model, 2, 'r3', [r1, r2])
+        # gmsh.fltk.run()
         yield Rects(rect1, rect2, rect3)
 
 
@@ -29,10 +30,12 @@ def test_geo_ids(rectangles):
 
 
 def test_get_boundaries(rectangles):
-    assert sorted(rectangles.r1.get_boundaries()) == [1, 2, 3, 4]
-    assert sorted(rectangles.r2.get_boundaries()) == [2, 5, 6, 7]
-    assert sorted(rectangles.r3.get_boundaries()) == [1, 3, 4, 5, 6, 7]
+    assert sorted(rectangles.r1.boundaries) == [1, 2, 3, 4]
+    assert sorted(rectangles.r2.boundaries) == [2, 5, 6, 7]
+    assert sorted(rectangles.r3.boundaries) == [1, 3, 4, 5, 6, 7]
 
 
-if __name__ == "__main__":
-    test_get_boundaries(rectangles)
+def test_get_boundaries_in_box(rectangles):
+    assert sorted(rectangles.r1.get_boundaries_in_box([-0.5, 1.5], [-0.5, 1.5])) == [1, 2, 3, 4]
+    assert rectangles.r1.get_boundaries_in_box([0.5, 1.5], [-0.5, 1.5]) == [2]
+    assert rectangles.r1.get_boundaries_in_box([0.5, 1.5], [-0.5, 1.5], one_only=True) == 2

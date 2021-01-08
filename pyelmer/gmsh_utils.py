@@ -180,7 +180,7 @@ def get_boundaries_in_box(x_min, y_min, z_min, x_max, y_max, z_max, dim, tag, mu
     elif len(tags_filtered) == 0:
         raise ValueError("Nothing found :(")
     if multiple:
-        return tags_filtered
+        return tags_filtered  # TODO inconsistent return value
     else:
         return tags_filtered[0][1]
 
@@ -303,7 +303,4 @@ def restricted_const_field(surf_tag, lc, NNodesByEdge=1000):
 def cut(obj_dimtags, tool_dimtags, remove_tool=True):
     factory.synchronize()
     out = factory.cut(obj_dimtags, tool_dimtags, removeTool=remove_tool)
-    tags = []
-    for dimtag in out[0]:
-        tags.append(dimtag[1])
-    return tags
+    return [dimtag[1] for dimtag in out[0]]
