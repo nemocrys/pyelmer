@@ -1,4 +1,5 @@
 # PyElmer
+[![DOI](https://zenodo.org/badge/294339020.svg)](https://zenodo.org/badge/latestdoi/294339020)
 
 ## Project description
 
