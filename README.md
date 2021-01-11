@@ -208,7 +208,9 @@ Pyelmer is published under the [GPLv3 license](https://www.gnu.org/licenses/gpl-
 
 ## Acknowledgements
 
-This package was developed in the [Nemocrys project](https://www.researchgate.net/project/NEMOCRYS-Next-Generation-Multiphysical-Models-for-Crystal-Growth-Processes) which is founded by the [European Research Council](https://erc.europa.eu/).
+This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme ([grant agreement No 851768](https://cordis.europa.eu/project/id/851768/)).
+
+![European Union, European Research Council](./EU-ERC.png)
 
 ## Contribution
 

@@ -14,7 +14,7 @@ import os
 import yaml
 
 
-DATA_DIR =  os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
+DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
 
 
 class Simulation:
@@ -35,22 +35,6 @@ class Simulation:
             'Stefan Boltzmann': 5.6704e-08
         }
         self.settings = {}
-
-    @property
-    def transient(self):
-        """Returns information wether simulation is transient or not.
-
-        Returns: bool
-        """
-        try:
-            if self.settings['Simulation Type'].lower() == 'transient':
-                return True
-            else:
-                return False
-        except KeyError:
-            print('Warning: Simulation type not set.')
-            return False
-
 
     def write_sif(self, simulation_dir):
         """Write sif file.
@@ -118,8 +102,7 @@ class Simulation:
         """
         with open(simulation_dir + '/ELMERSOLVER_STARTINFO', 'w') as f:
             f.write('case.sif\n')
-            f.write('1\n')
-        
+            f.write('1\n')   
 
     def write_boundary_ids(self, simulation_dir):
         """Write yaml-file containing the boundary names and the

@@ -1,4 +1,3 @@
-# created by Arved Enders-Seidlitz on 07.09.2020
 # https://packaging.python.org/tutorials/packaging-projects/
 
 import setuptools
@@ -10,7 +9,7 @@ setuptools.setup(
     version='0.1',
     author='Arved Enders-Seidlitz',
     author_email='arved.enders-seidlitz@ikz-berlin.de',
-    description='A python interface to Elmer',
+    description='A python interface to Elmer.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/nemocrys/pyelmer',

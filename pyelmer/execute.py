@@ -1,3 +1,4 @@
+"""Utility functions for the execution of ElmerSolver and ElmerGrid."""
 import os
 import shutil
 import subprocess
@@ -36,7 +37,7 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid=None):
 
 
 def run_elmer_solver(sim_dir, elmersolver=None):
-    """Run ElmerSolver with input file case.sif
+    """Run ElmerSolver with input file case.sif.
 
     Args:
         sim_dir (str): Simulation directory
@@ -54,9 +55,9 @@ def run_elmer_solver(sim_dir, elmersolver=None):
     with open(sim_dir + '/elmersolver.log', 'w') as f:
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
 
+
 def run_multicore(count, sim_dirs, meshfiles, elmergrid=None, elmersolver=None):
-    """Run multiple instances of ElmerGrid, ElmerSolver on multiple
-    cores.
+    """Run multiple instances of ElmerGrid, ElmerSolver.
 
     Args:
         count (int): Number of processes

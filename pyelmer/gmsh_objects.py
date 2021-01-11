@@ -62,8 +62,7 @@ class Model:
 
 
     def show(self):
-        """Run gmsh GUI.
-        """
+        """Run gmsh GUI."""
         gmsh.fltk.run()
 
 
@@ -167,7 +166,8 @@ class Shape:
 
     @property
     def dimtags(self):
-        """
+        """Gmsh dimension tags.
+
         Returns:
             list: Gmsh dim-tags of entities in shape.
         """
@@ -191,7 +191,7 @@ class Shape:
 
     @property
     def bounding_box(self):
-        """Get the bounding box of this shape
+        """Get the bounding box of this shape.
 
         Returns:
             list[float]: [x_min, y_min, z_min, x_max, y_max, z_max]
@@ -281,7 +281,7 @@ class Shape:
 
     def set_characteristic_length(self, char_length):
         """Set caracteristic length recursively on all boundaries and
-        their boudaries.
+        their boundaries.
 
         Args:
             char_length (float): Characteristic length for the mesh
@@ -291,14 +291,13 @@ class Shape:
         gmsh.model.mesh.setSize(boundary, char_length)
 
     def _make_physical(self):
-        """Convert shape into physical group.
-        """
+        """Convert shape into physical group."""
         self.ph_id = gmsh_utils.add_physical_group(self.dim, self.geo_ids, self.name)
 
 
 class MeshControl:
-    """Base class for mesh restrictions.
-    """
+    """Base class for mesh restrictions."""
+    
     def __init__(self, model):
         self._field = -1
         self._restricted_field = -1

@@ -83,7 +83,7 @@ def scan_logfile(sim_dir):
 
 
 def plot_residuals(sim_dir, solvers, save=False):
-    """Plot residuals in log file
+    """Plot residuals in log file. Does not work very well.
 
     Args:
         sim_dir (str): Simulation directory
