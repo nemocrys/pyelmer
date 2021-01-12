@@ -1,5 +1,4 @@
-# PyElmer
-[![DOI](https://zenodo.org/badge/294339020.svg)](https://zenodo.org/badge/latestdoi/294339020)
+# pyelmer
 
 ## Project description
 
@@ -9,7 +8,7 @@ Some utility-functions for pre-processing using the [gmsh python API](https://py
 
 ## Prerequisites
 
-Pyelmer requires Python >= 3.7. To run simulations, an Elmer executable is needed. As pyelmer was developed to be used with gmsh, an installation of this package is required (even though it may also be used without gmsh). Simulation settings, solver, and materials are stored in yaml-files. Therefore pyelmer depends on pyyaml. Furthermore, matplotlib is used for visualization.
+pyelmer requires Python >= 3.7. To run simulations, an Elmer executable is needed. As pyelmer was developed to be used with gmsh, an installation of this package is required (even though it may also be used without gmsh). Simulation settings, solver, and materials are stored in yaml-files. Therefore pyelmer depends on pyyaml. Furthermore, matplotlib is used for visualization.
 
 The required packages should be installed automatically when installing pyelmer. If you encounter any problems, try to run:
 
@@ -21,15 +20,11 @@ pip install --upgrade matplotlib
 
 ## Installation
 
-The package is not yet listed on [pypi](https://pypi.org/), so pip install pyelmer does not work. To install pyelmer you need to clone this repository and install it in development mode. This is done with the following commands:
+You can install pyelmer using pip:
 
 ```shell
-git clone https://github.com/nemocrys/pyelmer
-cd pyelmer
-pip install -e ./
+pip install pyelmer
 ```
-
-Alternatively, you can build your own wheel and install it with the tool of your choice. A nice introduction can be found [here](https://python-packaging-tutorial.readthedocs.io/en/latest/setup_py.html).
 
 ## Basic principles
 
@@ -82,7 +77,7 @@ sim.write_sif('./simulation_directory/')
 
 The following example shows the setup of a simple heat transfer simulation. The domain consists of two quadratic bodies stacked on top of each other, the lower one is water and the upper one is air. At the bottom a constant temperature of 80°C, and at the top a constant temperature of 20°C is set. You may consider this as a very simple model of the heat distribution when boiling water in a pot:
 
-![setup](./examples/heat_transfer_setup.png)
+<img src="https://raw.githubusercontent.com/nemocrys/pyelmer/master/examples/heat_transfer_setup.png" width="100%">
 
 The example uses the OpenCASCADE geometry kernel of gmsh. Note, that you may also use the build-in "geo-style" kernel in python. Alternatively, it is also possible to manually set the body-ids of the mesh created with the tool of your choice.
 
@@ -188,7 +183,6 @@ sim = elmer.load_simulation('simulation-name', 'my/own/simulations.yml')
 air = elmer.load_material('material-name', sim, 'my/own/materials.yml')
 ```
 
-
 Additional examples, e.g. for the postprocessing or using more complex setups, will hopefully follow soon.
 
 ## Geometry generation
@@ -205,13 +199,19 @@ A simple documentation in form of doc-strings can be found in the source code. A
 
 ## License
 
-Pyelmer is published under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.html).
+pyelmer is published under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.html).
+
+## Referencing
+
+If you use pyelmer in your research, we would be grateful if you cite us using the information provided here:
+
+[![DOI](https://zenodo.org/badge/294339020.svg)](https://zenodo.org/badge/latestdoi/294339020)
 
 ## Acknowledgements
 
-This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme ([grant agreement No 851768](https://cordis.europa.eu/project/id/851768/)).
+[This project](https://www.researchgate.net/project/NEMOCRYS-Next-Generation-Multiphysical-Models-for-Crystal-Growth-Processes) has received funding from the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No 851768).
 
-![European Union, European Research Council](./EU-ERC.png)
+<img src="https://raw.githubusercontent.com/nemocrys/pyelmer/master/EU-ERC.png" width="100%">
 
 ## Contribution
 

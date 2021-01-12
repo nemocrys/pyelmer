@@ -1,4 +1,6 @@
 *.pyc
 **/simdata/*
 **/.vscode/*
+**/build/*
+**/dist/*
 pyelmer.egg-info/

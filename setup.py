@@ -4,9 +4,10 @@ import setuptools
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
+
 setuptools.setup(
     name='pyelmer',  
-    version='0.1.0',
+    version='0.1.1',
     author='Arved Enders-Seidlitz',
     author_email='arved.enders-seidlitz@ikz-berlin.de',
     description='A python interface to Elmer.',
@@ -27,4 +28,5 @@ setuptools.setup(
       'pyyaml',
       'matplotlib',
     ],
+    python_requires='>=3.7',
  )
