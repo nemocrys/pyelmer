@@ -77,7 +77,7 @@ sim.write_sif('./simulation_directory/')
 
 The following example shows the setup of a simple heat transfer simulation. The domain consists of two quadratic bodies stacked on top of each other, the lower one is water and the upper one is air. At the bottom a constant temperature of 80°C, and at the top a constant temperature of 20°C is set. You may consider this as a very simple model of the heat distribution when boiling water in a pot:
 
-<img src="https://raw.githubusercontent.com/nemocrys/pyelmer/master/examples/heat_transfer_setup.png" width="100%">
+<img src="https://raw.githubusercontent.com/nemocrys/pyelmer/master/examples/heat_transfer_setup.png">
 
 The example uses the OpenCASCADE geometry kernel of gmsh. Note, that you may also use the build-in "geo-style" kernel in python. Alternatively, it is also possible to manually set the body-ids of the mesh created with the tool of your choice.
 
@@ -211,7 +211,7 @@ If you use pyelmer in your research, we would be grateful if you cite us using t
 
 [This project](https://www.researchgate.net/project/NEMOCRYS-Next-Generation-Multiphysical-Models-for-Crystal-Growth-Processes) has received funding from the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No 851768).
 
-<img src="https://raw.githubusercontent.com/nemocrys/pyelmer/master/EU-ERC.png" width="100%">
+<img src="https://raw.githubusercontent.com/nemocrys/pyelmer/master/EU-ERC.png">
 
 ## Contribution
 
