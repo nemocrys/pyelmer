@@ -188,7 +188,9 @@ class Boundary:
         self.id = 0
         self.surface_ids = surf_ids
         self.radiation = False
+        self.radiation_idealized = False
         self.fixed_temperature = None
+        self.fixed_heatflux = None
         self.zero_potential = False
         self.save_scalars = False
         self.save_line = False
@@ -216,6 +218,12 @@ class Boundary:
         d = {key: value}
         if self.radiation:
             d.update({'Radiation': 'Diffuse Gray'})
+        if self.radiation_idealized:
+            d.update({'Radiation': 'Idealized',
+                      'External Temperature': self.T_ext})
+        if self.fixed_heatflux is not None:
+            d.update({'Heat Flux BC': True,
+                      'Heat Flux': self.fixed_heatflux})
         if self.fixed_temperature is not None:
             d.update({'Temperature': self.fixed_temperature})
         if self.zero_potential:

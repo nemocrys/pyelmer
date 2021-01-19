@@ -5,6 +5,7 @@ from pyelmer import gmsh_utils
 factory = gmsh.model.occ
 field = gmsh.model.mesh.field
 
+#TODO point select of geometries / boundaries / ...?
 
 class GmshError(Exception):
     pass
