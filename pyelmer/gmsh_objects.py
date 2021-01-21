@@ -90,9 +90,9 @@ class Model:
         for dim in dimensions:
             gmsh.model.mesh.setSize(gmsh.model.getEntities(dim), char_length)
 
-    def generate_mesh(self, dimension=2, order=1, char_length_factor=1, smoothing=1):
+    def generate_mesh(self, dimension=2, order=1, size_factor=1, smoothing=1):
         self._apply_restrictions()
-        gmsh.option.setNumber('Mesh.CharacteristicLengthFactor', char_length_factor)
+        gmsh.option.setNumber('Mesh.CharacteristicLengthFactor', size_factor)
         gmsh.option.setNumber('Mesh.Smoothing', smoothing)
         gmsh.model.mesh.generate(dimension)
         gmsh.model.mesh.setOrder(order)    
