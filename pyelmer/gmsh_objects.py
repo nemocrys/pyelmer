@@ -40,12 +40,10 @@ class Model:
         self._physical = False
 
         gmsh.initialize()
-        gmsh.model.add(name)
-        
+        gmsh.model.add(name)  
     
     def __del__(self):
         gmsh.finalize()
-
 
     def __getitem__(self, name):
         """Get shape that is part of this model.
@@ -60,12 +58,14 @@ class Model:
             if shape.name == name:
                 return shape
         raise GeometryError(f'Shape {name} does not exist.')
-
+    
+    def __repr__(self):
+        shapes = [s.name for s in self._shapes]
+        return f'Gmsh model created with pyelmer.\nShapes: {shapes}'
 
     def show(self):
         """Run gmsh GUI."""
         gmsh.fltk.run()
-
 
     def _add_shape(self, shape):
         """Add a shape to the model.
@@ -76,31 +76,26 @@ class Model:
         """
         self._shapes.append(shape)
 
-
     def _apply_restrictions(self):
         self.min_field = field.add('Min')
         field.setNumbers(self.min_field, 'FieldsList', [x.field for x in self.mesh_restrictions])
         field.setAsBackgroundMesh(self.min_field)
-
 
     def deactivate_characteristic_length(self):
         gmsh.option.setNumber('Mesh.CharacteristicLengthFromPoints', 0)
         gmsh.option.setNumber('Mesh.CharacteristicLengthFromCurvature', 0)
         gmsh.option.setNumber('Mesh.CharacteristicLengthExtendFromBoundary', 0)
 
-
     def set_characteristic_length(self, char_length, dimensions=[0]):
         for dim in dimensions:
             gmsh.model.mesh.setSize(gmsh.model.getEntities(dim), char_length)
-
 
     def generate_mesh(self, dimension=2, order=1, char_length_factor=1, smoothing=1):
         self._apply_restrictions()
         gmsh.option.setNumber('Mesh.CharacteristicLengthFactor', char_length_factor)
         gmsh.option.setNumber('Mesh.Smoothing', smoothing)
         gmsh.model.mesh.generate(dimension)
-        gmsh.model.mesh.setOrder(order)
-        
+        gmsh.model.mesh.setOrder(order)    
 
     def get_shapes(self, dimension, name=''):
         """Get shapes of certain dimension, optionally filtered by name.
@@ -116,7 +111,6 @@ class Model:
         """
         return [s for s in self._shapes if s.dim == dimension and name in s.name]
 
-
     def make_physical(self):
         """Convert all shapes into physical groups.
 
@@ -128,7 +122,6 @@ class Model:
         for shape in self._shapes:
             shape._make_physical()
 
-
     def synchronize(self):
         """Synchronize gmsh geometry kernel.
         """
@@ -136,10 +129,24 @@ class Model:
         #     raise GmshError('The model is physical. Synchronizing would break it.')
         factory.synchronize()
 
+    def remove_shape(self, shape):
+        """Remove shape from model.
+
+        Args:
+            shape (Shape): shape object to be removed
+        """
+        self._shapes.remove(shape)
 
     def write_msh(self, file_name):
         gmsh.write(file_name)
 
+    def  set_const_mesh_sizes(self):
+        for shape in self._shapes:
+            if shape.mesh_size == 0:
+                print(f'Warning: Mesh size = 0 for {shape.name}. Ignoring this shape...')
+            else:
+                print(shape.name, shape.mesh_size)
+                MeshControlConstant(self, shape.mesh_size, shapes=[shape])
 
 class Shape:
     """Wrapper for any kind of shape, that shall be part of the final
@@ -156,14 +163,33 @@ class Shape:
             geo_ids (list, optional): Geometry IDs of the shape.
                                       They may be added later.
         """
+        self.model = model
         self.dim = dim
         self.name = name
         self.geo_ids = geo_ids
         self.params = Parameters()
         self.ph_id = -1
         self.mesh_size = 0
-        self.neighbors = []
         model._add_shape(self)
+
+    def __iadd__(self, other):
+        if type(other) is list:
+            self.geo_ids += [x for x in other if x not in self.geo_ids]
+        if type(other) is int:
+            self.geo_ids.append(other)
+        if type(other) is Shape:
+            self.geo_ids += [x for x in other.geo_ids if x not in self.geo_ids]
+            self.model.remove_shape(other)
+        return self
+
+    def __isub__(self, other):
+        if type(other) is list:
+            self.geo_ids = [x for x in self.geo_ids if x not in other]
+        if type(other) is int and other in self.geo_ids:
+            self.geo_ids.remove(other)
+        if type(other) is Shape:
+            self.geo_ids = [x for x in self.geo_ids if x not in other.geo_ids]
+        return self
 
     @property
     def dimtags(self):
@@ -208,8 +234,8 @@ class Shape:
         Args:
             shape (Shape): Other shape that is in contact with this.
         """
-        self.neighbors.append(shape)
-        shape.neighbors.append(self)
+        # self.neighbors.append(shape)
+        # shape.neighbors.append(self)
         factory.fragment(self.dimtags, shape.dimtags)
         factory.synchronize()
 
@@ -233,7 +259,7 @@ class Shape:
         Args:
             x (list): [x_min, x_max] limits for x-coordinate
             y (list): [y_min, y_max] limits for y-coordinate
-            z (list, optional): [z_min, z_max] limits for z coordinate. Defaults to [0, 0].
+            z (list, optional): [z_min, z_max] limits for z coordinate.
             eps (float, optional): Sensitivity. Defaults to 1e-6.
             one_only (bool, optional): Search for only one boundary;
             raise GeometryError if more / less boundaries are found.
@@ -255,6 +281,35 @@ class Shape:
         else:
             return tags_filtered
 
+    def get_part_in_box(self, x, y, z=[0, 0], eps=1e-6, one_only=False):
+        """Get part of the shape within a box. Only the parts completely
+        inside the box are returned
+
+        Args:
+            x (list): [x_min, x_max] limits for x-coordinate
+            y (list): [y_min, y_max] limits for y-coordinate
+            z (list, optional): [z_min, z_max] limits for z coordinate.
+            eps (float, optional): Sensitivity. Defaults to 1e-6.
+            one_only (bool, optional): Search for only one part;
+            raise GeometryError if more / less parts are found.
+
+        Returns:
+            list: Geometry tags.
+            Integer return if only_one was set to true.
+        """
+        dimtags = gmsh.model.getEntitiesInBoundingBox(x[0] - eps, y[0] - eps, z[0] - eps,
+                                                      x[1] + eps, y[1] + eps, z[1] + eps,
+                                                      self.dim)
+        tags = [x[1] for x in dimtags]
+        tags_filtered = [x for x in tags if x in self.geo_ids]
+        if one_only:
+            if len(tags_filtered) != 1:
+                raise GeometryError(f'Found {len(tags_filtered)} instead of only one part.')
+            else:
+                return tags_filtered[0]
+        else:
+            return tags_filtered
+  
     @property
     def top_boundary(self):
         [x_min, y_min, z_min, x_max, y_max, z_max] = self.bounding_box
@@ -328,7 +383,7 @@ class MeshControl:
     @property
     def field(self):
         if self.faces_list == [] and self.edges_list == []:
-            if self.field == -1:
+            if self._field == -1:
                 raise GmshError('Field not set.')
             return self._field
         else:
@@ -347,16 +402,23 @@ class MeshControlConstant(MeshControl):
         self.restrict(shapes, surfaces, edges)
 
 class MeshControlLinear(MeshControl):
-    def __init__(self, model, shape_1d, min_char_length, max_char_length, dist_start=0,
+    def __init__(self, model, shape, min_char_length, max_char_length, dist_start=0,
                   dist_end=None, NNodesByEdge=1000, shapes=[], surfaces=[], edges=[]):
         super().__init__(model)
 
         if dist_end is None:
             dist_end = min_char_length + max_char_length
 
+        if shape.dim == 1:
+            edg = shape.geo_ids            
+        elif shape.dim == 2:
+            edg = shape.boundaries
+        else:
+            raise GmshError('This is only possible for shapes of dimension 1 or 2.')
+
         dist_field = field.add('Distance')
         field.setNumber(dist_field, 'NNodesByEdge', NNodesByEdge)
-        field.setNumbers(dist_field, 'EdgesList', shape_1d.boundaries)
+        field.setNumbers(dist_field, 'EdgesList', edg)
         self._field = field.add('Threshold')
         field.setNumber(self._field, 'IField', dist_field)
         field.setNumber(self._field, 'LcMin', min_char_length)
@@ -367,12 +429,20 @@ class MeshControlLinear(MeshControl):
 
 
 class MeshControlExponential(MeshControl):
-    def __init__(self, model, shape_1d, char_length, exp=1.8, fact=1, NNodesByEdge=1000,
+    def __init__(self, model, shape, char_length, exp=1.8, fact=1, NNodesByEdge=1000,
                  shapes=[], surfaces=[], edges=[]):
         super().__init__(model)
+
+        if shape.dim == 1:
+            edg = shape.geo_ids            
+        elif shape.dim == 2:
+            edg = shape.boundaries
+        else:
+            raise GmshError('This is only possible for shapes of dimension 1 or 2.')
+
         dist_field = gmsh.model.mesh.field.add('Distance')
         field.setNumber(dist_field, 'NNodesByEdge', NNodesByEdge)
-        field.setNumbers(dist_field, 'EdgesList', shape_1d.boundaries)
+        field.setNumbers(dist_field, 'EdgesList', edg)
         self._field = field.add('MathEval')
         field.setString(self._field, 'F', f'F{dist_field}^{exp}*{fact}+{char_length}')
         self.restrict(shapes, surfaces, edges)
