@@ -7,7 +7,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='pyelmer',  
-    version='0.1.1',
+    version='0.1.2',
     author='Arved Enders-Seidlitz',
     author_email='arved.enders-seidlitz@ikz-berlin.de',
     description='A python interface to Elmer.',
