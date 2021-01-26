@@ -140,13 +140,21 @@ class Model:
     def write_msh(self, file_name):
         gmsh.write(file_name)
 
-    def  set_const_mesh_sizes(self):
+    def set_const_mesh_sizes(self):
         for shape in self._shapes:
             if shape.mesh_size == 0:
                 print(f'Warning: Mesh size = 0 for {shape.name}. Ignoring this shape...')
             else:
                 print(shape.name, shape.mesh_size)
                 MeshControlConstant(self, shape.mesh_size, shapes=[shape])
+
+    @property
+    def symmetry_axis(self):
+        sym_ax = []
+        for shape in self._shapes:
+            if shape.dim == 2:
+                sym_ax += shape.get_boundaries_in_box([0, 0], [-1e6, 1e6])
+        return sym_ax
 
 class Shape:
     """Wrapper for any kind of shape, that shall be part of the final
