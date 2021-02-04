@@ -28,7 +28,7 @@ class Model:
     and physical groups, and provides high-level access to some major
     functionalities of the gmsh API.
     """
-    def __init__(self, name='model'):
+    def __init__(self, name='model', noenv=False):
         """Create gmsh model.
 
         Args:
@@ -38,8 +38,10 @@ class Model:
         self.mesh_restrictions = []
         self.min_field = -1
         self._physical = False
-
-        gmsh.initialize()
+        if noenv:
+            gmsh.initialize(['-noenv'])
+        else:
+            gmsh.initialize()
         gmsh.model.add(name)  
     
     def __del__(self):
@@ -200,6 +202,22 @@ class Shape:
         return self
 
     @property
+    def geo_id(self):
+        """Gmsh geometry id.
+
+        Raises:
+            GeometryError: If there are more / less than exactly one id
+            assigned to this shape.
+
+        Returns:
+            int: Gmsh tag.
+        """
+        if len(self.geo_ids) == 1:
+            return self.geo_ids[0]
+        else:
+            raise GeometryError(f'This shape has {len(self.geo_ids)} geo ids.')
+
+    @property
     def dimtags(self):
         """Gmsh dimension tags.
 
@@ -341,7 +359,6 @@ class Shape:
         [x_min, y_min, z_min, x_max, y_max, z_max] = self.bounding_box
         return self.get_boundaries_in_box([x_max, x_max], [y_min, y_max], [z_min, z_max],
                                           one_only=True)
-
 
     def set_characteristic_length(self, char_length):
         """Set caracteristic length recursively on all boundaries and
