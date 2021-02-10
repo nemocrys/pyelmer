@@ -1,3 +1,4 @@
+from copy import deepcopy
 import gmsh
 import numpy as np
 from pyelmer import gmsh_utils
@@ -44,7 +45,8 @@ class Model:
             gmsh.initialize()
         gmsh.model.add(name)  
     
-    def __del__(self):
+    # TODO allow with / close -> implement __enter__, __exit__
+    def close_gmsh(self):
         gmsh.finalize()
 
     def __getitem__(self, name):
@@ -176,11 +178,11 @@ class Shape:
         self.model = model
         self.dim = dim
         self.name = name
-        self.geo_ids = geo_ids
+        self.geo_ids = deepcopy(geo_ids)
         self.params = Parameters()
         self.ph_id = -1
         self.mesh_size = 0
-        model._add_shape(self)
+        self.model._add_shape(self)
 
     def __iadd__(self, other):
         if type(other) is list:
