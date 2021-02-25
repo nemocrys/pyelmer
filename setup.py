@@ -2,31 +2,31 @@
 
 import setuptools
 
-with open('README.md', 'r') as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='pyelmer',  
-    version='0.1.1',
-    author='Arved Enders-Seidlitz',
-    author_email='arved.enders-seidlitz@ikz-berlin.de',
-    description='A python interface to Elmer.',
+    name="pyelmer",
+    version="0.1.1",
+    author="Arved Enders-Seidlitz",
+    author_email="arved.enders-seidlitz@ikz-berlin.de",
+    description="A python interface to Elmer.",
     long_description=long_description,
-    long_description_content_type='text/markdown',
-    url='https://github.com/nemocrys/pyelmer',
-    packages=['pyelmer', 'pyelmer.test'],
+    long_description_content_type="text/markdown",
+    url="https://github.com/nemocrys/pyelmer",
+    packages=["pyelmer", "pyelmer.test"],
     include_package_data=True,
-    package_data={'': ['data/*.yml']},
+    package_data={"": ["data/*.yml"]},
     classifiers=[
-        'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-        'Operating System :: OS Independent',
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        "Operating System :: OS Independent",
     ],
     install_requires=[
-      #'Django >= 1.1.1',
-      'gmsh',
-      'pyyaml',
-      'matplotlib',
+        #'Django >= 1.1.1',
+        "gmsh",
+        "pyyaml",
+        "matplotlib",
     ],
-    python_requires='>=3.7',
- )
+    python_requires=">=3.7",
+)

@@ -10,16 +10,17 @@ class Rects:
     r2: Shape
     r3: Shape
 
-@pytest.fixture(scope='module')
+
+@pytest.fixture(scope="module")
 def rectangles():
     model = Model()
     r1 = factory.addRectangle(0, 0, 0, 1, 1)
     r2 = factory.addRectangle(1, 0, 0, 1, 1)
     factory.fragment([(2, r1)], [(2, r2)])
     factory.synchronize()
-    rect1 = Shape(model, 2, 'r1', [r1])
-    rect2 = Shape(model, 2, 'r2', [r2])
-    rect3 = Shape(model, 2, 'r3', [r1, r2])
+    rect1 = Shape(model, 2, "r1", [r1])
+    rect2 = Shape(model, 2, "r2", [r2])
+    rect3 = Shape(model, 2, "r3", [r1, r2])
     gmsh.fltk.run()
     yield Rects(rect1, rect2, rect3)
 
@@ -37,9 +38,16 @@ def test_get_boundaries(rectangles):
 
 
 def test_get_boundaries_in_box(rectangles):
-    assert sorted(rectangles.r1.get_boundaries_in_box([-0.5, 1.5], [-0.5, 1.5])) == [1, 2, 3, 4]
+    assert sorted(rectangles.r1.get_boundaries_in_box([-0.5, 1.5], [-0.5, 1.5])) == [
+        1,
+        2,
+        3,
+        4,
+    ]
     assert rectangles.r1.get_boundaries_in_box([0.5, 1.5], [-0.5, 1.5]) == [2]
-    assert rectangles.r1.get_boundaries_in_box([0.5, 1.5], [-0.5, 1.5], one_only=True) == 2
+    assert (
+        rectangles.r1.get_boundaries_in_box([0.5, 1.5], [-0.5, 1.5], one_only=True) == 2
+    )
 
 
 def test_top_bottom_left_right_boundary(rectangles):

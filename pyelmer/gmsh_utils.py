@@ -37,7 +37,7 @@ def rotate(tag):
     Returns:
         int: tag of 3d object
     """
-    dimtags = factory.revolve([(2, tag)], 0, 0, 0, 0, 1, 0, 2*np.pi)
+    dimtags = factory.revolve([(2, tag)], 0, 0, 0, 0, 1, 0, 2 * np.pi)
     for dimtag in dimtags:
         if dimtag[0] == 3:
             return dimtag[1]
@@ -95,20 +95,24 @@ def get_cylinder_boundary(dim, body_tag, r, h, y0, eps=1e-6):
     Returns:
         Int: Boundary tag
     """
-    dimtags = gmsh.model.getEntitiesInBoundingBox(-r - eps, y0 - eps, -r - eps, r + eps,
-                                                  y0 + h + eps, r + eps, dim-1)
+    dimtags = gmsh.model.getEntitiesInBoundingBox(
+        -r - eps, y0 - eps, -r - eps, r + eps, y0 + h + eps, r + eps, dim - 1
+    )
     boundaries = get_boundaries(dim, body_tag)
     dimtags_filtered = [dimtag for dimtag in dimtags if dimtag[1] in boundaries]
     tags = []
     for dimtag in dimtags_filtered:
-        xmin, ymin, zmin, xmax, ymax, zmax = gmsh.model.getBoundingBox(dimtag[0], dimtag[1])
+        xmin, ymin, zmin, xmax, ymax, zmax = gmsh.model.getBoundingBox(
+            dimtag[0], dimtag[1]
+        )
         dy = np.round(ymax - ymin, 6)
         if dy != 0:
             if np.round(xmax - r, 6) == 0:
                 tags.append(dimtag[1])
     if len(tags) != 1:
-        raise ValueError('Problem finding cylinder boundary :(')
+        raise ValueError("Problem finding cylinder boundary :(")
     return tags[0]
+
 
 def get_ring_boundary(dim, body_tag, r_out, y0, eps=1e-6):
     """Get boundary of a circle or ring around y-axis (with extent in
@@ -127,24 +131,34 @@ def get_ring_boundary(dim, body_tag, r_out, y0, eps=1e-6):
     Returns:
         Int: Boundary tag
     """
-    dimtags = gmsh.model.getEntitiesInBoundingBox(-r_out -eps, y0 - eps, -r_out - eps,
-                                                  r_out + eps, y0 + eps, r_out + eps, dim-1)
+    dimtags = gmsh.model.getEntitiesInBoundingBox(
+        -r_out - eps,
+        y0 - eps,
+        -r_out - eps,
+        r_out + eps,
+        y0 + eps,
+        r_out + eps,
+        dim - 1,
+    )
     boundaries = get_boundaries(dim, body_tag)
     dimtags_filtered = [dimtag for dimtag in dimtags if dimtag[1] in boundaries]
     tags = []
     for dimtag in dimtags_filtered:
-        xmin, ymin, zmin, xmax, ymax, zmax = gmsh.model.getBoundingBox(dimtag[0], dimtag[1])
+        xmin, ymin, zmin, xmax, ymax, zmax = gmsh.model.getBoundingBox(
+            dimtag[0], dimtag[1]
+        )
         dy = np.round(ymax - ymin, 6)
         if dy == 0:
             if np.round(xmax - r_out, 6) == 0:
                 tags.append(dimtag[1])
     if len(tags) != 1:
-        raise ValueError('Problem finding ring boundary :(')
+        raise ValueError("Problem finding ring boundary :(")
     return tags[0]
 
 
-def get_boundaries_in_box(x_min, y_min, z_min, x_max, y_max, z_max, dim, tag, multiple=False,
-                          eps=1e-6):
+def get_boundaries_in_box(
+    x_min, y_min, z_min, x_max, y_max, z_max, dim, tag, multiple=False, eps=1e-6
+):
     """Find boundaries belonging to a given entity by searching in a
     box.
 
@@ -168,8 +182,15 @@ def get_boundaries_in_box(x_min, y_min, z_min, x_max, y_max, z_max, dim, tag, mu
     Returns:
         Int or list[int]: boundary tag
     """
-    tags = gmsh.model.getEntitiesInBoundingBox(x_min - eps, y_min - eps, z_min - eps, x_max + eps,
-                                               y_max + eps, z_max + eps, dim-1)
+    tags = gmsh.model.getEntitiesInBoundingBox(
+        x_min - eps,
+        y_min - eps,
+        z_min - eps,
+        x_max + eps,
+        y_max + eps,
+        z_max + eps,
+        dim - 1,
+    )
     boundaries = get_boundaries(dim, tag)
     tags_filtered = []
     for tag in tags:
@@ -220,15 +241,15 @@ def threshold_field(tag, lc_min, lc_max, min_dist=-1, max_dist=-1, NNodesByEdge=
         min_dist = 0
     if max_dist == -1:
         max_dist = min_dist + lc_max
-    dist_field = field.add('Distance')
-    field.setNumber(dist_field, 'NNodesByEdge', NNodesByEdge)
-    field.setNumbers(dist_field, 'EdgesList', get_boundaries(2, tag))
-    threshold_field = field.add('Threshold')
-    field.setNumber(threshold_field, 'IField', dist_field)
-    field.setNumber(threshold_field, 'LcMin', lc_min)
-    field.setNumber(threshold_field, 'LcMax', lc_max)
-    field.setNumber(threshold_field, 'DistMin', min_dist)
-    field.setNumber(threshold_field, 'DistMax', max_dist)
+    dist_field = field.add("Distance")
+    field.setNumber(dist_field, "NNodesByEdge", NNodesByEdge)
+    field.setNumbers(dist_field, "EdgesList", get_boundaries(2, tag))
+    threshold_field = field.add("Threshold")
+    field.setNumber(threshold_field, "IField", dist_field)
+    field.setNumber(threshold_field, "LcMin", lc_min)
+    field.setNumber(threshold_field, "LcMax", lc_max)
+    field.setNumber(threshold_field, "DistMin", min_dist)
+    field.setNumber(threshold_field, "DistMax", max_dist)
     return threshold_field
 
 
@@ -252,12 +273,14 @@ def exp_field(tag, lc, exp=1.8, fact=1, boundaries=[], NNodesByEdge=1000):
     """
     if boundaries == []:
         boundaries = get_boundaries(2, tag)
-    dist_field = gmsh.model.mesh.field.add('Distance')
-    field.setNumber(dist_field, 'NNodesByEdge', NNodesByEdge)
-    field.setNumbers(dist_field, 'EdgesList', boundaries)
-    math_field = field.add('MathEval')
-    math_str = 'F' + str(dist_field) + '^' + str(exp) + '*' + str(fact) + ' + ' + str(lc)
-    field.setString(math_field, 'F', math_str)
+    dist_field = gmsh.model.mesh.field.add("Distance")
+    field.setNumber(dist_field, "NNodesByEdge", NNodesByEdge)
+    field.setNumbers(dist_field, "EdgesList", boundaries)
+    math_field = field.add("MathEval")
+    math_str = (
+        "F" + str(dist_field) + "^" + str(exp) + "*" + str(fact) + " + " + str(lc)
+    )
+    field.setString(math_field, "F", math_str)
     return math_field
 
 
@@ -272,10 +295,10 @@ def restricted_field(base_field, faces_list=[], edges_list=[]):
     Returns:
         Int: Tag of restricted field.
     """
-    restrict_field = field.add('Restrict')
-    field.setNumber(restrict_field, 'IField', base_field)
-    field.setNumbers(restrict_field, 'FacesList', faces_list)
-    field.setNumbers(restrict_field, 'EdgesList', edges_list)
+    restrict_field = field.add("Restrict")
+    field.setNumber(restrict_field, "IField", base_field)
+    field.setNumbers(restrict_field, "FacesList", faces_list)
+    field.setNumbers(restrict_field, "EdgesList", edges_list)
     return restrict_field
 
 
@@ -291,12 +314,12 @@ def restricted_const_field(surf_tag, lc, NNodesByEdge=1000):
     Returns:
         Int: Tag of the resticted constant field.
     """
-    math_field = field.add('MathEval')
-    field.setString(math_field, 'F', str(lc))
-    restrict_field = field.add('Restrict')
-    field.setNumber(restrict_field, 'IField', math_field)
-    field.setNumbers(restrict_field, 'FacesList', [surf_tag])
-    field.setNumbers(restrict_field, 'EdgesList', get_boundaries(2, surf_tag))
+    math_field = field.add("MathEval")
+    field.setString(math_field, "F", str(lc))
+    restrict_field = field.add("Restrict")
+    field.setNumber(restrict_field, "IField", math_field)
+    field.setNumbers(restrict_field, "FacesList", [surf_tag])
+    field.setNumbers(restrict_field, "EdgesList", get_boundaries(2, surf_tag))
     return restrict_field
 
 
