@@ -1,0 +1,6 @@
+v 0.1.2
+- Added further functionality to gmsh_objects
+- BC: added radiation to ambient and heat flux, improved mesh updated
+
+v 0.1.1
+- Updated readme.md
