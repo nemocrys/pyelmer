@@ -1,5 +1,5 @@
 # https://packaging.python.org/tutorials/packaging-projects/
-
+import versioneer
 import setuptools
 
 with open("README.md", "r") as fh:
@@ -7,7 +7,8 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyelmer",
-    version="0.1.1",
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     author="Arved Enders-Seidlitz",
     author_email="arved.enders-seidlitz@ikz-berlin.de",
     description="A python interface to Elmer.",
