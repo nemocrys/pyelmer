@@ -169,13 +169,13 @@ class Body:
             value += str(body_id) + " "
         d = {key: value}
         if self.equation is not None:
-            d.update({"Equation": self.equation.id})
+            d.update({"Equation": f"{self.equation.id}  ! {self.equation.name}"})
         if self.initial_condition is not None:
-            d.update({"Initial Condition": self.initial_condition.id})
+            d.update({"Initial Condition": f"{self.initial_condition.id}  ! {self.initial_condition.name}"})
         if self.material is not None:
-            d.update({"Material": self.material.id})
+            d.update({"Material": f"{self.material.id}  ! {self.material.name}"})
         if self.body_force is not None:
-            d.update({"Body Force": self.body_force.id})
+            d.update({"Body Force": f"{self.body_force.id}  ! {self.body_force.name}"})
         d.update(self.data)
         return d
 
@@ -439,9 +439,11 @@ class Equation:
         """Generate dictionary with data for sif-file."""
         n_solvers = len(self.solvers)
         solver_id_str = ""
+        solver_name_str = ""
         for solver in self.solvers:
             solver_id_str += str(solver.id) + " "
-        return {"Active Solvers(" + str(n_solvers) + ")": solver_id_str}
+            solver_name_str += solver.name + ", "
+        return {"Active Solvers(" + str(n_solvers) + ")": f"{solver_id_str}  ! {solver_name_str}"}
 
 
 def load_simulation(name, setup_file=None):
