@@ -103,7 +103,6 @@ class Simulation:
         """
         with open(simulation_dir + "/ELMERSOLVER_STARTINFO", "w") as f:
             f.write("case.sif\n")
-            f.write("1\n")
 
     def write_boundary_ids(self, simulation_dir):
         """Write yaml-file containing the boundary names and the
