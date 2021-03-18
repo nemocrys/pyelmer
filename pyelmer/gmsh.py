@@ -329,7 +329,6 @@ def cut(obj_dimtags, tool_dimtags, remove_tool=True):
     return [dimtag[1] for dimtag in out[0]]
 
 
-
 class GmshError(Exception):
     pass
 
@@ -353,7 +352,7 @@ class Model:
     functionalities of the gmsh API.
     """
 
-    def __init__(self, name="model", noenv=False):
+    def __init__(self, name="model"):
         """Create gmsh model.
 
         Args:
@@ -363,10 +362,9 @@ class Model:
         self.mesh_restrictions = []
         self.min_field = -1
         self._physical = False
-        if noenv:
-            gmsh.initialize(["-noenv"])
-        else:
-            gmsh.initialize()
+        gmsh.initialize(
+            ["-noenv"]
+        )  # see https://gitlab.onelab.info/gmsh/gmsh/-/issues/1142 for details about -noenv option
         gmsh.model.add(name)
 
     # TODO allow with / close -> implement __enter__, __exit__
@@ -493,6 +491,7 @@ class Shape:
     model. Shapes may be 2 or 3D objects, lines or points.
     A shape may consist of multiple gmsh entities of the same dimension.
     """
+
     # TODO point select of geometries / boundaries / ...?
 
     def __init__(self, model, dim, name, geo_ids=[]):
@@ -855,5 +854,3 @@ class MeshControlExponential(MeshControl):
         self._field = field.add("MathEval")
         field.setString(self._field, "F", f"F{dist_field}^{exp}*{fact}+{char_length}")
         self.restrict(shapes, surfaces, edges)
-
-

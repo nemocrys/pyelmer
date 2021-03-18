@@ -171,7 +171,11 @@ class Body:
         if self.equation is not None:
             d.update({"Equation": f"{self.equation.id}  ! {self.equation.name}"})
         if self.initial_condition is not None:
-            d.update({"Initial Condition": f"{self.initial_condition.id}  ! {self.initial_condition.name}"})
+            d.update(
+                {
+                    "Initial Condition": f"{self.initial_condition.id}  ! {self.initial_condition.name}"
+                }
+            )
         if self.material is not None:
             d.update({"Material": f"{self.material.id}  ! {self.material.name}"})
         if self.body_force is not None:
@@ -443,7 +447,11 @@ class Equation:
         for solver in self.solvers:
             solver_id_str += str(solver.id) + " "
             solver_name_str += solver.name + ", "
-        return {"Active Solvers(" + str(n_solvers) + ")": f"{solver_id_str}  ! {solver_name_str}"}
+        return {
+            "Active Solvers("
+            + str(n_solvers)
+            + ")": f"{solver_id_str}  ! {solver_name_str}"
+        }
 
 
 def load_simulation(name, setup_file=None):
