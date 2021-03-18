@@ -15,7 +15,7 @@ import gmsh
 from pyelmer import elmer
 from pyelmer import execute
 from pyelmer.post import scan_logfile
-from pyelmer.gmsh_utils import add_physical_group, get_boundaries_in_box
+from pyelmer.gmsh import add_physical_group, get_boundaries_in_box
 
 
 ###############

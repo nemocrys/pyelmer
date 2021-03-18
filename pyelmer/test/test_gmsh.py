@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import pytest
 import gmsh
-from pyelmer.gmsh_objects import *
+from pyelmer.gmsh import *
 
 
 @dataclass
@@ -21,7 +21,7 @@ def rectangles():
     rect1 = Shape(model, 2, "r1", [r1])
     rect2 = Shape(model, 2, "r2", [r2])
     rect3 = Shape(model, 2, "r3", [r1, r2])
-    gmsh.fltk.run()
+    # gmsh.fltk.run()
     yield Rects(rect1, rect2, rect3)
 
 

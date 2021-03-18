@@ -1,8 +1,5 @@
 """A python interface to Elmer."""
-import pyelmer.elmer
-import pyelmer.execute
-import pyelmer.gmsh_utils
-import pyelmer.post
+from . import elmer, execute, gmsh, post
 
 
 from ._version import get_versions
