@@ -35,7 +35,24 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid=None):
         shutil.move(mesh_dir + '/' + f, sim_dir)
     shutil.rmtree(mesh_dir)
 
+def run_elmerf90(sim_dir, userdefinedsolver=None):
+    """Compile User Defined Solver with elmerf90 library.
+    Args:
+        sim_dir (str): Simulation directory
+        elmerf90 (str): elmerf90 executable
+    """
+    if elmersolver is None:
+        # On Windows ElmerSolver.exe is not found once gmsh.initialize() was executed.
+        # Try to use abs-path instead.
+        if os.path.exists('C:/Program Files/Elmer 8.4-Release/bin/elmerf90.exe'):
+            elmerf90 = 'C:/Program Files/Elmer 8.4-Release/bin/elmerf90.exe'
+        else:
+            elmerf90 = 'elmerf90'
 
+    args = [elmersolver, '-o' , 'ModelPDE.so', 'ModelPDE.f90']
+    with open(sim_dir + '/elmerf90.log', 'w') as f:
+        subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
+        
 def run_elmer_solver(sim_dir, elmersolver=None):
     """Run ElmerSolver with input file case.sif.
 
