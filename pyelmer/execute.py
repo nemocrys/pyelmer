@@ -39,6 +39,7 @@ def run_elmerf90(sim_dir, userdefinedsolver=None):
     """Compile User Defined Solver with elmerf90 library.
     Args:
         sim_dir (str): Simulation directory
+        userfile (str): Filename of .f90 file
         elmerf90 (str): elmerf90 executable
     """
     if elmersolver is None:
@@ -49,9 +50,18 @@ def run_elmerf90(sim_dir, userdefinedsolver=None):
         else:
             elmerf90 = 'elmerf90'
 
-    args = [elmersolver, '-o' , 'ModelPDE.so', 'ModelPDE.f90']
+    args = [elmerf90, '-o' , 'ModelPDE.so', userfile]
     with open(sim_dir + '/elmerf90.log', 'w') as f:
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
+        
+    # have to define path of user defined solver or function file
+    mesh_dir = sim_dir + '/' + '.'.join(meshfile.split('.')[:-1])
+    files = os.listdir(mesh_dir)
+    for f in files:
+        if os.path.exists(sim_dir + '/' + f):
+            os.remove(sim_dir + '/' + f)
+        shutil.move(mesh_dir + '/' + f, sim_dir)
+    shutil.rmtree(mesh_dir)
         
 def run_elmer_solver(sim_dir, elmersolver=None):
     """Run ElmerSolver with input file case.sif.
