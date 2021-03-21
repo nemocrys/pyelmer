@@ -35,33 +35,24 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid=None):
         shutil.move(mesh_dir + '/' + f, sim_dir)
     shutil.rmtree(mesh_dir)
 
-def run_elmerf90(sim_dir, userfile, elmerf90=None):
-    """Compile User Defined Solver with elmerf90 library.
+def run_elmerf90(userfile_in, userfile_out, elmerf90=None):
+    """Compile user defined function  or solver in .F90 format to share object (.so) file in linux.
+    using elmerf90 compiler
+    It has been tested to work in Ubuntu 16.04 computer 
+
     Args:
-        sim_dir (str): Simulation directory
-        userfile (str): Filename of .f90 file
+        userfile_in (str) : Filename of .F90 file
+        userfile_out (str) : Filename of .so file 
         elmerf90 (str): elmerf90 executable
     """
-    if elmersolver is None:
+    if elmerf90 is None:
         # On Windows ElmerSolver.exe is not found once gmsh.initialize() was executed.
         # Try to use abs-path instead.
         if os.path.exists('C:/Program Files/Elmer 8.4-Release/bin/elmerf90.exe'):
             elmerf90 = 'C:/Program Files/Elmer 8.4-Release/bin/elmerf90.exe'
         else:
             elmerf90 = 'elmerf90'
-
-    args = [elmerf90, '-o' , 'ModelPDE.so', userfile]
-    with open(sim_dir + '/elmerf90.log', 'w') as f:
-        subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
-        
-    # have to define path of user defined solver or function file
-    mesh_dir = sim_dir + '/' + '.'.join(meshfile.split('.')[:-1])
-    files = os.listdir(mesh_dir)
-    for f in files:
-        if os.path.exists(sim_dir + '/' + f):
-            os.remove(sim_dir + '/' + f)
-        shutil.move(mesh_dir + '/' + f, sim_dir)
-    shutil.rmtree(mesh_dir)
+    subprocess.call(["elmerf90","-o", userfile_out, userfile_in])
         
 def run_elmer_solver(sim_dir, elmersolver=None):
     """Run ElmerSolver with input file case.sif.
