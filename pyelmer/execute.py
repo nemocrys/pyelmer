@@ -35,7 +35,7 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid=None):
         shutil.move(mesh_dir + '/' + f, sim_dir)
     shutil.rmtree(mesh_dir)
 
-def run_elmerf90(sim_dir, userdefinedsolver=None):
+def run_elmerf90(sim_dir, userfile, elmerf90=None):
     """Compile User Defined Solver with elmerf90 library.
     Args:
         sim_dir (str): Simulation directory
