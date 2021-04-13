@@ -187,7 +187,7 @@ class Body:
 class Boundary:
     """Wrapper for boundaries in sif-file."""
 
-    def __init__(self, simulation, name, surf_ids=[]):
+    def __init__(self, simulation, name, geo_ids=[]):
         """Create boundary object.
 
         Args:
@@ -197,7 +197,7 @@ class Boundary:
             surf_ids (list of int): Ids of boundaries in mesh.
         """
         self.id = 0
-        self.surface_ids = surf_ids
+        self.geo_ids = geo_ids
         self.radiation = False
         self.radiation_idealized = False
         self.fixed_temperature = None
@@ -222,10 +222,10 @@ class Boundary:
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
-        key = "Target Boundaries(" + str(len(self.surface_ids)) + ")"
+        key = f"Target Boundaries({len(self.geo_ids)})"
         value = ""
-        for surf_id in self.surface_ids:
-            value += str(surf_id) + " "
+        for geo_id in self.geo_ids:
+            value += f"{geo_id} "
         d = {key: value}
         if self.radiation:
             d.update({"Radiation": "Diffuse Gray"})
@@ -441,16 +441,13 @@ class Equation:
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
-        n_solvers = len(self.solvers)
         solver_id_str = ""
         solver_name_str = ""
         for solver in self.solvers:
             solver_id_str += str(solver.id) + " "
             solver_name_str += solver.name + ", "
         return {
-            "Active Solvers("
-            + str(n_solvers)
-            + ")": f"{solver_id_str}  ! {solver_name_str}"
+            f"Active Solvers({len(self.solvers)})": f"{solver_id_str}  ! {solver_name_str}"
         }
 
 
