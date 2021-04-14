@@ -151,23 +151,24 @@ class Body:
             name (str): Name of the body
             body_ids (list of int): Ids of bodies in mesh.
         """
+        simulation.bodies.update({name: self})
         self.id = 0
+        self.name = name
         self.body_ids = body_ids
+        self.data = {}
+        # optional parameters
         self.equation = None
         self.initial_condition = None
         self.material = None
         self.body_force = None
-        self.name = name
-        self.data = {}
-        simulation.bodies.update({name: self})
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
-        key = "Target Bodies(" + str(len(self.body_ids)) + ")"
-        value = ""
-        for body_id in self.body_ids:
-            value += str(body_id) + " "
-        d = {key: value}
+        d = {
+            f"Target Bodies({len(self.body_ids)})": " ".join(
+                [str(x) for x in self.body_ids]
+            )
+        }
         if self.equation is not None:
             d.update({"Equation": f"{self.equation.id}  ! {self.equation.name}"})
         if self.initial_condition is not None:
@@ -196,7 +197,11 @@ class Boundary:
             name (str): Name of the body
             surf_ids (list of int): Ids of boundaries in mesh.
         """
+        simulation.boundaries.update({name: self})
         self.id = 0
+        self.name = name
+        self.data = {}
+        # optional parameters
         self.geo_ids = geo_ids
         self.radiation = False
         self.radiation_idealized = False
@@ -216,17 +221,14 @@ class Boundary:
         self.heat_transfer_coefficient = 0
         self.T_ext = 0
         self.mesh_update = []
-        self.name = name
-        self.data = {}
-        simulation.boundaries.update({name: self})
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
-        key = f"Target Boundaries({len(self.geo_ids)})"
-        value = ""
-        for geo_id in self.geo_ids:
-            value += f"{geo_id} "
-        d = {key: value}
+        d = {
+            f"Target Boundaries({len(self.geo_ids)})": " ".join(
+                [str(x) for x in self.geo_ids]
+            )
+        }
         if self.radiation:
             d.update({"Radiation": "Diffuse Gray"})
         if self.radiation_idealized:
@@ -310,11 +312,11 @@ class Material:
             name (str): Name of the material
             data (dict): Material data as in sif-file.
         """
-        self.id = 0
-        self.data = data
-        self.name = name
         if simulation is not None:
             simulation.materials.update({name: self})
+        self.id = 0
+        self.name = name
+        self.data = data
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -333,7 +335,11 @@ class BodyForce:
             name (str): Name of the body force
             data (dict): Body force data as in sif-file.
         """
+        simulation.body_forces.update({name: self})
         self.id = 0
+        self.name = name
+        self.data = data
+        # optional parameters
         self.joule_heat = False
         self.current_density = 0
         self.heat_source = 0
@@ -341,9 +347,6 @@ class BodyForce:
         self.smart_heat_control = False
         self.smart_heater_control_point = []
         self.smart_heater_T = 0
-        self.name = name
-        self.data = data
-        simulation.body_forces.update({name: self})
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -389,10 +392,10 @@ class InitialCondition:
             name (str): Name of the initial condition
             data (dict): Initial condition data as in sif-file.
         """
-        self.id = 0
-        self.data = data
-        self.name = name
         simulation.initial_conditions.update({name: self})
+        self.id = 0
+        self.name = name
+        self.data = data
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -411,11 +414,11 @@ class Solver:
             name (str): Name of the solver
             data (dict): Solver data as in sif-file.
         """
-        self.id = 0
-        self.data = data
-        self.name = name
         if simulation is not None:
             simulation.solvers.update({name: self})
+        self.id = 0
+        self.name = name
+        self.data = data
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -434,21 +437,22 @@ class Equation:
             name (str): Name of the equation
             solvers ([list]): Solvers in this equation
         """
-        self.id = 0
-        self.solvers = solvers
-        self.name = name
         simulation.equations.update({name: self})
+        self.id = 0
+        self.name = name
+        self.solvers = solvers
+        self.data = {}
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
         solver_id_str = ""
         solver_name_str = ""
         for solver in self.solvers:
-            solver_id_str += str(solver.id) + " "
-            solver_name_str += solver.name + ", "
+            solver_id_str += f"{solver.id} "
+            solver_name_str += f"{solver.name}, "
         return {
             f"Active Solvers({len(self.solvers)})": f"{solver_id_str}  ! {solver_name_str}"
-        }
+        }.update(self.data)
 
 
 def load_simulation(name, setup_file=None):
