@@ -450,9 +450,11 @@ class Equation:
         for solver in self.solvers:
             solver_id_str += f"{solver.id} "
             solver_name_str += f"{solver.name}, "
-        return {
+        d = {
             f"Active Solvers({len(self.solvers)})": f"{solver_id_str}  ! {solver_name_str}"
-        }.update(self.data)
+        }
+        d.update(self.data)
+        return d
 
 
 def load_simulation(name, setup_file=None):
