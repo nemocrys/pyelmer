@@ -18,21 +18,21 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid=None):
     if elmergrid is None:
         # On Windows ElmerGrid.exe is not found once gmsh.initialize() was executed.
         # Try to use abs-path instead.
-        if os.path.exists('C:/Program Files/Elmer 8.4-Release/bin/ElmerGrid.exe'):
-            elmergrid = 'C:/Program Files/Elmer 8.4-Release/bin/ElmerGrid.exe'
+        if os.path.exists("C:/Program Files/Elmer 9.0-Release/bin/ElmerGrid.exe"):
+            elmergrid = "C:/Program Files/Elmer 9.0-Release/bin/ElmerGrid.exe"
         else:
-            elmergrid = 'ElmerGrid'
+            elmergrid = "ElmerGrid"
 
-    args = [elmergrid, '14', '2', meshfile]
-    with open(sim_dir + '/elmergrid.log', 'w') as f:
+    args = [elmergrid, "14", "2", meshfile]
+    with open(sim_dir + "/elmergrid.log", "w") as f:
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
 
-    mesh_dir = sim_dir + '/' + '.'.join(meshfile.split('.')[:-1])
+    mesh_dir = sim_dir + "/" + ".".join(meshfile.split(".")[:-1])
     files = os.listdir(mesh_dir)
     for f in files:
-        if os.path.exists(sim_dir + '/' + f):
-            os.remove(sim_dir + '/' + f)
-        shutil.move(mesh_dir + '/' + f, sim_dir)
+        if os.path.exists(sim_dir + "/" + f):
+            os.remove(sim_dir + "/" + f)
+        shutil.move(mesh_dir + "/" + f, sim_dir)
     shutil.rmtree(mesh_dir)
 
 
@@ -46,13 +46,13 @@ def run_elmer_solver(sim_dir, elmersolver=None):
     if elmersolver is None:
         # On Windows ElmerSolver.exe is not found once gmsh.initialize() was executed.
         # Try to use abs-path instead.
-        if os.path.exists('C:/Program Files/Elmer 8.4-Release/bin/ElmerSolver.exe'):
-            elmersolver = 'C:/Program Files/Elmer 8.4-Release/bin/ElmerSolver.exe'
+        if os.path.exists("C:/Program Files/Elmer 9.0-Release/bin/ElmerSolver.exe"):
+            elmersolver = "C:/Program Files/Elmer 9.0-Release/bin/ElmerSolver.exe"
         else:
-            elmersolver = 'ElmerSolver'
+            elmersolver = "ElmerSolver"
 
-    args = [elmersolver, 'case.sif']
-    with open(sim_dir + '/elmersolver.log', 'w') as f:
+    args = [elmersolver, "case.sif"]
+    with open(sim_dir + "/elmersolver.log", "w") as f:
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
 
 
@@ -70,13 +70,13 @@ def run_multicore(count, sim_dirs, meshfiles, elmergrid=None, elmersolver=None):
     pool = multiprocessing.Pool(processes=count)
     args = []
     for i in range(len(sim_dirs)):
-        args.append( (sim_dirs[i], meshfiles[i], elmergrid, elmersolver) )
+        args.append((sim_dirs[i], meshfiles[i], elmergrid, elmersolver))
     pool.starmap(_run_grid_solver, args)
 
 
 def _run_grid_solver(sim_dir, meshfile, elmergrid, elmersolver):
-        print('Starting ElmerGrid for', meshfile)
-        run_elmer_grid(sim_dir, meshfile, elmergrid)
-        print('Starting ElmerSolver in', sim_dir)
-        run_elmer_solver(sim_dir, elmersolver)
-        print('Finished ElmerSolver in', sim_dir)
+    print("Starting ElmerGrid for", meshfile)
+    run_elmer_grid(sim_dir, meshfile, elmergrid)
+    print("Starting ElmerSolver in", sim_dir)
+    run_elmer_solver(sim_dir, elmersolver)
+    print("Finished ElmerSolver in", sim_dir)

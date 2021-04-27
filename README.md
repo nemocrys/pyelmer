@@ -1,5 +1,5 @@
 # pyelmer
-
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ## Project description
 
 The pyelmer package provides a simple object-oriented way to set up [Elmer FEM](http://www.elmerfem.org/) simulations from python.
@@ -86,7 +86,7 @@ import os
 import gmsh
 from pyelmer import elmer
 from pyelmer import execute
-from pyelmer.gmsh_utils import add_physical_group, get_boundaries_in_box
+from pyelmer.gmsh import add_physical_group, get_boundaries_in_box
 
 ###############
 # set up working directory

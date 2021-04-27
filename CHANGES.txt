@@ -1,3 +1,13 @@
+v 0.2.0
+- Improved behavior of 'import pyelmer'
+- Summarized gmsh_objects and gmsh_utils to single gmsh module
+- Write equation, force, initial condition, material, solver name in body / equation in sif
+- renamed surf_id to geo_id in Body class
+- Intoduced proper versioning numbering using versioneer
+- Codestyle: black
+- Bugfixes in gmsh Shape, Model
+- Cleanup and minor bugfixes
+
 v 0.1.2
 - Added further functionality to gmsh_objects
 - BC: added radiation to ambient and heat flux, improved mesh updated
