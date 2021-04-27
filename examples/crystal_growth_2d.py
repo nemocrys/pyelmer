@@ -15,7 +15,14 @@ import gmsh
 from pyelmer import elmer
 from pyelmer import execute
 from pyelmer.post import scan_logfile
-from pyelmer.gmsh import Model, Shape, MeshControlConstant, MeshControlExponential, cut, factory
+from pyelmer.gmsh import (
+    Model,
+    Shape,
+    MeshControlConstant,
+    MeshControlExponential,
+    cut,
+    factory,
+)
 
 
 ###############
@@ -42,7 +49,7 @@ model = Model()
 crystal = Shape(model, 2, "crystal", [factory.addRectangle(0, 0, 0, crys_r, crys_h)])
 melt = Shape(model, 2, "melt", [factory.addRectangle(0, -melt_h, 0, melt_r, melt_h)])
 
-crucible = factory.addRectangle(0, -melt_h - (cruc_h - cruc_hi), 0, cruc_r, cruc_h )
+crucible = factory.addRectangle(0, -melt_h - (cruc_h - cruc_hi), 0, cruc_r, cruc_h)
 crucible_hole = factory.addRectangle(0, -melt_h, 0, melt_r, cruc_hi)
 cut([(2, crucible)], [(2, crucible_hole)])
 crucible = Shape(model, 2, "crucible", [crucible])
@@ -52,12 +59,18 @@ crystal.set_interface(melt)
 melt.set_interface(crucible)
 
 # detect boundaries
-bnd_crystal_out = Shape(model, 1, "bnd_crystal_out", [crystal.top_boundary, crystal.right_boundary])
-bnd_melt = Shape(model, 1, "bnd_melt_surf", melt.get_boundaries_in_box([crys_r, melt_r], [0, 0]))
+bnd_crystal_out = Shape(
+    model, 1, "bnd_crystal_out", [crystal.top_boundary, crystal.right_boundary]
+)
+bnd_melt = Shape(
+    model, 1, "bnd_melt_surf", melt.get_boundaries_in_box([crys_r, melt_r], [0, 0])
+)
 surfs = [
-    crucible.get_boundaries_in_box([melt_r, melt_r], [0, cruc_hi - melt_h], one_only=True),
+    crucible.get_boundaries_in_box(
+        [melt_r, melt_r], [0, cruc_hi - melt_h], one_only=True
+    ),
     crucible.top_boundary,
-    crucible.right_boundary
+    crucible.right_boundary,
 ]
 bnd_crucible_outside = Shape(model, 1, "bnd_crucible_outside", surfs)
 bnd_crucible_bottom = Shape(model, 1, "bnd_crucible_bottom", [crucible.bottom_boundary])
@@ -71,7 +84,9 @@ model.make_physical()
 model.deactivate_characteristic_length()
 MeshControlConstant(model, 0.005, [crucible, melt])
 MeshControlConstant(model, 0.0025, [crystal])
-MeshControlExponential(model, if_crystal_melt, 0.001, exp=1.7, fact=3, shapes=[crystal, melt, crucible])
+MeshControlExponential(
+    model, if_crystal_melt, 0.001, exp=1.7, fact=3, shapes=[crystal, melt, crucible]
+)
 
 # create mesh, show, export
 model.generate_mesh()
@@ -115,7 +130,9 @@ bndry_bottom.fixed_heatflux = 5314  # adjusted to fit the melting point
 bndry_crys_melt = elmer.Boundary(sim, "crys_melt", [if_crystal_melt.ph_id])
 bndry_crys_melt.fixed_heatflux = 21289  # latent heat release
 
-bndry_surfaces = elmer.Boundary(sim, "surfaces", [bnd_crystal_out.ph_id, bnd_melt.ph_id, bnd_crucible_outside.ph_id])
+bndry_surfaces = elmer.Boundary(
+    sim, "surfaces", [bnd_crystal_out.ph_id, bnd_melt.ph_id, bnd_crucible_outside.ph_id]
+)
 bndry_surfaces.heat_transfer_coefficient = 3.5
 bndry_surfaces.T_ext = 300.0
 bndry_surfaces.radiation_idealized = True

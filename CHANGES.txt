@@ -1,4 +1,8 @@
 v 0.2.0
+- Merged pull request from Anil Kunwar:
+    - execute.py: run_elmerf90
+    - simulations.yml: "2D transient"
+    - solvers.yml: "ThermoElectricSolver"
 - Improved behavior of 'import pyelmer'
 - Summarized gmsh_objects and gmsh_utils to single gmsh module
 - Write equation, force, initial condition, material, solver name in body / equation in sif
