@@ -591,7 +591,7 @@ class Shape:
             boxes[:, 2].min(),
             boxes[:, 3].max(),
             boxes[:, 4].max(),
-            boxes[:, 4].max(),
+            boxes[:, 5].max(),
         ]
 
     def set_interface(self, shape):
