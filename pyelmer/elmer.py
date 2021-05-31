@@ -33,6 +33,7 @@ class Simulation:
         self.equations = {}
         self.constants = {"Stefan Boltzmann": 5.6704e-08}
         self.settings = {}
+        self.default_data_dir = ''
 
     def write_sif(self, simulation_dir):
         """Write sif file.
@@ -457,22 +458,28 @@ class Equation:
         return d
 
 
-def load_simulation(name, setup_file=None):
+def load_simulation(name, setup_file=None, default_data_dir=None):
     """Load simulation settings from database.
 
     Args:
         name (str): Name of the simulation in database.
         setup_file (str, optional): Path to yaml file cotaining setup.
-
+        default_data_dir (str, optional): default directory for all yaml files.
     Returns:
         Simulation object.
     """
+    if default_data_dir is not None:
+        setup_dir = default_data_dir
+    else:
+        setup_dir = DATA_DIR
     if setup_file is None:
-        setup_file = DATA_DIR + "/simulations.yml"
+        setup_file = setup_dir + "/simulations.yml"
     with open(setup_file) as f:
         settings = yaml.safe_load(f)[name]
     sim = Simulation()
     sim.settings = settings
+    if default_data_dir is not None:
+        sim.default_data_dir = default_data_dir
     return sim
 
 
@@ -488,7 +495,11 @@ def load_material(name, simulation=None, setup_file=None):
         Material object.
     """
     if setup_file is None:
-        setup_file = DATA_DIR + "/materials.yml"
+        if simulation is not None and len(simulation.default_data_dir)>0:
+            setup_dir = simulation.default_data_dir
+        else:
+            setup_dir = DATA_DIR    
+        setup_file = setup_dir + "/materials.yml"
     with open(setup_file) as f:
         data = yaml.safe_load(f)[name]
     return Material(simulation, name, data)
@@ -506,7 +517,11 @@ def load_solver(name, simulation=None, setup_file=None):
         Solver object.
     """
     if setup_file is None:
-        setup_file = DATA_DIR + "/solvers.yml"
+        if simulation is not None and len(simulation.default_data_dir)>0:
+            setup_dir = simulation.default_data_dir
+        else:
+            setup_dir = DATA_DIR    
+        setup_file = setup_dir + "/solvers.yml"
     with open(setup_file) as f:
         data = yaml.safe_load(f)
         data = data[name]
