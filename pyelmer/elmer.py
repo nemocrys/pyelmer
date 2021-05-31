@@ -199,6 +199,7 @@ class Boundary:
             surf_ids (list of int): Ids of boundaries in mesh.
         """
         simulation.boundaries.update({name: self})
+        self.simulation = simulation
         self.id = 0
         self.name = name
         self.data = {}
@@ -299,6 +300,19 @@ class Boundary:
                     d.update({"Mesh Update 3": self.mesh_update[2]})
         d.update(self.data)
         return d
+
+
+    def load_boundary(self, boundname, setup_file=None):
+        """Load boundary settings from file."""
+        if setup_file is None:
+            if self.simulation is not None and len(self.simulation.default_data_dir)>0:
+                setup_dir = self.simulation.default_data_dir
+            else:
+                setup_dir = DATA_DIR    
+            setup_file = setup_dir + "/boundaries.yml"
+        with open(setup_file) as f:
+            bounddata = yaml.safe_load(f)[boundname]
+            self.data.update(bounddata)
 
 
 class Material:

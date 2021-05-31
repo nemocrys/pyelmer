@@ -1,0 +1,70 @@
+air:
+  Density: 1.1885  # 20°C
+  Electric Conductivity: 0.0 
+  Heat Capacity: 1006.4  # 20°C
+  Heat Conductivity: 0.025873  # 20°C
+  Relative Permeability: 1
+  Relative Permittivity: 1
+copper_inductor:
+  Density: 8960.0  # 20°C
+  Electric Conductivity: 0.0  # necessary for 2D
+  Emissivity: 0.012  # 327°C
+  Heat Capacity: 384.4  # interpolated for 20°C
+  Heat Conductivity: 401.0
+  Relative Permeability: 1
+  Relative Permittivity: 1
+copper:
+  Density: 8960.0  # 0°C
+  Electric Conductivity: 32300000  # 200°C
+  Emissivity: 0.012  # 327°C
+  Heat Capacity: 415.0  # 200°C
+  Heat Conductivity: 401.0  # 0°C
+  Relative Permeability: 1
+  Relative Permittivity: 1
+graphite_CZ3-R6300:  # crucible
+  Density: 1730.0
+  Electric Conductivity: 58800
+  Emissivity: 0.81  # 205°C
+  Heat Capacity: 1237.0
+  Heat Conductivity: 65  # 20°C
+  Relative Permeability: 1
+  Relative Permittivity: 1
+graphite_FU8957:  # heater
+  Density: 1750.0
+  Emissivity: 0.81  # 250°C
+  Heat Capacity: 1237.0
+  Heat Conductivity: 105  # averaged over different given values
+  Relative Permeability: 1
+  Relative Permittivity: 1
+steel_1.4541:
+  Density: 7900.0  # 20°C
+  Electric Conductivity: 1370
+  Emissivity: 0.111  # 200°C
+  Heat Capacity:  470.0 # 20°C
+  Heat Conductivity: 15.0 # 20°C
+  Relative Permeability: 1
+  Relative Permittivity: 1
+tin_liquid:
+  Density: 6980.0
+  Electric Conductivity: 2080000
+  Emissivity: 0.064  # set equal to solid
+  Heat Capacity: 252.7
+  Heat Conductivity: 29.0
+  Relative Permeability: 1
+  Relative Permittivity: 1
+  Liquid: 'Logical True'
+tin_solid:
+  Density: 7179.0
+  Electric Conductivity: 4380000
+  Emissivity: 0.064
+  Heat Capacity: 244.0
+  Heat Conductivity: 60.0
+  Relative Permeability: 1
+  Relative Permittivity: 1
+  Solid: 'Logical True'
+  Melting Point: 505
+  Latent Heat: 59600
+water:
+  Density: 1000.0
+  Heat Capacity: 4182.0
+  Heat Conductivity: 0.6

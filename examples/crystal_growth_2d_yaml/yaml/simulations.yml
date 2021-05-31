@@ -1,0 +1,37 @@
+2D_steady:
+  Max Output Level: 4
+  Coordinate System: Cartesian 2D
+  Simulation Type: Steady state
+  Steady State Max Iterations: 10
+  
+2D_transient:
+  Max Output Level: 4
+  Coordinate System: Cartesian 2D
+  Simulation Type: Transient
+  Steady State Max Iterations: 10
+  Output File: case.result
+  Output Intervals: 10
+  Timestep Sizes: 0.1
+  Timestep Intervals: 100
+  Timestepping Method: BDF
+  BDF Order: 1
+
+
+axi-symmetric_steady:
+  Max Output Level: 4
+  Coordinate System: Axi Symmetric
+  Simulation Type: Steady state
+  Steady State Max Iterations: 10
+  Output File: case.result
+
+axi-symmetric_transient:
+  Max Output Level: 4
+  Coordinate System: Axi Symmetric
+  Simulation Type: Transient
+  Steady State Max Iterations: 10
+  Output File: case.result
+  Output Intervals: 10
+  Timestep Sizes: 0.1
+  Timestep Intervals: 100
+  Timestepping Method: BDF
+  BDF Order: 1
