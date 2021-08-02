@@ -28,7 +28,7 @@ def cylinder(x, y, z, r, h, dim):
         return factory.addCylinder(x, y, z, 0, h, 0, r)
 
 
-def rotate(tag, angle=2*np.pi, recombine=False):
+def rotate(tag, angle=2 * np.pi, recombine=False):
     """Extrusion by rotation around y-axis. Returns tag.
 
     Args:
@@ -39,7 +39,9 @@ def rotate(tag, angle=2*np.pi, recombine=False):
     Returns:
         int: tag of 3d object
     """
-    dimtags = factory.revolve([(2, tag)], 0, 0, 0, 0, 1, 0, angle, heights=[0.1], recombine=recombine)
+    dimtags = factory.revolve(
+        [(2, tag)], 0, 0, 0, 0, 1, 0, angle, heights=[0.1], recombine=recombine
+    )
     for dimtag in dimtags:
         if dimtag[0] == 3:
             return dimtag[1]

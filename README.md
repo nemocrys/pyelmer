@@ -1,5 +1,8 @@
 # pyelmer
+
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![DOI](https://zenodo.org/badge/294339020.svg)](https://zenodo.org/badge/latestdoi/294339020)
+
 ## Project description
 
 The pyelmer package provides a simple object-oriented way to set up [Elmer FEM](http://www.elmerfem.org/) simulations from python.
@@ -51,7 +54,7 @@ material.data = {
 An object of the class *Simulation* is used to manage all members of the sif-file:
 
 ```python
-import pyelmer.sif as elmer
+import pyelmer.elmer as elmer
 
 # simulation object
 sim = elmer.Simulation()
@@ -86,11 +89,13 @@ import os
 import gmsh
 from pyelmer import elmer
 from pyelmer import execute
+from pyelmer.post import scan_logfile
 from pyelmer.gmsh import add_physical_group, get_boundaries_in_box
+
 
 ###############
 # set up working directory
-sim_dir = './examples/simdata'
+sim_dir = "./simdata"
 
 if not os.path.exists(sim_dir):
     os.mkdir(sim_dir)
@@ -99,11 +104,11 @@ if not os.path.exists(sim_dir):
 # geometry modeling using gmsh
 gmsh.initialize()
 gmsh.option.setNumber("General.Terminal", 1)
-gmsh.model.add('heat-transfer-2d')
+gmsh.model.add("heat-transfer-2d")
 factory = gmsh.model.occ
 
 # main bodies
-water =  factory.addRectangle(0, 0, 0, 1, 1)
+water = factory.addRectangle(0, 0, 0, 1, 1)
 air = factory.addRectangle(0, 1, 0, 1, 1)
 
 # create connection between the two bodies
@@ -112,14 +117,14 @@ factory.fragment([(2, water)], [(2, air)])
 
 # add physical groups
 factory.synchronize()
-ph_water = add_physical_group(2, [water], 'water')
-ph_air = add_physical_group(2, [air], 'air')
+ph_water = add_physical_group(2, [water], "water")
+ph_air = add_physical_group(2, [air], "air")
 
 # detect boundaries
 line = get_boundaries_in_box(0, 0, 0, 1, 0, 0, 2, water)
-ph_bottom = add_physical_group(1, [line], 'bottom')
+ph_bottom = add_physical_group(1, [line], "bottom")
 line = get_boundaries_in_box(0, 2, 0, 1, 2, 0, 2, air)
-ph_top = add_physical_group(1, [line], 'top')
+ph_top = add_physical_group(1, [line], "top")
 
 # create mesh
 gmsh.model.mesh.setSize(gmsh.model.getEntities(0), 0.1)
@@ -127,71 +132,87 @@ gmsh.model.mesh.generate(2)
 
 # show mesh & export
 gmsh.fltk.run()  # comment this line out if your system doesn't support the gmsh GUI
-gmsh.write(sim_dir + '/case.msh2')  # use legacy file format msh2 for elmer grid
+gmsh.write(sim_dir + "/case.msh")
 
 ###############
 # elmer setup
-sim = elmer.load_simulation('2D_steady')
+sim = elmer.load_simulation("2D_steady", setup_file="./data/simulations.yml")
 
-air = elmer.load_material('air', sim)
-water = elmer.load_material('water', sim)
+air = elmer.load_material("air", sim, setup_file="./data/materials.yml")
+water = elmer.load_material("water", sim, setup_file="./data/materials.yml")
 
-solver_heat = elmer.load_solver('HeatSolver', sim)
-solver_output = elmer.load_solver('ResultOutputSolver', sim)
-eqn = elmer.Equation(sim, 'main', [solver_heat])
+solver_heat = elmer.load_solver("HeatSolver", sim, setup_file="./data/solvers.yml")
+solver_output = elmer.load_solver(
+    "ResultOutputSolver", sim, setup_file="./data/solvers.yml"
+)
+eqn = elmer.Equation(sim, "main", [solver_heat])
 
-T0 = elmer.InitialCondition(sim, 'T0', {'Temperature': 273.15})
+T0 = elmer.InitialCondition(sim, "T0", {"Temperature": 273.15})
 
-bdy_water = elmer.Body(sim, 'water', [ph_water])
+bdy_water = elmer.Body(sim, "water", [ph_water])
 bdy_water.material = water
 bdy_water.initial_condition = T0
 bdy_water.equation = eqn
 
-bdy_air = elmer.Body(sim, 'air', [ph_air])
+bdy_air = elmer.Body(sim, "air", [ph_air])
 bdy_air.material = air
 bdy_air.initial_condition = T0
 bdy_air.equation = eqn
 
-bndry_bottom = elmer.Boundary(sim, 'bottom', [ph_bottom])
-bndry_bottom.fixed_temperature = 353.15  # 80 °C
-bndry_top = elmer.Boundary(sim, 'top', [ph_top])
-bndry_top.fixed_temperature = 293.15  # 20 °C
+bndry_bottom = elmer.Boundary(sim, "bottom", [ph_bottom])
+bndry_bottom.data.update({"Temperature": 353.15})  # 80 °C
+bndry_top = elmer.Boundary(sim, "top", [ph_top])
+bndry_top.data.update({"Temperature": 293.15})  # 20 °C
 
 sim.write_startinfo(sim_dir)
 sim.write_sif(sim_dir)
 
 ##############
 # execute ElmerGrid & ElmerSolver
-execute.run_elmer_grid(sim_dir, 'case.msh2')
+execute.run_elmer_grid(sim_dir, "case.msh")
 execute.run_elmer_solver(sim_dir)
 
 ###############
 # scan log for errors and warnings
 err, warn, stats = scan_logfile(sim_dir)
-print('Errors:', err)
-print('Warnings:', warn)
-print('Statistics:', stats)
+print("Errors:", err)
+print("Warnings:", warn)
+print("Statistics:", stats)
 ```
 
-An alternative version of this example, without using the pre-defined materials and solvers, can be found in the examples folder. There is also another example file regarding a more complex heat transfer simulation (examples/crystal_growth_2d.py).
+The pre-defined materials and solvers can be found in the directory pyelmer/examples/data. An alternative version of this example, without using the pre-defined materials and solvers, can be found in the examples folder.
 
-The pre-defined materials and solvers can be found in the directory pyelmer/data.
-You may define own yaml-files with settings:
+## Advanced examples
 
-```python
-sim = elmer.load_simulation('simulation-name', 'my/own/simulations.yml')
-air = elmer.load_material('material-name', sim, 'my/own/materials.yml')
-```
+Additional examples can be found on GitHub in the examples directory:
 
-Additional examples, e.g. for the postprocessing or using more complex setups, will hopefully follow soon.
+- [Simplified 2D crystal growth](https://github.com/nemocrys/pyelmer/blob/master/examples/crystal_growth_2d.py)
+- [3D Electrostatic Capacitance]()
 
 ## Geometry generation
 
-Some utility functions for the geometry generation with gmsh are provided in pyelmer/gmsh_utils.py (e.g. add_physical_group, get_boundaries_in_box used in the example). However this part is still in development and may be subject to fundamental changes.
+Some utility functions for the geometry generation with gmsh are provided in pyelmer/gmsh.py (e.g. add_physical_group, get_boundaries_in_box used in the example). An advanced object-oriente gmsh interface using the OpenCASCADE kernel, which facilitates the detection of the boundaries is used in crystal_growth_2d.py.
 
-I am currently working on an improved gmsh interface using the OpenCASCADE kernel, which facilitates the (currently very annoying) detection of the boundaries. Examples will follow soon. If you're interested in the current state just have a look at pyelmer/gmsh_objects.py!
+Note, that it may also be worth trying [pygmsh](https://pypi.org/project/pygmsh/), which is build on top of the rather complicated [gmsh python API](https://pypi.org/project/gmsh/) used in this example.
 
-Note, that it may also be worth trying [pygmsh](https://pypi.org/project/pygmsh/), which is build on top of the rather complicated [gmsh python API](https://pypi.org/project/gmsh/) used in the example.
+## Video tutorials
+
+There are two video tutorial on pyelmer (using deprecated solver-specific keywords):
+
+- [Heating up water](https://youtu.be/KZ1N2FM6J7E)
+- [Crystal growth](https://youtu.be/0lnX-ytKTH8)
+
+A presentation from the elmer webinar series (using these two examples) can be found [here](https://youtu.be/QIfAa_5pvHU).
+
+## Backward compatibility
+
+In earlier versions of pyelmer solver-specific keywords were used, for maintainability reasons these are not included any longer. For the old implementation with solver-specific keywords use:
+
+```python
+import pyelmer.elmerkw as elmer
+# instead of
+# from pyelmer import elmer
+```
 
 ## Documentation
 
@@ -203,9 +224,7 @@ pyelmer is published under the [GPLv3 license](https://www.gnu.org/licenses/gpl-
 
 ## Referencing
 
-If you use pyelmer in your research, we would be grateful if you cite us using the information provided here:
-
-[![DOI](https://zenodo.org/badge/294339020.svg)](https://zenodo.org/badge/latestdoi/294339020)
+If you use pyelmer in your research, we would be grateful if you cite us using the information provided [here](https://zenodo.org/badge/latestdoi/294339020).
 
 ## Acknowledgements
 

@@ -11,7 +11,6 @@ https://www.researchgate.net/publication/340234026_Growth_of_a_tin_crystal
 """
 
 import os
-import gmsh
 from pyelmer import elmer
 from pyelmer import execute
 from pyelmer.post import scan_logfile
@@ -95,19 +94,23 @@ model.write_msh(sim_dir + "/case.msh")
 
 ###############
 # elmer setup
-sim = elmer.load_simulation("axi-symmetric_steady")
+sim = elmer.load_simulation("axi-symmetric_steady", setup_file="./data/simulations.yml")
 
 # materials
-tin_solid = elmer.load_material("tin_solid", sim)
+tin_solid = elmer.load_material("tin_solid", sim, setup_file="./data/materials.yml")
 tin_solid.data.update({"Emissivity": 0.5})
-tin_liquid = elmer.load_material("tin_liquid", sim)
+tin_liquid = elmer.load_material("tin_liquid", sim, setup_file="./data/materials.yml")
 tin_liquid.data.update({"Emissivity": 0.5, "Heat Conductivity": 32.0})
-graphite = elmer.load_material("graphite_CZ3-R6300", sim)
+graphite = elmer.load_material(
+    "graphite_CZ3-R6300", sim, setup_file="./data/materials.yml"
+)
 graphite.data.update({"Emissivity": 0.5, "Heat Conductivity": 236})
 
 # solver, equation
-solver_heat = elmer.load_solver("HeatSolver", sim)
-solver_output = elmer.load_solver("ResultOutputSolver", sim)
+solver_heat = elmer.load_solver("HeatSolver", sim, setup_file="./data/solvers.yml")
+solver_output = elmer.load_solver(
+    "ResultOutputSolver", sim, setup_file="./data/solvers.yml"
+)
 eqn = elmer.Equation(sim, "main", [solver_heat])
 
 # bodies
@@ -125,17 +128,17 @@ bdy_crys.equation = eqn
 
 # boundaries
 bndry_bottom = elmer.Boundary(sim, "bottom", [bnd_crucible_bottom.ph_id])
-bndry_bottom.fixed_heatflux = 5314  # adjusted to fit the melting point
+bndry_bottom.data.update({"Heat Flux BC": True, "Heat Flux": 5314})
 
 bndry_crys_melt = elmer.Boundary(sim, "crys_melt", [if_crystal_melt.ph_id])
-bndry_crys_melt.fixed_heatflux = 21289  # latent heat release
+bndry_crys_melt.data.update({"Heat Flux BC": True, "Heat Flux": 21289})
 
 bndry_surfaces = elmer.Boundary(
     sim, "surfaces", [bnd_crystal_out.ph_id, bnd_melt.ph_id, bnd_crucible_outside.ph_id]
 )
-bndry_surfaces.heat_transfer_coefficient = 3.5
-bndry_surfaces.T_ext = 300.0
-bndry_surfaces.radiation_idealized = True
+bndry_surfaces.data.update({"External Temperature": 300.0})
+bndry_surfaces.data.update({"Heat Transfer Coefficient": 3.5})
+bndry_surfaces.data.update({"Radiation": "Idealized"})
 
 # export
 sim.write_startinfo(sim_dir)

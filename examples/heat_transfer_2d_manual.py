@@ -51,7 +51,7 @@ gmsh.model.mesh.generate(2)
 
 # show mesh & export
 gmsh.fltk.run()  # comment this line out if your system doesn't support the gmsh GUI
-gmsh.write(sim_dir + "/case.msh2")  # use legacy file format msh2 for elmer grid
+gmsh.write(sim_dir + "/case.msh")
 
 ###############
 # elmer setup
@@ -100,7 +100,7 @@ sim.write_sif(sim_dir)
 
 ##############
 # execute ElmerGrid & ElmerSolver
-execute.run_elmer_grid(sim_dir, "case.msh2")
+execute.run_elmer_grid(sim_dir, "case.msh")
 execute.run_elmer_solver(sim_dir)
 
 ###############

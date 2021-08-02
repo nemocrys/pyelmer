@@ -50,17 +50,19 @@ gmsh.model.mesh.generate(2)
 
 # show mesh & export
 gmsh.fltk.run()  # comment this line out if your system doesn't support the gmsh GUI
-gmsh.write(sim_dir + "/case.msh2")  # use legacy file format msh2 for elmer grid
+gmsh.write(sim_dir + "/case.msh")
 
 ###############
 # elmer setup
-sim = elmer.load_simulation("2D_steady")
+sim = elmer.load_simulation("2D_steady", setup_file="./data/simulations.yml")
 
-air = elmer.load_material("air", sim)
-water = elmer.load_material("water", sim)
+air = elmer.load_material("air", sim, setup_file="./data/materials.yml")
+water = elmer.load_material("water", sim, setup_file="./data/materials.yml")
 
-solver_heat = elmer.load_solver("HeatSolver", sim)
-solver_output = elmer.load_solver("ResultOutputSolver", sim)
+solver_heat = elmer.load_solver("HeatSolver", sim, setup_file="./data/solvers.yml")
+solver_output = elmer.load_solver(
+    "ResultOutputSolver", sim, setup_file="./data/solvers.yml"
+)
 eqn = elmer.Equation(sim, "main", [solver_heat])
 
 T0 = elmer.InitialCondition(sim, "T0", {"Temperature": 273.15})
@@ -76,16 +78,16 @@ bdy_air.initial_condition = T0
 bdy_air.equation = eqn
 
 bndry_bottom = elmer.Boundary(sim, "bottom", [ph_bottom])
-bndry_bottom.fixed_temperature = 353.15  # 80 °C
+bndry_bottom.data.update({"Temperature": 353.15})  # 80 °C
 bndry_top = elmer.Boundary(sim, "top", [ph_top])
-bndry_top.fixed_temperature = 293.15  # 20 °C
+bndry_top.data.update({"Temperature": 293.15})  # 20 °C
 
 sim.write_startinfo(sim_dir)
 sim.write_sif(sim_dir)
 
 ##############
 # execute ElmerGrid & ElmerSolver
-execute.run_elmer_grid(sim_dir, "case.msh2")
+execute.run_elmer_grid(sim_dir, "case.msh")
 execute.run_elmer_solver(sim_dir)
 
 ###############

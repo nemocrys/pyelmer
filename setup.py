@@ -16,8 +16,6 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/nemocrys/pyelmer",
     packages=["pyelmer", "pyelmer.test"],
-    include_package_data=True,
-    package_data={"": ["data/*.yml"]},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
