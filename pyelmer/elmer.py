@@ -137,7 +137,7 @@ class Simulation:
 class Body:
     """Wrapper for bodies in sif-file."""
 
-    def __init__(self, simulation, name, body_ids=[], data={}):
+    def __init__(self, simulation, name, body_ids=None, data=None):
         """Create body object.
 
         Args:
@@ -150,8 +150,14 @@ class Body:
         simulation.bodies.update({name: self})
         self.id = 0
         self.name = name
-        self.body_ids = body_ids
-        self.data = data
+        if body_ids is None:
+            self.body_ids = []
+        else:
+            self.body_ids = body_ids
+        if data is None:
+            self.data = {}
+        else:
+            self.data = data
         # optional parameters
         self.equation = None
         self.initial_condition = None
@@ -184,7 +190,7 @@ class Body:
 class Boundary:
     """Wrapper for boundaries in sif-file."""
 
-    def __init__(self, simulation, name, geo_ids=[], data={}):
+    def __init__(self, simulation, name, geo_ids=None, data=None):
         """Create boundary object.
 
         Args:
@@ -197,8 +203,14 @@ class Boundary:
         simulation.boundaries.update({name: self})
         self.id = 0
         self.name = name
-        self.geo_ids = geo_ids
-        self.data = data
+        if geo_ids is None:
+            self.geo_ids = []
+        else:
+            self.geo_ids = geo_ids
+        if data is None:
+            self.data = {}
+        else:
+            self.data = data
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -214,7 +226,7 @@ class Boundary:
 class Material:
     """Wrapper for materials in sif-file."""
 
-    def __init__(self, simulation, name, data={}):
+    def __init__(self, simulation, name, data=None):
         """Create material object
 
         Args:
@@ -226,7 +238,10 @@ class Material:
         simulation.materials.update({name: self})
         self.id = 0
         self.name = name
-        self.data = data
+        if data is None:
+            self.data = {}
+        else:
+            self.data = data
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -236,7 +251,7 @@ class Material:
 class BodyForce:
     """Wrapper for body forces in sif-file."""
 
-    def __init__(self, simulation, name, data={}):
+    def __init__(self, simulation, name, data=None):
         """Create body force object.
 
         Args:
@@ -248,7 +263,10 @@ class BodyForce:
         simulation.body_forces.update({name: self})
         self.id = 0
         self.name = name
-        self.data = data
+        if data is None:
+            self.data = {}
+        else:
+            self.data = data
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -258,7 +276,7 @@ class BodyForce:
 class InitialCondition:
     """Wrapper for initial condition in sif-file."""
 
-    def __init__(self, simulation, name, data={}):
+    def __init__(self, simulation, name, data=None):
         """Create initial condition object.
 
         Args:
@@ -271,7 +289,10 @@ class InitialCondition:
         simulation.initial_conditions.update({name: self})
         self.id = 0
         self.name = name
-        self.data = data
+        if data is None:
+            self.data = {}
+        else:
+            self.data = data
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -281,7 +302,7 @@ class InitialCondition:
 class Solver:
     """Wrapper for solver in sif-file."""
 
-    def __init__(self, simulation, name, data={}):
+    def __init__(self, simulation, name, data=None):
         """Create solver object
 
         Args:
@@ -293,7 +314,10 @@ class Solver:
         simulation.solvers.update({name: self})
         self.id = 0
         self.name = name
-        self.data = data
+        if data is None:
+            self.data = {}
+        else:
+            self.data = data
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -303,7 +327,7 @@ class Solver:
 class Equation:
     """Wrapper for equations in sif-file."""
 
-    def __init__(self, simulation, name, solvers, data={}):
+    def __init__(self, simulation, name, solvers, data=None):
         """Create equation object
 
         Args:
@@ -317,7 +341,10 @@ class Equation:
         self.id = 0
         self.name = name
         self.solvers = solvers
-        self.data = data
+        if data is None:
+            self.data = {}
+        else:
+            self.data = data
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""

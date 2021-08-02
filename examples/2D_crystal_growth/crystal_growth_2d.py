@@ -94,23 +94,22 @@ model.write_msh(sim_dir + "/case.msh")
 
 ###############
 # elmer setup
-sim = elmer.load_simulation("axi-symmetric_steady", setup_file="./data/simulations.yml")
+
+elmer.data_dir = "./data"
+
+sim = elmer.load_simulation("axi-symmetric_steady")
 
 # materials
-tin_solid = elmer.load_material("tin_solid", sim, setup_file="./data/materials.yml")
+tin_solid = elmer.load_material("tin_solid", sim)
 tin_solid.data.update({"Emissivity": 0.5})
-tin_liquid = elmer.load_material("tin_liquid", sim, setup_file="./data/materials.yml")
+tin_liquid = elmer.load_material("tin_liquid", sim)
 tin_liquid.data.update({"Emissivity": 0.5, "Heat Conductivity": 32.0})
-graphite = elmer.load_material(
-    "graphite_CZ3-R6300", sim, setup_file="./data/materials.yml"
-)
+graphite = elmer.load_material("graphite_CZ3-R6300", sim)
 graphite.data.update({"Emissivity": 0.5, "Heat Conductivity": 236})
 
 # solver, equation
-solver_heat = elmer.load_solver("HeatSolver", sim, setup_file="./data/solvers.yml")
-solver_output = elmer.load_solver(
-    "ResultOutputSolver", sim, setup_file="./data/solvers.yml"
-)
+solver_heat = elmer.load_solver("HeatSolver", sim)
+solver_output = elmer.load_solver("ResultOutputSolver", sim)
 eqn = elmer.Equation(sim, "main", [solver_heat])
 
 # bodies
