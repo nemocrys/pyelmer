@@ -7,9 +7,10 @@ Each of these objects contains the data required in the sif in form
 of a dictionary called data.
 """
 
-import os
 import yaml
 
+
+data_dir = "./"
 
 class Simulation:
     """Main wrapper for the sif file. The simulation class is used to
@@ -136,7 +137,7 @@ class Simulation:
 class Body:
     """Wrapper for bodies in sif-file."""
 
-    def __init__(self, simulation, name, body_ids=[]):
+    def __init__(self, simulation, name, body_ids=[], data={}):
         """Create body object.
 
         Args:
@@ -144,12 +145,13 @@ class Body:
                                             simulation object.
             name (str): Name of the body
             body_ids (list of int): Ids of bodies in mesh.
+            data (dict, optional): Body data as in sif-file.
         """
         simulation.bodies.update({name: self})
         self.id = 0
         self.name = name
         self.body_ids = body_ids
-        self.data = {}
+        self.data = data
         # optional parameters
         self.equation = None
         self.initial_condition = None
@@ -182,21 +184,21 @@ class Body:
 class Boundary:
     """Wrapper for boundaries in sif-file."""
 
-    def __init__(self, simulation, name, geo_ids=[]):
+    def __init__(self, simulation, name, geo_ids=[], data={}):
         """Create boundary object.
 
         Args:
             simulation (Simulation Object): The boundary is added to
                                             this simulation object.
             name (str): Name of the body
-            surf_ids (list of int): Ids of boundaries in mesh.
+            surf_ids (list of int, optional): Ids of boundaries in mesh.
+            data (dict, optional): Boundary data as in sif-file.
         """
         simulation.boundaries.update({name: self})
         self.id = 0
         self.name = name
-        self.data = {}
-        # optional parameters
         self.geo_ids = geo_ids
+        self.data = data
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -219,10 +221,9 @@ class Material:
             simulation (Simulation Object): The material is added to
                                             this simulation object.
             name (str): Name of the material
-            data (dict): Material data as in sif-file.
+            data (dict, optional): Material data as in sif-file.
         """
-        if simulation is not None:
-            simulation.materials.update({name: self})
+        simulation.materials.update({name: self})
         self.id = 0
         self.name = name
         self.data = data
@@ -242,7 +243,7 @@ class BodyForce:
             simulation (Simulation Object): The body force is added to
                                             this simulation object.
             name (str): Name of the body force
-            data (dict): Body force data as in sif-file.
+            data (dict, optional): Body force data as in sif-file.
         """
         simulation.body_forces.update({name: self})
         self.id = 0
@@ -265,7 +266,7 @@ class InitialCondition:
                                             added to this simulation
                                             object.
             name (str): Name of the initial condition
-            data (dict): Initial condition data as in sif-file.
+            data (dict, optional): Initial condition data as in sif-file.
         """
         simulation.initial_conditions.update({name: self})
         self.id = 0
@@ -287,10 +288,9 @@ class Solver:
             simulation (Simulation Object): The solver is added to
                                             this simulation object.
             name (str): Name of the solver
-            data (dict): Solver data as in sif-file.
+            data (dict, optional): Solver data as in sif-file.
         """
-        if simulation is not None:
-            simulation.solvers.update({name: self})
+        simulation.solvers.update({name: self})
         self.id = 0
         self.name = name
         self.data = data
@@ -303,7 +303,7 @@ class Solver:
 class Equation:
     """Wrapper for equations in sif-file."""
 
-    def __init__(self, simulation, name, solvers):
+    def __init__(self, simulation, name, solvers, data={}):
         """Create equation object
 
         Args:
@@ -311,12 +311,13 @@ class Equation:
                                             this simulation object.
             name (str): Name of the equation
             solvers ([list]): Solvers in this equation
+            data (dict, optional): Equation data as in sif-file.
         """
         simulation.equations.update({name: self})
         self.id = 0
         self.name = name
         self.solvers = solvers
-        self.data = {}
+        self.data = data
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -332,7 +333,7 @@ class Equation:
         return d
 
 
-def load_simulation(name, setup_file="./simulations.yml"):
+def load_simulation(name, setup_file=""):
     """Load simulation settings from database.
 
     Args:
@@ -342,6 +343,8 @@ def load_simulation(name, setup_file="./simulations.yml"):
     Returns:
         Simulation object.
     """
+    if setup_file == "":
+        setup_file = f"{data_dir}/simulations.yml"
     with open(setup_file) as f:
         settings = yaml.safe_load(f)[name]
     sim = Simulation()
@@ -349,7 +352,7 @@ def load_simulation(name, setup_file="./simulations.yml"):
     return sim
 
 
-def load_material(name, simulation=None, setup_file="./materials.yml"):
+def load_material(name, simulation, setup_file=""):
     """Load material from data base and add it to simulation.
 
     Args:
@@ -360,12 +363,14 @@ def load_material(name, simulation=None, setup_file="./materials.yml"):
     Returns:
         Material object.
     """
+    if setup_file == "":
+        setup_file = f"{data_dir}/materials.yml"
     with open(setup_file) as f:
         data = yaml.safe_load(f)[name]
     return Material(simulation, name, data)
 
 
-def load_solver(name, simulation=None, setup_file="./solvers.yml"):
+def load_solver(name, simulation, setup_file=""):
     """Load solver from data base and add it to simulation.
 
     Args:
@@ -376,6 +381,62 @@ def load_solver(name, simulation=None, setup_file="./solvers.yml"):
     Returns:
         Solver object.
     """
+    if setup_file == "":
+        setup_file = f"{data_dir}/solvers.yml"
     with open(setup_file) as f:
         data = yaml.safe_load(f)[name]
     return Solver(simulation, name, data)
+
+
+def load_boundary(name, simulation, setup_file=""):
+    """Load boundary from data base and add it to simulation.
+
+    Args:
+        name (str): boundary name
+        simulation (Simulation object)
+        setup_file (str, optional): Path to yaml file cotaining setup.
+
+    Returns:
+        Boundary object.
+    """
+    if setup_file == "":
+        setup_file = f"{data_dir}/boundaries.yml"
+    with open(setup_file) as f:
+        data = yaml.safe_load(f)[name]
+    return Boundary(simulation, name, data=data)
+
+
+def load_initial_condition(name, simulation, setup_file=""):
+    """Load initial condition from data base and add it to simulation.
+
+    Args:
+        name (str): initial condition name
+        simulation (Simulation object)
+        setup_file (str, optional): Path to yaml file cotaining setup.
+
+    Returns:
+        InitialCondition object.
+    """
+    if setup_file == "":
+        setup_file = f"{data_dir}/initial_conditions.yml"
+    with open(setup_file) as f:
+        data = yaml.safe_load(f)[name]
+    return InitialCondition(simulation, name, data)
+
+
+def load_body_force(name, simulation, setup_file=""):
+    """Load body force from data base and add it to simulation.
+
+    Args:
+        name (str): body force name
+        simulation (Simulation object)
+        setup_file (str, optional): Path to yaml file cotaining setup.
+
+    Returns:
+        BodyForce object.
+    """
+    if setup_file == "":
+        setup_file = f"{data_dir}/body_forces.yml"
+    with open(setup_file) as f:
+        data = yaml.safe_load(f)[name]
+    return BodyForce(simulation, name, data)

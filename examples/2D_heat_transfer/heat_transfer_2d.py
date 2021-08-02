@@ -54,15 +54,15 @@ gmsh.write(sim_dir + "/case.msh")
 
 ###############
 # elmer setup
-sim = elmer.load_simulation("2D_steady", setup_file="./data/simulations.yml")
+elmer.data_dir="./data"
 
-air = elmer.load_material("air", sim, setup_file="./data/materials.yml")
-water = elmer.load_material("water", sim, setup_file="./data/materials.yml")
+sim = elmer.load_simulation("2D_steady")
 
-solver_heat = elmer.load_solver("HeatSolver", sim, setup_file="./data/solvers.yml")
-solver_output = elmer.load_solver(
-    "ResultOutputSolver", sim, setup_file="./data/solvers.yml"
-)
+air = elmer.load_material("air", sim)
+water = elmer.load_material("water", sim)
+
+solver_heat = elmer.load_solver("HeatSolver", sim)
+solver_output = elmer.load_solver("ResultOutputSolver", sim)
 eqn = elmer.Equation(sim, "main", [solver_heat])
 
 T0 = elmer.InitialCondition(sim, "T0", {"Temperature": 273.15})
