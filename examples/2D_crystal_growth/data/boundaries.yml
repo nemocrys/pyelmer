@@ -1,0 +1,56 @@
+fixed_heatflux_bottom:
+  Heat Flux BC: 'Logical True'
+  Heat Flux: 5314 # adjusted to fit the melting point
+fixed_heatflux_crys_melt:
+  Heat Flux BC: 'Logical True'
+  Heat Flux: 21289  # latent heat release
+heat_transfer_radiation_idealized:
+  Radiation: Idealized
+  External Temperature: 300.0
+  Heat Transfer Coefficient: 3.5
+
+radiation:
+  Radiation: 'Diffuse Gray'
+radiation_idealized:
+  Radiation: Idealized
+  External Temperature: 300.0
+fixed_temperature:
+  Temperature: 300.0
+fixed_heatflux:
+  Heat Flux BC: 'Logical True'
+  Heat Flux: 0.0
+zero_potential:
+  Potential Re: 0.0
+  Potential Im: 0.0
+save_scalars:
+  Save Scalars: 'Logical True'
+save_line:
+  Save Line: 'Logical True'
+smart_heater_T:
+  Smart Heater Boundary: 'Logical True'
+  Smart Heater Temperature: 300.0
+phase_change_steady:
+  Phase Change: 'Logical True'
+  Phase Velocity 1: 0.0
+  Phase Velocity 2: 0.0
+  Melting Point: 300.0
+  Latent Heat: 0.0
+  Normal Target Body: 0
+  Heat Flux: 'Variable Coordinate 1\n Real Procedure "SteadyPhaseChange" "MeltingHeat"'
+  Mesh Update 1: 0
+  Mesh Update 2: 'Equals PhaseSurface'
+  Body Id: 'Integer 0'
+phase_change_transient:
+  Temperature: 300.0
+  Normal Target Body: 0
+  Mesh Update 1: 0
+  Mesh Update 2: 'Equals PhaseSurface'
+  Body Id: 'Integer 0'
+heat_transfer_coefficient:
+  Heat Transfer Coefficient: 0.0
+  External Temperature: 300.0
+mesh_update:
+  Mesh Update 1: 0.0
+  Mesh Update 2: 0.0
+  Mesh Update 3: 0.0
+

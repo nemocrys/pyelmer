@@ -140,6 +140,15 @@ bndry_surfaces.data.update({"External Temperature": 300.0})
 bndry_surfaces.data.update({"Heat Transfer Coefficient": 3.5})
 bndry_surfaces.data.update({"Radiation": "Idealized"})
 
+# alternatively you could load the boundaries from file:
+
+# bndry_bottom = elmer.load_boundary("fixed_heatflux_bottom", sim)
+# bndry_bottom.geo_ids = [bnd_crucible_bottom.ph_id]
+# bndry_crys_melt = elmer.load_boundary("fixed_heatflux_crys_melt", sim)
+# bndry_crys_melt = [if_crystal_melt.ph_id]
+# bndry_surfaces = elmer.load_boundary("heat_transfer_radiation_idealized", sim)
+# bndry_surfaces.geo_ids = [bnd_crystal_out.ph_id, bnd_melt.ph_id, bnd_crucible_outside.ph_id]
+
 # export
 sim.write_startinfo(sim_dir)
 sim.write_sif(sim_dir)
