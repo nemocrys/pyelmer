@@ -80,7 +80,7 @@ sim.write_sif('./simulation_directory/')
 
 The following example shows the setup of a simple heat transfer simulation. The domain consists of two quadratic bodies stacked on top of each other, the lower one is water and the upper one is air. At the bottom a constant temperature of 80°C, and at the top a constant temperature of 20°C is set. You may consider this as a very simple model of the heat distribution when boiling water in a pot:
 
-<img src="https://raw.githubusercontent.com/nemocrys/pyelmer/master/examples/heat_transfer_setup.png">
+<img src="https://raw.githubusercontent.com/nemocrys/pyelmer/master/examples/2D_heat_transfer/heat_transfer_setup.png">
 
 The example uses the OpenCASCADE geometry kernel of gmsh. Note, that you may also use the build-in "geo-style" kernel in python. Alternatively, it is also possible to manually set the body-ids of the mesh created with the tool of your choice.
 
@@ -180,14 +180,14 @@ print("Warnings:", warn)
 print("Statistics:", stats)
 ```
 
-The pre-defined materials and solvers can be found in the directory pyelmer/examples/data. An alternative version of this example, without using the pre-defined materials and solvers, can be found in the examples folder.
+The pre-defined materials and solvers can be found in the directory pyelmer/examples/2D_heat_transfer/data. An alternative version of this example, without using the pre-defined materials and solvers, can be found in the examples folder.
 
 ## Advanced examples
 
 Additional examples can be found on GitHub in the examples directory:
 
-- [Simplified 2D crystal growth](https://github.com/nemocrys/pyelmer/blob/master/examples/crystal_growth_2d.py)
-- [3D Electrostatic Capacitance]()
+- [Simplified 2D crystal growth](https://github.com/nemocrys/pyelmer/tree/master/examples/2D_crystal_growth)
+- [3D Electrostatic Capacitance](https://github.com/nemocrys/pyelmer/tree/master/examples/3D_Electrostatic_Capacitance)
 
 ## Geometry generation
 
