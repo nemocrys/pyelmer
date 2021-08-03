@@ -1,3 +1,6 @@
+v0.3.1
+- Bugfix in elmerkw
+
 v0.3.0
 - Removed solver specific keywords. For backward compatibility the new module elmerkw was added (usage: import pyelmer.elmerkw as elmer).
 - Moved data to examples, it's not shipped with the package any longer.

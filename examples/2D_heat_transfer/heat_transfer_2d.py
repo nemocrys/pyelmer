@@ -54,7 +54,7 @@ gmsh.write(sim_dir + "/case.msh")
 
 ###############
 # elmer setup
-elmer.data_dir="./data"
+elmer.data_dir = "./data"
 
 sim = elmer.load_simulation("2D_steady")
 

@@ -12,6 +12,7 @@ import yaml
 
 data_dir = "./"
 
+
 class Simulation:
     """Main wrapper for the sif file. The simulation class is used to
     collect all information.

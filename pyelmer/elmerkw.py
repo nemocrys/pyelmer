@@ -21,7 +21,7 @@ DeprecationWarning(
 class Boundary(elmer.Boundary):
     """Wrapper for boundaries in sif-file."""
 
-    def __init__(self, simulation, name, geo_ids=[]):
+    def __init__(self, simulation, name, geo_ids=None):
         """Create boundary object.
 
         Args:
@@ -126,7 +126,7 @@ class Boundary(elmer.Boundary):
 class BodyForce(elmer.BodyForce):
     """Wrapper for body forces in sif-file."""
 
-    def __init__(self, simulation, name, data):
+    def __init__(self, simulation, name, data=None):
         """Create body force object.
 
         Args:
