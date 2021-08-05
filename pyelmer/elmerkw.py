@@ -3,6 +3,7 @@ If you don't know what this is please use elmer.py instead."""
 from pyelmer import elmer
 from pyelmer.elmer import (
     Simulation,
+    Solver,
     Body,
     Material,
     Equation,
