@@ -1,0 +1,31 @@
+air:
+  Density: 1.1885  # 20°C
+  Electric Conductivity: 0.0 
+  Heat Capacity: 1006.4  # 20°C
+  Heat Conductivity: 0.025873  # 20°C
+  Relative Permeability: 1
+  Relative Permittivity: 1
+tin_liquid:
+  Density: 6980.0
+  Electric Conductivity: 2080000
+  Emissivity: 0.064  # set equal to solid
+  Heat Capacity: 252.7
+  Heat Conductivity: 29.0
+  Relative Permeability: 1
+  Relative Permittivity: 1
+  Liquid: 'Logical True'
+tin_solid:
+  Density: 7179.0
+  Electric Conductivity: 4380000
+  Emissivity: 0.064
+  Heat Capacity: 244.0
+  Heat Conductivity: 60.0
+  Relative Permeability: 1
+  Relative Permittivity: 1
+  Solid: 'Logical True'
+  Melting Point: 505
+  Latent Heat: 59600
+water:
+  Density: 1000.0
+  Heat Capacity: 4182.0
+  Heat Conductivity: 0.6
