@@ -1,6 +1,6 @@
 name: Python Package using Conda
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build-linux:
@@ -20,7 +20,8 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        conda env update --file environment.yml --name base
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        $CONDA/bin/conda env update --file environment.yml --name base
     - name: Lint with flake8
       run: |
         conda install flake8
