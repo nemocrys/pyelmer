@@ -10,9 +10,11 @@ elmer.data_dir = "./test_data"
 ###############
 # set up working directory
 sim_dir = "./test_simdata"
+file_dir = os.path.dirname(__file__)
 
 if not os.path.exists(sim_dir):
     os.mkdir(sim_dir)
+
 
 def test_simulation():
     # TO DO
@@ -269,17 +271,25 @@ def test_equation():
     ["2D_steady", "2D_transient", "axi-symmetric_steady", "axi-symmetric_transient",],
 )
 def test_load_simulation(name):
-    with open("./test_data/simulations.yml") as f:
+    with open(file_dir + "/test_data/simulations.yml") as f:
         settings = yaml.safe_load(f)[name]
-    assert elmer.load_simulation(name).settings == settings
+    assert (
+        elmer.load_simulation(name, file_dir + "/test_data/simulations.yml").settings
+        == settings
+    )
 
 
 @pytest.mark.parametrize("material", ["air", "water", "tin_liquid", "tin_solid",])
 def test_load_material(material):
-    with open("./test_data/materials.yml") as f:
+    with open(file_dir + "/test_data/materials.yml") as f:
         data = yaml.safe_load(f)[material]
     sim = elmer.Simulation()
-    assert elmer.load_material(material, sim).get_data() == data
+    assert (
+        elmer.load_material(
+            material, sim, file_dir + "/test_data/materials.yml"
+        ).get_data()
+        == data
+    )
 
 
 @pytest.mark.parametrize(
@@ -299,8 +309,10 @@ def test_load_material(material):
     ],
 )
 def test_load_solver(solver):
-    with open("./test_data/solvers.yml") as f:
+    with open(file_dir + "/test_data/solvers.yml") as f:
         data = yaml.safe_load(f)[solver]
     sim = elmer.Simulation()
-    assert elmer.load_solver(solver, sim).get_data() == data
-
+    assert (
+        elmer.load_solver(solver, sim, file_dir + "/test_data/solvers.yml").get_data()
+        == data
+    )
