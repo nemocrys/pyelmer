@@ -11,7 +11,7 @@ elmer.data_dir = "./test_data"
 ###############
 # set up working directory
 file_dir = os.path.dirname(__file__)
-sim_dir = file_dir+"/test_simdata"
+sim_dir = file_dir + "/test_simdata"
 
 if not os.path.exists(sim_dir):
     os.mkdir(sim_dir)
@@ -233,6 +233,7 @@ def test_load_initial_condition():
         == data
     )
 
+
 def test_write_sif():
     # setup gmsh
     gmsh.initialize()
@@ -246,22 +247,34 @@ def test_write_sif():
     ph_test_body = add_physical_group(2, [test_domain], "test_material")
 
     # setup simulation
-    sim = elmer.load_simulation("test_simulation", file_dir + "/test_data/simulations.yml")
+    sim = elmer.load_simulation(
+        "test_simulation", file_dir + "/test_data/simulations.yml"
+    )
 
-    test_solver = elmer.load_solver("test_solver", sim, file_dir + "/test_data/solvers.yml")
+    test_solver = elmer.load_solver(
+        "test_solver", sim, file_dir + "/test_data/solvers.yml"
+    )
 
-    test_post_solver = elmer.load_solver("test_post_solver", sim, file_dir + "/test_data/solvers.yml")
+    test_post_solver = elmer.load_solver(
+        "test_post_solver", sim, file_dir + "/test_data/solvers.yml"
+    )
 
     test_eqn = elmer.Equation(sim, "test_equation", [test_solver])
 
-    test_initial_condtion = elmer.load_initial_condition("test_initial_condition", sim, file_dir + "/test_data/initial_conditions.yml")
+    test_initial_condtion = elmer.load_initial_condition(
+        "test_initial_condition", sim, file_dir + "/test_data/initial_conditions.yml"
+    )
 
-    test_body_force = elmer.load_body_force("test_body_force", sim, file_dir + "/test_data/body_forces.yml")
+    test_body_force = elmer.load_body_force(
+        "test_body_force", sim, file_dir + "/test_data/body_forces.yml"
+    )
     # setup body object
     test_body = elmer.Body(sim, "test_body", [ph_test_body])
 
     # initialize body data
-    test_material = elmer.load_material("test_material", sim, file_dir + "/test_data/materials.yml")
+    test_material = elmer.load_material(
+        "test_material", sim, file_dir + "/test_data/materials.yml"
+    )
     test_body.material = test_material
     test_body.initial_condition = test_initial_condtion
     test_body.equation = test_eqn
@@ -287,8 +300,28 @@ def test_write_sif():
     boundaries = {}
     body_forces = {}
     initial_conditions = {}
-    names = ["Simulation", "Constants","Equation", "Solver", "Material", "Body", "Boundary Condition", "Body Force", "Initial Condition"]
-    objects = [simulation, constants, equations, solvers, materials, bodies, boundaries, body_forces, initial_conditions]
+    names = [
+        "Simulation",
+        "Constants",
+        "Equation",
+        "Solver",
+        "Material",
+        "Body",
+        "Boundary Condition",
+        "Body Force",
+        "Initial Condition",
+    ]
+    objects = [
+        simulation,
+        constants,
+        equations,
+        solvers,
+        materials,
+        bodies,
+        boundaries,
+        body_forces,
+        initial_conditions,
+    ]
 
     with open(sim_dir + "/case.sif", "r") as f:
         read_object = False
@@ -302,7 +335,7 @@ def test_write_sif():
 
             if not line:
                 break
-            
+
             line = line.strip().strip("\n")
             if line in names:
                 read_object = True
@@ -316,11 +349,13 @@ def test_write_sif():
                 checked_name = None
                 object_number = None
                 continue
-            
+
             if checked_name is not None and not read_object:
                 read_object = True
                 if any(map(str.isdigit, line)):
-                    object_name, object_number, _  = map(str.strip, re.split("(\d+)", line))
+                    object_name, object_number, _ = map(
+                        str.strip, re.split("(\d+)", line)
+                    )
                     for i, name in enumerate(names):
                         if name == object_name:
                             write_index = i
@@ -333,12 +368,11 @@ def test_write_sif():
             if read_object:
                 key, value = line.strip(" ").split(" = ")
                 if write_name == "Equation":
-                    value = value+" "
+                    value = value + " "
                 if checked_name is not None:
                     objects[write_index][checked_name].update({key: value})
                 else:
                     objects[write_index].update({key: value})
-
 
     assert equations["test_equation"] == test_eqn.get_data()
     assert solvers["test_solver"] == test_solver.get_data()
@@ -347,4 +381,6 @@ def test_write_sif():
     assert bodies["test_body"] == test_body.get_data()
     assert boundaries["test_boundary"] == test_boundary.get_data()
     assert body_forces["test_body_force"] == test_body_force.get_data()
-    assert initial_conditions["test_initial_condition"] == test_initial_condtion.get_data()
+    assert (
+        initial_conditions["test_initial_condition"] == test_initial_condtion.get_data()
+    )
