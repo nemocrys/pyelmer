@@ -1,2 +1,2 @@
 test_material:
-  test_parameter: 1.0 
+  test_parameter: "1.0" 

@@ -4,70 +4,41 @@ Header
 End
 
 Simulation
-  Max Output Level = 4
-  Coordinate System = Cartesian 2D
-  Simulation Type = Steady state
-  Steady State Max Iterations = 10
+  Test Parameter = 1.0
 End
 
 Constants
   Stefan Boltzmann = 5.6704e-08
 End
 
-! main
+! test_equation
 Equation 1
-  Active Solvers(1) = 1   ! HeatSolver, 
+  Active Solvers(1) = 1   ! test_solver, 
 End
 
 
-! HeatSolver
+! test_solver
 Solver 1
-  Equation = HeatSolver
-  Procedure = "HeatSolve" "HeatSolver"
-  Variable = "Temperature"
-  Variable Dofs = 1
-  Calculate Loads = True
-  Exec Solver = Always
-  Nonlinear System Convergence Tolerance = 1e-06
-  Nonlinear System Max Iterations = 1000
-  Nonlinear System Relaxation Factor = 0.7
-  Steady State Convergence Tolerance = 1e-06
-  Stabilize = True
-  Optimize Bandwidth = True
-  Linear System Solver = Iterative
-  Linear System Iterative Method = BiCGStab
-  Linear System Max Iterations = 1000
-  Linear System Preconditioning = ILU
-  Linear System Precondition Recompute = 1
-  Linear System Convergence Tolerance = 1e-08
-  Linear System Abort Not Converged = True
-  Linear System Residual Output = 1
-  Smart Heater Control After Tolerance = 0.0001
+  test_parameter = 1.0
 End
 
-! ResultOutputSolver
+! test_post_solver
 Solver 2
-  Exec Solver = After timestep
-  Equation = ResultOutputSolver
-  Procedure = "ResultOutputSolve" "ResultOutputSolver"
-  VTU Format = True
-  Save Geometry Ids = Logical True
+  test_post_parameter = 1.0
 End
 
 
 ! test_material
 Material 1
-  Density = 1.0
-  Heat Capacity = 1.0
-  Heat Conductivity = 1.0
+  test_parameter = 1.0
 End
 
 
 ! test_body
 Body 1
   Target Bodies(1) = 1
-  Equation = 1  ! main
-  Initial Condition = 1  ! T0
+  Equation = 1  ! test_equation
+  Initial Condition = 1  ! test_initial_condition
   Material = 1  ! test_material
 End
 
@@ -75,13 +46,18 @@ End
 ! test_boundary
 Boundary Condition 1
   Target Boundaries(1) = 2
-  Temperature = 1.0
+  test_parameter = 1.0
 End
 
 
+! test_body_force
+Body Force 1
+  Test Parameter = 1.0
+End
 
-! T0
+
+! test_initial_condition
 Initial Condition 1
-  Temperature = 1.0
+  test_parameter = 1.0
 End
 
