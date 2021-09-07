@@ -17,11 +17,6 @@ if not os.path.exists(sim_dir):
     os.mkdir(sim_dir)
 
 
-def test_simulation():
-    # TO DO
-    pass
-
-
 def test_body():
     # setup gmsh
     gmsh.initialize()
