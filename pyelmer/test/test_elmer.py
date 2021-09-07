@@ -110,8 +110,15 @@ def test_material():
 
 
 def test_body_force():
-    # TO DO
-    pass
+    # setup simulation
+    sim = elmer.Simulation()
+    # initialize data for test body force
+    data_test_body_force = {"test_parameter": 1.0}
+    test_material = elmer.BodyForce(sim, "test_body_force", data=data_test_body_force)
+    assert test_material.get_data() == {"test_parameter": 1.0}
+    # initialize empty test body force
+    empty_test_material = elmer.BodyForce(sim, "empty_test_body_force")
+    assert empty_test_material.get_data() == {}
 
 
 def test_initial_condition():
@@ -186,3 +193,27 @@ def test_load_solver():
         ).get_data()
         == data
     )
+
+
+def test_load_body_force():
+    with open(file_dir + "/test_data/body_forces.yml") as f:
+        data = yaml.safe_load(f)["test_body_force"]
+    sim = elmer.Simulation()
+    assert (
+        elmer.load_body_force(
+            "test_body_force", sim, file_dir + "/test_data/body_forces.yml"
+        ).get_data()
+        == data
+    )
+
+
+def test_load_boundary():
+    with open(file_dir + "/test_data/boundaries.yml") as f:
+        data = yaml.safe_load(f)["test_boundary"]
+    sim = elmer.Simulation()
+    assert elmer.load_boundary(
+        "test_boundary", sim, file_dir + "/test_data/boundaries.yml"
+    ).get_data() == {
+        "Target Boundaries(0)": "",
+        "test_parameter": data["test_parameter"],
+    }
