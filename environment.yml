@@ -4,4 +4,4 @@ channels:
   - defaults
 dependencies:
   - pyyaml
-  - gmsh
+  - python-gmsh
