@@ -32,3 +32,13 @@ jobs:
       run: |
         conda install pytest
         pytest
+    - name: Code coverage with pytest
+      run: |
+        conda install pytest
+        conda install pytest-cov
+        export PYTHONPATH=source
+        pytest --cov=source tests/
+    - name: "Upload coverage to Codecov"
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true
