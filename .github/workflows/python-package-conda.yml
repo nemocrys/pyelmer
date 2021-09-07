@@ -38,6 +38,6 @@ jobs:
         conda install pytest-cov
         pytest --cov=pyelmer/test
     - name: "Upload coverage to Codecov"
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@vv1.0.5
       with:
         fail_ci_if_error: true
