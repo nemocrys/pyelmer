@@ -1,0 +1,63 @@
+Header
+  CHECK KEYWORDS "Warn"
+  Mesh DB "." "."
+End
+
+Simulation
+  Test Parameter = 1.0
+End
+
+Constants
+  Stefan Boltzmann = 5.6704e-08
+End
+
+! test_equation
+Equation 1
+  Active Solvers(1) = 1   ! test_solver, 
+End
+
+
+! test_solver
+Solver 1
+  test_parameter = 1.0
+End
+
+! test_post_solver
+Solver 2
+  test_post_parameter = 1.0
+End
+
+
+! test_material
+Material 1
+  test_parameter = 1.0
+End
+
+
+! test_body
+Body 1
+  Target Bodies(1) = 1
+  Equation = 1  ! test_equation
+  Initial Condition = 1  ! test_initial_condition
+  Material = 1  ! test_material
+End
+
+
+! test_boundary
+Boundary Condition 1
+  Target Boundaries(1) = 2
+  test_parameter = 1.0
+End
+
+
+! test_body_force
+Body Force 1
+  Test Parameter = 1.0
+End
+
+
+! test_initial_condition
+Initial Condition 1
+  test_parameter = 1.0
+End
+

@@ -1,0 +1,9 @@
+name: test
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pyyaml
+  - python-gmsh
+  - matplotlib
+  - numpy

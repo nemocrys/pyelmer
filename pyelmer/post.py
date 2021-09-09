@@ -98,6 +98,8 @@ def plot_residuals(sim_dir, solvers, save=False):
 
     residuals = {}
     linres_str = {}  # string to detect linear solver residuals
+    lin_res_idx = []
+    lin_res_relc = []
     for solver in solvers:
         residuals.update({solver: SolverResiduals([SteadyStateIteration([])])})
         if solver == "heat equation":

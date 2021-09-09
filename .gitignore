@@ -13,3 +13,4 @@ examples/3D_Electrostatic_Capacitance/LaTeX_Source/main.run.xml
 examples/3D_Electrostatic_Capacitance/LaTeX_Source/main.synctex.gz
 *.toc
 *.bbl
+.coverage
