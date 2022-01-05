@@ -1,3 +1,6 @@
+v0.3.3
+- add intro_text property for parameter definitions to Simulation class
+
 v0.3.2
 - Bugfix elmerkw
 

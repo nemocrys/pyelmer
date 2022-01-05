@@ -20,6 +20,7 @@ class Simulation:
     """
 
     def __init__(self):
+        self.intro_text = ""
         self.materials = {}
         self.bodies = {}
         self.boundaries = {}
@@ -38,6 +39,9 @@ class Simulation:
         """
         self._set_ids()
         with open(simulation_dir + "/case.sif", "w") as f:
+            if self.intro_text != "":
+                f.write(self.intro_text)
+                f.write("\n\n")
             f.write("""Header\n  CHECK KEYWORDS "Warn"\n  Mesh DB "." "."\nEnd\n\n""")
             f.write("Simulation\n")
             f.write(self._dict_to_str(self.settings))
