@@ -49,11 +49,11 @@ def run_elmerf90(userfile_in, userfile_out, elmerf90=None):
     if elmerf90 is None:
         # On Windows ElmerSolver.exe is not found once gmsh.initialize() was executed.
         # Try to use abs-path instead.
-        if os.path.exists("C:/Program Files/Elmer 8.4-Release/bin/elmerf90.exe"):
-            elmerf90 = "C:/Program Files/Elmer 8.4-Release/bin/elmerf90.exe"
+        if os.path.exists("C:/Program Files/Elmer 9.0-Release/bin/elmerf90.bat"):
+            elmerf90 = "C:/Program Files/Elmer 9.0-Release/bin/elmerf90.bat"
         else:
             elmerf90 = "elmerf90"
-    subprocess.call(["elmerf90", "-o", userfile_out, userfile_in])
+    subprocess.call([elmerf90, "-o", userfile_out, userfile_in])
 
 
 def run_elmer_solver(sim_dir, elmersolver=None):
