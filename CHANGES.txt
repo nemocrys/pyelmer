@@ -1,3 +1,6 @@
+v1.0.0
+- remove gmsh module, it has been moved to a separate project: objectgmsh
+
 v0.3.3
 - add intro_text property for parameter definitions to Simulation class
 

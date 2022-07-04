@@ -1,6 +1,5 @@
 """A python interface to Elmer."""
-from . import elmer, execute, gmsh, post
-
+from . import elmer, execute, post
 
 from ._version import get_versions
 

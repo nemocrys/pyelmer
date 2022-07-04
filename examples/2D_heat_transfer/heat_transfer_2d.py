@@ -8,7 +8,7 @@ import gmsh
 from pyelmer import elmer
 from pyelmer import execute
 from pyelmer.post import scan_logfile
-from pyelmer.gmsh import add_physical_group, get_boundaries_in_box
+from objectgmsh import add_physical_group, get_boundaries_in_box
 
 
 ###############

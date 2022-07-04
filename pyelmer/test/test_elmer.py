@@ -3,7 +3,7 @@ import yaml
 import gmsh
 import os
 import re
-from pyelmer.gmsh import add_physical_group, get_boundaries_in_box
+from objectgmsh import add_physical_group, get_boundaries_in_box
 from pyelmer import elmer
 
 elmer.data_dir = "./test_data"
@@ -324,7 +324,6 @@ def test_write_sif():
         write_name = None
         checked_name = None
         object_name = None
-        object_number = None
         while True:
             line = f.readline()
 
@@ -342,7 +341,6 @@ def test_write_sif():
             if line == "End":
                 read_object = False
                 checked_name = None
-                object_number = None
                 continue
 
             if checked_name is not None and not read_object:

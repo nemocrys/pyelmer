@@ -14,7 +14,7 @@ import os
 from pyelmer import elmer
 from pyelmer import execute
 from pyelmer.post import scan_logfile
-from pyelmer.gmsh import (
+from objectgmsh import (
     Model,
     Shape,
     MeshControlConstant,

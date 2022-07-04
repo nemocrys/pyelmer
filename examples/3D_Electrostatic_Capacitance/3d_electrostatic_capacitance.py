@@ -2,7 +2,7 @@ import os
 import gmsh
 from pyelmer import elmer, post
 from pyelmer import execute
-from pyelmer.gmsh import add_physical_group
+from objectgmsh import add_physical_group
 from math import floor, log10
 
 
