@@ -22,10 +22,11 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        #'Django >= 1.1.1',
         "gmsh",
         "pyyaml",
         "matplotlib",
+        "numpy",
+        "objectgmsh",
     ],
     python_requires=">=3.7",
 )

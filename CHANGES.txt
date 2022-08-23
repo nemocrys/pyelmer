@@ -1,3 +1,6 @@
+v1.0.1
+- fix requirements in setup.py, environment.yml
+
 v1.0.0
 - remove gmsh module, it has been moved to a separate project: objectgmsh
 
