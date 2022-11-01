@@ -7,4 +7,3 @@ dependencies:
   - python-gmsh
   - matplotlib
   - numpy
-  - objectgmsh
