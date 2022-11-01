@@ -133,10 +133,10 @@ class Simulation:
         ]
         # give each object id
         for obj in objects:
-            id = 1
+            id_ = 1
             for key in obj:
-                obj[key].id = id
-                id += 1
+                obj[key].id = id_
+                id_ += 1
 
 
 class Body:
@@ -191,6 +191,9 @@ class Body:
         d.update(self.data)
         return d
 
+    def __str__(self):
+        return str(self.id)
+
 
 class Boundary:
     """Wrapper for boundaries in sif-file."""
@@ -227,6 +230,9 @@ class Boundary:
         d.update(self.data)
         return d
 
+    def __str__(self):
+        return str(self.id)
+
 
 class Material:
     """Wrapper for materials in sif-file."""
@@ -252,6 +258,9 @@ class Material:
         """Generate dictionary with data for sif-file."""
         return self.data
 
+    def __str__(self):
+        return str(self.id)
+
 
 class BodyForce:
     """Wrapper for body forces in sif-file."""
@@ -276,6 +285,9 @@ class BodyForce:
     def get_data(self):
         """Generate dictionary with data for sif-file."""
         return self.data
+
+    def __str__(self):
+        return str(self.id)
 
 
 class InitialCondition:
@@ -303,6 +315,9 @@ class InitialCondition:
         """Generate dictionary with data for sif-file."""
         return self.data
 
+    def __str__(self):
+        return str(self.id)
+
 
 class Solver:
     """Wrapper for solver in sif-file."""
@@ -327,6 +342,9 @@ class Solver:
     def get_data(self):
         """Generate dictionary with data for sif-file."""
         return self.data
+
+    def __str__(self):
+        return str(self.id)
 
 
 class Equation:
@@ -363,6 +381,28 @@ class Equation:
         }
         d.update(self.data)
         return d
+
+    def __str__(self):
+        return str(self.id)
+
+
+class StringFromList:
+    """String including references to other Bodies, Boundaries, ..."""
+
+    def __init__(self, content: list):
+        """Create StringWithReference object.
+
+        Args:
+            content (list): The content of the string, separated into
+            text, bodies / boundaries, ....
+            e.g. ["integer", boundary1]; type(boundary1)=elmer.Boundary
+        """
+        self.content = content
+
+    def __str__(self):
+        """This is evaluated when writing the sif, when the IDs have
+        already been assigned."""
+        return " ".join([str(x) for x in self.content])
 
 
 def load_simulation(name, setup_file=""):
