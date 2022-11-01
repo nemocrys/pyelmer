@@ -8,6 +8,7 @@ from pyelmer.elmer import (
     Material,
     Equation,
     InitialCondition,
+    StringFromList,
     load_material,
     load_simulation,
     load_solver,

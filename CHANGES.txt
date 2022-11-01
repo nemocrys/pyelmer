@@ -1,3 +1,6 @@
+v1.0.2
+- add referencing to other bodies / boundaries (issue #17) using the StringFromList class
+
 v1.0.1
 - fix requirements in setup.py, environment.yml
 
