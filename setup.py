@@ -27,6 +27,7 @@ setuptools.setup(
         "matplotlib",
         "numpy",
         "objectgmsh",
+        "pandas",
     ],
     python_requires=">=3.7",
 )
