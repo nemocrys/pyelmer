@@ -35,15 +35,16 @@ class Simulation:
         self.equations = {}
         self.constants = {"Stefan Boltzmann": 5.6704e-08}
         self.settings = {}
+        self.sif_filename = "case.sif"
 
-    def write_sif(self, simulation_dir, filename="case.sif"):
+    def write_sif(self, simulation_dir):
         """Write sif file.
 
         Args:
             simulation_dir (str): Path of simulation directory
         """
         self._set_ids()
-        with open(os.path.join(simulation_dir, filename), "w") as f:
+        with open(os.path.join(simulation_dir, self.sif_filename), "w") as f:
             if self.intro_text != "":
                 f.write(self.intro_text)
                 f.write("\n\n")
@@ -108,8 +109,9 @@ class Simulation:
         Args:
             simulation_dir (str): simulation directory
         """
-        with open(simulation_dir + "/ELMERSOLVER_STARTINFO", "w") as f:
-            f.write("case.sif\n")
+        with open(os.path.join(simulation_dir, "ELMERSOLVER_STARTINFO"), "w") as f:
+            f.write(self.sif_filename)
+            f.write("\n")
 
     def write_boundary_ids(self, simulation_dir):
         """Write yaml-file containing the boundary names and the
