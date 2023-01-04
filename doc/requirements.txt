@@ -1,0 +1,6 @@
+gmsh
+pyyaml
+matplotlib
+numpy
+objectgmsh
+pandas
