@@ -7,6 +7,7 @@ Each of these objects contains the data required in the sif in form
 of a dictionary called data.
 """
 
+import os
 import yaml
 
 
@@ -21,6 +22,10 @@ class Simulation:
 
     def __init__(self):
         self.intro_text = ""
+        self.header = {
+            "CHECK KEYWORDS": '"Warn"',
+            "Mesh DB": '"." "."',
+        }
         self.materials = {}
         self.bodies = {}
         self.boundaries = {}
@@ -30,6 +35,7 @@ class Simulation:
         self.equations = {}
         self.constants = {"Stefan Boltzmann": 5.6704e-08}
         self.settings = {}
+        self.sif_filename = "case.sif"
 
     def write_sif(self, simulation_dir):
         """Write sif file.
@@ -38,11 +44,13 @@ class Simulation:
             simulation_dir (str): Path of simulation directory
         """
         self._set_ids()
-        with open(simulation_dir + "/case.sif", "w") as f:
+        with open(os.path.join(simulation_dir, self.sif_filename), "w") as f:
             if self.intro_text != "":
                 f.write(self.intro_text)
                 f.write("\n\n")
-            f.write("""Header\n  CHECK KEYWORDS "Warn"\n  Mesh DB "." "."\nEnd\n\n""")
+            f.write("Header\n")
+            f.write(self._dict_to_str(self.header, key_value_separator=" "))
+            f.write("End\n\n")
             f.write("Simulation\n")
             f.write(self._dict_to_str(self.settings))
             f.write("End\n\n")
@@ -101,8 +109,9 @@ class Simulation:
         Args:
             simulation_dir (str): simulation directory
         """
-        with open(simulation_dir + "/ELMERSOLVER_STARTINFO", "w") as f:
-            f.write("case.sif\n")
+        with open(os.path.join(simulation_dir, "ELMERSOLVER_STARTINFO"), "w") as f:
+            f.write(self.sif_filename)
+            f.write("\n")
 
     def write_boundary_ids(self, simulation_dir):
         """Write yaml-file containing the boundary names and the
@@ -115,10 +124,10 @@ class Simulation:
         with open(simulation_dir + "/boundaries.yml", "w") as f:
             yaml.dump(data, f, sort_keys=False)
 
-    def _dict_to_str(self, dictionary):
+    def _dict_to_str(self, dictionary, *, key_value_separator=" = "):
         text = ""
         for key, value in dictionary.items():
-            text = "".join([text, "  ", key, " = ", str(value), "\n"])
+            text = "".join([text, "  ", key, key_value_separator, str(value), "\n"])
         return text
 
     def _set_ids(self):
@@ -508,7 +517,7 @@ def load_body_force(name, simulation, setup_file=""):
         BodyForce object.
     """
     if setup_file == "":
-        setup_file = f"{data_dir}/body_forces.yml"
+        setup_file = os.path.join(data_dir, "body_forces.yml")
     with open(setup_file) as f:
         data = yaml.safe_load(f)[name]
     return BodyForce(simulation, name, data)

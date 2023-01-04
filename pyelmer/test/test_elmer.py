@@ -1,8 +1,10 @@
 import pytest
 import yaml
+import filecmp
 import gmsh
 import os
 import re
+import tempfile
 from objectgmsh import add_physical_group, get_boundaries_in_box
 from pyelmer import elmer
 
@@ -282,8 +284,16 @@ def test_write_sif():
     test_boundary = elmer.Boundary(sim, "test_boundary", [ph_test_boundary])
     test_boundary.data.update({"test_parameter": "1.0"})
 
-    sim.write_startinfo(sim_dir)
-    sim.write_sif(sim_dir)
+    with tempfile.TemporaryDirectory() as tempdir:
+        sim.write_startinfo(tempdir)
+        sim.write_sif(tempdir)
+
+        files = os.listdir(tempdir)
+        # Ensure that we have generated the same files as stored in git.
+        assert os.listdir(sim_dir) == files
+        for file in files:
+            # Check that the contents of each file agrees with the reference.
+            assert filecmp.cmp(os.path.join(sim_dir, file), os.path.join(tempdir, file))
 
     # check format of sif file
     simulation = {}
@@ -318,7 +328,9 @@ def test_write_sif():
         initial_conditions,
     ]
 
-    with open(sim_dir + "/case.sif", "r") as f:
+    # We already know that the reference sif file is equal to that which we generated,
+    # so read the reference sif file here.
+    with open(os.path.join(sim_dir, "case.sif"), "r") as f:
         read_object = False
         write_index = None
         write_name = None
@@ -367,6 +379,7 @@ def test_write_sif():
                 else:
                     objects[write_index].update({key: value})
 
+    assert simulation == sim.settings
     assert equations["test_equation"] == test_eqn.get_data()
     assert solvers["test_solver"] == test_solver.get_data()
     assert solvers["test_post_solver"] == test_post_solver.get_data()
