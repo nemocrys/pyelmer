@@ -7,6 +7,7 @@ Each of these objects contains the data required in the sif in form
 of a dictionary called data.
 """
 
+import os
 import yaml
 
 
@@ -21,6 +22,10 @@ class Simulation:
 
     def __init__(self):
         self.intro_text = ""
+        self.header = {
+            "CHECK KEYWORDS": '"Warn"',
+            "Mesh DB": '"." "."',
+        }
         self.materials = {}
         self.bodies = {}
         self.boundaries = {}
@@ -31,18 +36,20 @@ class Simulation:
         self.constants = {"Stefan Boltzmann": 5.6704e-08}
         self.settings = {}
 
-    def write_sif(self, simulation_dir):
+    def write_sif(self, simulation_dir, filename="case.sif"):
         """Write sif file.
 
         Args:
             simulation_dir (str): Path of simulation directory
         """
         self._set_ids()
-        with open(simulation_dir + "/case.sif", "w") as f:
+        with open(os.path.join(simulation_dir, filename), "w") as f:
             if self.intro_text != "":
                 f.write(self.intro_text)
                 f.write("\n\n")
-            f.write("""Header\n  CHECK KEYWORDS "Warn"\n  Mesh DB "." "."\nEnd\n\n""")
+            f.write("Header\n")
+            f.write(self._dict_to_str(self.header, key_value_separator=" "))
+            f.write("End\n\n")
             f.write("Simulation\n")
             f.write(self._dict_to_str(self.settings))
             f.write("End\n\n")
@@ -115,10 +122,10 @@ class Simulation:
         with open(simulation_dir + "/boundaries.yml", "w") as f:
             yaml.dump(data, f, sort_keys=False)
 
-    def _dict_to_str(self, dictionary):
+    def _dict_to_str(self, dictionary, *, key_value_separator=" = "):
         text = ""
         for key, value in dictionary.items():
-            text = "".join([text, "  ", key, " = ", str(value), "\n"])
+            text = "".join([text, "  ", key, key_value_separator, str(value), "\n"])
         return text
 
     def _set_ids(self):
@@ -508,7 +515,7 @@ def load_body_force(name, simulation, setup_file=""):
         BodyForce object.
     """
     if setup_file == "":
-        setup_file = f"{data_dir}/body_forces.yml"
+        setup_file = os.path.join(data_dir, "body_forces.yml")
     with open(setup_file) as f:
         data = yaml.safe_load(f)[name]
     return BodyForce(simulation, name, data)
