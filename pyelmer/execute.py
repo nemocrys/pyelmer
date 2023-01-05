@@ -13,10 +13,10 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid=None, **kwargs):
     Args:
         sim_dir (str): Simulation directory
         meshfile (str): Filename of .msh file
-        elmergrid (str): ElmerGrid executable
+        elmergrid (str, optional): ElmerGrid executable
     Kwargs:
-        out_dir (str): Optional directory to save the output.
-        keep_mesh_dir(bool): Whether to keep the mesh directory
+        out_dir (str): Optional directory to save the output
+        keep_mesh_dir (bool): Whether to keep the mesh directory
     """
     if elmergrid is None:
         # On Windows ElmerGrid.exe is not found once gmsh.initialize() was executed.
@@ -31,11 +31,11 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid=None, **kwargs):
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
 
     mesh_dir = sim_dir + "/" + ".".join(meshfile.split(".")[:-1])
-    keep_mesh_dir = kwargs.get('keep_mesh_dir', False)
+    keep_mesh_dir = kwargs.get("keep_mesh_dir", False)
     if keep_mesh_dir:
         return None
 
-    out_dir = kwargs.get('out_dir', sim_dir)
+    out_dir = kwargs.get("out_dir", sim_dir)
     files = os.listdir(mesh_dir)
     for f in files:
         if os.path.exists(out_dir + "/" + f):
