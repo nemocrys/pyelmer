@@ -64,7 +64,7 @@ def scan_logfile(sim_dir):
     Returns:
         list[str], list[str], dict: error messages, warnings, statistics
     """
-    with open(sim_dir + "/elmersolver.log", "r") as f:
+    with open(os.path.join(sim_dir, "elmersolver.log"), "r") as f:
         log = f.readlines()
     for i in range(len(log)):
         log[i] = log[i][:-1]
@@ -92,7 +92,7 @@ def plot_residuals(sim_dir, solvers, save=False):
         solvers (list): solvers to analyze - currently works only for
         'heat equation' and 'statmagsolver'
     """
-    with open(sim_dir + "/elmersolver.log", "r") as f:
+    with open(os.path.join(sim_dir, "elmersolver.log"), "r") as f:
         log = f.readlines()
     for i in range(len(log)):
         log[i] = log[i][:-1]

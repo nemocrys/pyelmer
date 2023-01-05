@@ -1,3 +1,5 @@
+- use os.path.join instead of manual filepath construction
+
 v1.1.0
 - add ability to configure Header section
 

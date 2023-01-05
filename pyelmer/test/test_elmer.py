@@ -159,7 +159,7 @@ def test_equation():
 
 
 def test_load_simulation():
-    with open(file_dir + "/test_data/simulations.yml") as f:
+    with open(os.path.join(file_dir, "test_data", "simulations.yml") as f:
         settings = yaml.safe_load(f)["test_simulation"]
     assert (
         elmer.load_simulation(
@@ -170,7 +170,7 @@ def test_load_simulation():
 
 
 def test_load_material():
-    with open(file_dir + "/test_data/materials.yml") as f:
+    with open(os.path.join(file_dir, "test_data", "materials.yml") as f:
         data = yaml.safe_load(f)["test_material"]
     sim = elmer.Simulation()
     assert (
@@ -182,7 +182,7 @@ def test_load_material():
 
 
 def test_load_solver():
-    with open(file_dir + "/test_data/solvers.yml") as f:
+    with open(os.path.join(file_dir, "test_data", "solvers.yml") as f:
         data = yaml.safe_load(f)["test_solver"]
     sim = elmer.Simulation()
     assert (
@@ -194,7 +194,7 @@ def test_load_solver():
 
 
 def test_load_body_force():
-    with open(file_dir + "/test_data/body_forces.yml") as f:
+    with open(os.path.join(file_dir, "test_data", "body_forces.yml") as f:
         data = yaml.safe_load(f)["test_body_force"]
     sim = elmer.Simulation()
     assert (
@@ -206,7 +206,7 @@ def test_load_body_force():
 
 
 def test_load_boundary():
-    with open(file_dir + "/test_data/boundaries.yml") as f:
+    with open(os.path.join(file_dir, "test_data", "boundaries.yml") as f:
         data = yaml.safe_load(f)["test_boundary"]
     sim = elmer.Simulation()
     assert elmer.load_boundary(
@@ -218,7 +218,7 @@ def test_load_boundary():
 
 
 def test_load_initial_condition():
-    with open(file_dir + "/test_data/initial_conditions.yml") as f:
+    with open(os.path.join(file_dir, "test_data", "initial_conditions.yml") as f:
         data = yaml.safe_load(f)["test_initial_condition"]
     sim = elmer.Simulation()
     assert (
