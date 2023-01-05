@@ -38,8 +38,8 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid=None, **kwargs):
     out_dir = kwargs.get('out_dir', sim_dir)
     files = os.listdir(mesh_dir)
     for f in files:
-        if os.path.exists(sim_dir + "/" + f):
-            os.remove(sim_dir + "/" + f)
+        if os.path.exists(out_dir + "/" + f):
+            os.remove(out_dir + "/" + f)
         shutil.move(mesh_dir + "/" + f, out_dir)
     shutil.rmtree(mesh_dir)
 
