@@ -2,6 +2,7 @@
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![DOI](https://zenodo.org/badge/294339020.svg)](https://zenodo.org/badge/latestdoi/294339020)
+[![Documentation Status](https://readthedocs.org/projects/pyelmer/badge/?version=latest)](https://pyelmer.readthedocs.io/en/latest/?badge=latest)
 
 ## Project description
 
@@ -216,7 +217,7 @@ import pyelmer.elmerkw as elmer
 
 ## Documentation
 
-A simple documentation in form of doc-strings can be found in the source code. A more extensive documentation will hopefully follow soon.
+To get an overview of the program have a look at [pyelmer's Read the Docs page](https://pyelmer.readthedocs.io/en/latest/). In case of questions please open an issue!
 
 ## License
 

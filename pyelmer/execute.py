@@ -52,7 +52,7 @@ def run_elmerf90(userfile_in, userfile_out, elmerf90=None):
     Args:
         userfile_in (str) : Filename of .F90 file
         userfile_out (str) : Filename of .so file
-        elmerf90 (str): elmerf90 executable
+        elmerf90 (str, optional): elmerf90 executable
     """
     if elmerf90 is None:
         # On Windows ElmerSolver.exe is not found once gmsh.initialize() was executed.
@@ -69,7 +69,7 @@ def run_elmer_solver(sim_dir, elmersolver=None):
 
     Args:
         sim_dir (str): Simulation directory
-        elmersolver (str): ElmerSolver executable
+        elmersolver (str, optional): ElmerSolver executable
     """
     if elmersolver is None:
         # On Windows ElmerSolver.exe is not found once gmsh.initialize() was executed.
