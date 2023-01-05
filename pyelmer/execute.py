@@ -7,16 +7,19 @@ import platform
 
 
 def run_elmer_grid(sim_dir, meshfile, elmergrid=None, **kwargs):
-    """Run ElmerGrid on gmsh meshfile and move everithing into main
+    """Run ElmerGrid on gmsh meshfile and move everything into main
     directory.
 
     Args:
         sim_dir (str): Simulation directory
         meshfile (str): Filename of .msh file
         elmergrid (str, optional): ElmerGrid executable
-    Kwargs:
+        **kwargs: Arbitrary keyword arguments
+
+    Keyword Args:
         out_dir (str): Optional directory to save the output
-        keep_mesh_dir (bool): Whether to keep the mesh directory
+        keep_mesh_dir (bool): Whether to keep the mesh directory, don't
+            use out_dir.
     """
     if elmergrid is None:
         # On Windows ElmerGrid.exe is not found once gmsh.initialize() was executed.
