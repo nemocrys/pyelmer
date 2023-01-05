@@ -121,7 +121,7 @@ class Simulation:
             simulation_dir (str): Path of simulation directory
         """
         data = {boundary.id: name for name, boundary in self.boundaries.items()}
-        with open(simulation_dir + "/boundaries.yml", "w") as f:
+        with open(os.path.join(simulation_dir + "/boundaries.yml"), "w") as f:
             yaml.dump(data, f, sort_keys=False)
 
     def _dict_to_str(self, dictionary, *, key_value_separator=" = "):
@@ -425,7 +425,7 @@ def load_simulation(name, setup_file=""):
         Simulation object.
     """
     if setup_file == "":
-        setup_file = f"{data_dir}/simulations.yml"
+        setup_file = os.path.join(data_dir, "simulations.yml")
     with open(setup_file) as f:
         settings = yaml.safe_load(f)[name]
     sim = Simulation()
@@ -445,7 +445,7 @@ def load_material(name, simulation, setup_file=""):
         Material object.
     """
     if setup_file == "":
-        setup_file = f"{data_dir}/materials.yml"
+        setup_file = os.path.join(data_dir, "materials.yml")
     with open(setup_file) as f:
         data = yaml.safe_load(f)[name]
     return Material(simulation, name, data)
@@ -463,7 +463,7 @@ def load_solver(name, simulation, setup_file=""):
         Solver object.
     """
     if setup_file == "":
-        setup_file = f"{data_dir}/solvers.yml"
+        setup_file = os.path.join(data_dir, "solvers.yml")
     with open(setup_file) as f:
         data = yaml.safe_load(f)[name]
     return Solver(simulation, name, data)
@@ -481,7 +481,7 @@ def load_boundary(name, simulation, setup_file=""):
         Boundary object.
     """
     if setup_file == "":
-        setup_file = f"{data_dir}/boundaries.yml"
+        setup_file = os.path.join(data_dir, "boundaries.yml")
     with open(setup_file) as f:
         data = yaml.safe_load(f)[name]
     return Boundary(simulation, name, data=data)
@@ -499,7 +499,7 @@ def load_initial_condition(name, simulation, setup_file=""):
         InitialCondition object.
     """
     if setup_file == "":
-        setup_file = f"{data_dir}/initial_conditions.yml"
+        setup_file = os.path.join(data_dir, "initial_conditions.yml")
     with open(setup_file) as f:
         data = yaml.safe_load(f)[name]
     return InitialCondition(simulation, name, data)

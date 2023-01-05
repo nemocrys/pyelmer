@@ -24,7 +24,7 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid=None):
             elmergrid = "ElmerGrid"
 
     args = [elmergrid, "14", "2", meshfile]
-    with open(sim_dir + "/elmergrid.log", "w") as f:
+    with open(os.path.join(sim_dir, "elmergrid.log"), "w") as f:
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
 
     mesh_dir = sim_dir + "/" + ".".join(meshfile.split(".")[:-1])
@@ -72,7 +72,7 @@ def run_elmer_solver(sim_dir, elmersolver=None):
             elmersolver = "ElmerSolver"
 
     args = [elmersolver, "case.sif"]
-    with open(sim_dir + "/elmersolver.log", "w") as f:
+    with open(os.path.join(sim_dir, "elmersolver.log"), "w") as f:
         subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
 
 
