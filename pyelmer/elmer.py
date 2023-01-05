@@ -173,10 +173,10 @@ class Body:
         else:
             self.data = data
         # optional parameters
-        self.equation = None
-        self.initial_condition = None
-        self.material = None
-        self.body_force = None
+        self.equation = None  #: optional reference to an Equation object
+        self.initial_condition = None  #: optional reference to an InitialCondition object 
+        self.material = None  #: optional reference to a Material object
+        self.body_force = None  #: optional reference to a BodyForce object
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""

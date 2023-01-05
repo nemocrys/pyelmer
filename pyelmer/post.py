@@ -8,12 +8,14 @@ from dataclasses import dataclass
 
 @dataclass
 class LinearIteration:
+    """Template class for evaluation of residuals - does not work very well."""
     idx: list
     relc: list
 
 
 @dataclass
 class NonlinearIteration:
+    """Template class for evaluation of residuals - does not work very well."""
     nrm: float = 0
     relc: float = 0
     linear_iteration: LinearIteration = LinearIteration([], [])
@@ -21,6 +23,7 @@ class NonlinearIteration:
 
 @dataclass
 class SteadyStateIteration:
+    """Template class for evaluation of residuals - does not work very well."""
     nonlinear_iterations: list
     nrm: float = 0
     relc: float = 0
@@ -40,6 +43,7 @@ class SteadyStateIteration:
 
 @dataclass
 class SolverResiduals:
+    """Template class for evaluation of residuals - does not work very well."""
     steady_state_iterations: list
 
     def ss_relc(self):
