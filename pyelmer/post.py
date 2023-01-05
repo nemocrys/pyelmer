@@ -9,6 +9,7 @@ from dataclasses import dataclass
 @dataclass
 class LinearIteration:
     """Template class for evaluation of residuals - does not work very well."""
+
     idx: list
     relc: list
 
@@ -16,6 +17,7 @@ class LinearIteration:
 @dataclass
 class NonlinearIteration:
     """Template class for evaluation of residuals - does not work very well."""
+
     nrm: float = 0
     relc: float = 0
     linear_iteration: LinearIteration = LinearIteration([], [])
@@ -24,6 +26,7 @@ class NonlinearIteration:
 @dataclass
 class SteadyStateIteration:
     """Template class for evaluation of residuals - does not work very well."""
+
     nonlinear_iterations: list
     nrm: float = 0
     relc: float = 0
@@ -44,6 +47,7 @@ class SteadyStateIteration:
 @dataclass
 class SolverResiduals:
     """Template class for evaluation of residuals - does not work very well."""
+
     steady_state_iterations: list
 
     def ss_relc(self):
@@ -247,7 +251,10 @@ def dat_to_dataframe(dat_file):
     names_start = False
     for line in lines:
         if names_start == True:
-            names.append(line.split(":")[-1].strip())
-        if "Data on different columns" in line:
+            names.append(":".join(line.split(":")[1:]).strip())
+        if (
+            "Data on different columns" in line
+            or "Variables in columns of matrix" in line
+        ):
             names_start = True
     return pd.read_table(dat_file, names=names, delim_whitespace=True)

@@ -1,3 +1,6 @@
+- update dat_to_dataframe function
+
+v1.1.1
 - sphinx documentation / readthedocs
 - use os.path.join instead of manual filepath construction
 

@@ -174,7 +174,9 @@ class Body:
             self.data = data
         # optional parameters
         self.equation = None  #: optional reference to an Equation object
-        self.initial_condition = None  #: optional reference to an InitialCondition object 
+        self.initial_condition = (
+            None  #: optional reference to an InitialCondition object
+        )
         self.material = None  #: optional reference to a Material object
         self.body_force = None  #: optional reference to a BodyForce object
 
