@@ -11,7 +11,7 @@ def run_elmer_grid(mesh_dir, meshfile, elmergrid=None, **kwargs):
     directory.
 
     Args:
-        mesh_dir (str): Simulation directory
+        mesh_dir (str): Directory of mesh file
         meshfile (str): Filename of .msh file
         elmergrid (str, optional): ElmerGrid executable
         **kwargs: Arbitrary keyword arguments
