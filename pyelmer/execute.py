@@ -6,12 +6,12 @@ import multiprocessing
 import platform
 
 
-def run_elmer_grid(sim_dir, meshfile, elmergrid=None, **kwargs):
+def run_elmer_grid(mesh_dir, meshfile, elmergrid=None, **kwargs):
     """Run ElmerGrid on gmsh meshfile and move everything into main
     directory.
 
     Args:
-        sim_dir (str): Simulation directory
+        mesh_dir (str): Simulation directory
         meshfile (str): Filename of .msh file
         elmergrid (str, optional): ElmerGrid executable
         **kwargs: Arbitrary keyword arguments
@@ -30,21 +30,22 @@ def run_elmer_grid(sim_dir, meshfile, elmergrid=None, **kwargs):
             elmergrid = "ElmerGrid"
 
     args = [elmergrid, "14", "2", meshfile]
-    with open(os.path.join(sim_dir, "elmergrid.log"), "w") as f:
-        subprocess.run(args, cwd=sim_dir, stdout=f, stderr=f)
+    with open(os.path.join(mesh_dir, "elmergrid.log"), "w") as f:
+        subprocess.run(args, cwd=mesh_dir, stdout=f, stderr=f)
 
-    mesh_dir = sim_dir + "/" + ".".join(meshfile.split(".")[:-1])
     keep_mesh_dir = kwargs.get("keep_mesh_dir", False)
-    if keep_mesh_dir:
-        return None
 
-    out_dir = kwargs.get("out_dir", sim_dir)
-    files = os.listdir(mesh_dir)
-    for f in files:
-        if os.path.exists(out_dir + "/" + f):
-            os.remove(out_dir + "/" + f)
-        shutil.move(mesh_dir + "/" + f, out_dir)
-    shutil.rmtree(mesh_dir)
+    if not keep_mesh_dir:
+        elmer_mesh_dir = os.path.join(mesh_dir, ".".join(meshfile.split(".")[:-1]))
+        out_dir = kwargs.get("out_dir", mesh_dir)
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+        files = os.listdir(elmer_mesh_dir)
+        for f in files:
+            if os.path.exists(os.path.join(out_dir, f)):
+                os.remove(os.path.join(out_dir, f))
+            shutil.move(os.path.join(elmer_mesh_dir, f), out_dir)
+        shutil.rmtree(elmer_mesh_dir)
 
 
 def run_elmerf90(userfile_in, userfile_out, elmerf90=None):

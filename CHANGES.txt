@@ -1,3 +1,4 @@
+- update run_elmer_grid function
 - update dat_to_dataframe function
 
 v1.1.1
