@@ -3,15 +3,15 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class LinearIteration:
     """Template class for evaluation of residuals - does not work very well."""
 
-    idx: list
-    relc: list
+    idx: list = field(default_factory=list)
+    relc: list = field(default_factory=list)
 
 
 @dataclass
@@ -20,7 +20,7 @@ class NonlinearIteration:
 
     nrm: float = 0
     relc: float = 0
-    linear_iteration: LinearIteration = LinearIteration([], [])
+    linear_iteration: LinearIteration = field(default_factory=LinearIteration)
 
 
 @dataclass
