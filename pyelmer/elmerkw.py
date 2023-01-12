@@ -64,7 +64,7 @@ class Boundary(elmer.Boundary):
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
-        d = super().get_data()
+        d = {}
         if self.radiation:
             d.update({"Radiation": "Diffuse Gray"})
         if self.radiation_idealized:
@@ -132,6 +132,7 @@ class Boundary(elmer.Boundary):
             if len(self.mesh_update) == 3:
                 if self.mesh_update[2] is not None:
                     d.update({"Mesh Update 3": self.mesh_update[2]})
+        d.update(super().get_data())
         return d
 
 
@@ -159,7 +160,7 @@ class BodyForce(elmer.BodyForce):
         self.smart_heater_T = 0  #: smart heater temperature, defaults to 0
 
     def get_data(self):
-        d = super().get_data()
+        d = {}
         if self.joule_heat:
             d.update({"Joule Heat": "Logical True"})
         if self.current_density != 0:
@@ -184,4 +185,5 @@ class BodyForce(elmer.BodyForce):
                     "Smart Heater Temperature": self.smart_heater_T,
                 }
             )
+        d.update(super().get_data())
         return d
