@@ -121,7 +121,7 @@ class Simulation:
             simulation_dir (str): Path of simulation directory
         """
         data = {boundary.id: name for name, boundary in self.boundaries.items()}
-        with open(os.path.join(simulation_dir + "/boundaries.yml"), "w") as f:
+        with open(os.path.join(simulation_dir, "boundaries.yml"), "w") as f:
             yaml.dump(data, f, sort_keys=False)
 
     def _dict_to_str(self, dictionary, *, key_value_separator=" = "):

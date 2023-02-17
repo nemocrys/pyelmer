@@ -8,12 +8,12 @@ import tempfile
 from objectgmsh import add_physical_group, get_boundaries_in_box
 from pyelmer import elmer
 
-elmer.data_dir = "./test_data"
+elmer.data_dir = os.path.join(os.getcwd(), "test_data")
 
 ###############
 # set up working directory
 file_dir = os.path.dirname(__file__)
-sim_dir = file_dir + "/test_simdata"
+sim_dir = os.path.join(file_dir, "test_simdata")
 
 if not os.path.exists(sim_dir):
     os.mkdir(sim_dir)
@@ -163,7 +163,7 @@ def test_load_simulation():
         settings = yaml.safe_load(f)["test_simulation"]
     assert (
         elmer.load_simulation(
-            "test_simulation", file_dir + "/test_data/simulations.yml"
+            "test_simulation", os.path.join(file_dir, "test_data", "simulations.yml")
         ).settings
         == settings
     )
@@ -175,7 +175,7 @@ def test_load_material():
     sim = elmer.Simulation()
     assert (
         elmer.load_material(
-            "test_material", sim, file_dir + "/test_data/materials.yml"
+            "test_material", sim, os.path.join(file_dir, "test_data", "materials.yml")
         ).get_data()
         == data
     )
@@ -187,7 +187,7 @@ def test_load_solver():
     sim = elmer.Simulation()
     assert (
         elmer.load_solver(
-            "test_solver", sim, file_dir + "/test_data/solvers.yml"
+            "test_solver", sim, os.path.join(file_dir, "test_data", "solvers.yml")
         ).get_data()
         == data
     )
@@ -199,7 +199,9 @@ def test_load_body_force():
     sim = elmer.Simulation()
     assert (
         elmer.load_body_force(
-            "test_body_force", sim, file_dir + "/test_data/body_forces.yml"
+            "test_body_force",
+            sim,
+            os.path.join(file_dir, "test_data", "body_forces.yml")
         ).get_data()
         == data
     )
@@ -210,7 +212,7 @@ def test_load_boundary():
         data = yaml.safe_load(f)["test_boundary"]
     sim = elmer.Simulation()
     assert elmer.load_boundary(
-        "test_boundary", sim, file_dir + "/test_data/boundaries.yml"
+        "test_boundary", sim, os.path.join(file_dir, "test_data", "boundaries.yml")
     ).get_data() == {
         "Target Boundaries(0)": "",
         "test_parameter": data["test_parameter"],
@@ -225,7 +227,7 @@ def test_load_initial_condition():
         elmer.load_initial_condition(
             "test_initial_condition",
             sim,
-            file_dir + "/test_data/initial_conditions.yml",
+            os.path.join(file_dir, "test_data", "initial_conditions.yml"),
         ).get_data()
         == data
     )
@@ -366,32 +368,34 @@ def test_write_sif():
 
     # setup simulation
     sim = elmer.load_simulation(
-        "test_simulation", file_dir + "/test_data/simulations.yml"
+        "test_simulation", os.path.join(file_dir, "test_data", "simulations.yml")
     )
 
     test_solver = elmer.load_solver(
-        "test_solver", sim, file_dir + "/test_data/solvers.yml"
+        "test_solver", sim, os.path.join(file_dir, "test_data", "solvers.yml")
     )
 
     test_post_solver = elmer.load_solver(
-        "test_post_solver", sim, file_dir + "/test_data/solvers.yml"
+        "test_post_solver", sim, os.path.join(file_dir, "test_data", "solvers.yml")
     )
 
     test_eqn = elmer.Equation(sim, "test_equation", [test_solver])
 
     test_initial_condtion = elmer.load_initial_condition(
-        "test_initial_condition", sim, file_dir + "/test_data/initial_conditions.yml"
+        "test_initial_condition",
+        sim,
+        os.path.join(file_dir, "test_data", "initial_conditions.yml")
     )
 
     test_body_force = elmer.load_body_force(
-        "test_body_force", sim, file_dir + "/test_data/body_forces.yml"
+        "test_body_force", sim, os.path.join(file_dir, "test_data", "body_forces.yml")
     )
     # setup body object
     test_body = elmer.Body(sim, "test_body", [ph_test_body])
 
     # initialize body data
     test_material = elmer.load_material(
-        "test_material", sim, file_dir + "/test_data/materials.yml"
+        "test_material", sim, os.path.join(file_dir, "test_data", "materials.yml")
     )
     test_body.material = test_material
     test_body.initial_condition = test_initial_condtion
