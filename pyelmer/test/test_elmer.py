@@ -238,10 +238,10 @@ def test_duplicate_body():
 
     obj1 = elmer.Body(sim, "duplicate", body_ids=[1], data={"test": 7})
     obj2 = elmer.Body(sim, "duplicate", body_ids=[1], data={"test": 7})
-    assert obj1 == obj2
+    assert obj1 is obj2
 
     obj3 = elmer.Body(sim, "different")
-    assert obj1 != obj3
+    assert obj1 is not obj3
 
     with pytest.raises(ValueError):
         elmer.Body(sim, "duplicate", body_ids=[1])
@@ -255,10 +255,10 @@ def test_duplicate_boundary():
 
     obj1 = elmer.Boundary(sim, "duplicate", geo_ids=[1], data={"test": 7})
     obj2 = elmer.Boundary(sim, "duplicate", geo_ids=[1], data={"test": 7})
-    assert obj1 == obj2
+    assert obj1 is obj2
 
     obj3 = elmer.Boundary(sim, "different")
-    assert obj1 != obj3
+    assert obj1 is not obj3
 
     with pytest.raises(ValueError):
         elmer.Boundary(sim, "duplicate", geo_ids=[1])
@@ -272,10 +272,10 @@ def test_duplicate_material():
 
     obj1 = elmer.Material(sim, "duplicate", data={"test": 7})
     obj2 = elmer.Material(sim, "duplicate", data={"test": 7})
-    assert obj1 == obj2
+    assert obj1 is obj2
 
     obj3 = elmer.Material(sim, "different")
-    assert obj1 != obj3
+    assert obj1 is not obj3
 
     with pytest.raises(ValueError):
         elmer.Material(sim, "duplicate")
@@ -289,10 +289,10 @@ def test_duplicate_body_force():
 
     obj1 = elmer.BodyForce(sim, "duplicate", data={"test": 7})
     obj2 = elmer.BodyForce(sim, "duplicate", data={"test": 7})
-    assert obj1 == obj2
+    assert obj1 is obj2
 
     obj3 = elmer.BodyForce(sim, "different")
-    assert obj1 != obj3
+    assert obj1 is not obj3
 
     with pytest.raises(ValueError):
         elmer.BodyForce(sim, "duplicate")
@@ -306,10 +306,10 @@ def test_duplicate_initial_condition():
 
     obj1 = elmer.InitialCondition(sim, "duplicate", data={"test": 7})
     obj2 = elmer.InitialCondition(sim, "duplicate", data={"test": 7})
-    assert obj1 == obj2
+    assert obj1 is obj2
 
     obj3 = elmer.InitialCondition(sim, "different")
-    assert obj1 != obj3
+    assert obj1 is not obj3
 
     with pytest.raises(ValueError):
         elmer.InitialCondition(sim, "duplicate")
@@ -323,10 +323,10 @@ def test_duplicate_solver():
 
     obj1 = elmer.Solver(sim, "duplicate", data={"test": 7})
     obj2 = elmer.Solver(sim, "duplicate", data={"test": 7})
-    assert obj1 == obj2
+    assert obj1 is obj2
 
     obj3 = elmer.Solver(sim, "different")
-    assert obj1 != obj3
+    assert obj1 is not obj3
 
     with pytest.raises(ValueError):
         elmer.Solver(sim, "duplicate")
@@ -342,10 +342,10 @@ def test_duplicate_equation():
 
     obj1 = elmer.Equation(sim, "duplicate", [solver1], data={"test": 7})
     obj2 = elmer.Equation(sim, "duplicate", [solver1], data={"test": 7})
-    assert obj1 == obj2
+    assert obj1 is obj2
 
     obj3 = elmer.Equation(sim, "different", [solver1])
-    assert obj1 != obj3
+    assert obj1 is not obj3
 
     with pytest.raises(ValueError):
         elmer.Equation(sim, "duplicate", [solver1])
