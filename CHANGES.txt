@@ -1,3 +1,6 @@
+v1.1.5
+- allow duplicate Materials, Solvers, etc. to be added
+
 v1.1.4
 - enable overwriting of values set in elmerkw
 
