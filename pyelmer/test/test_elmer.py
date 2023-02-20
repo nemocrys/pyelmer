@@ -1,18 +1,19 @@
 import yaml
 import filecmp
 import gmsh
+import pytest
 import os
 import re
 import tempfile
 from objectgmsh import add_physical_group, get_boundaries_in_box
 from pyelmer import elmer
 
-elmer.data_dir = "./test_data"
+elmer.data_dir = os.path.join(os.getcwd(), "test_data")
 
 ###############
 # set up working directory
 file_dir = os.path.dirname(__file__)
-sim_dir = file_dir + "/test_simdata"
+sim_dir = os.path.join(file_dir, "test_simdata")
 
 if not os.path.exists(sim_dir):
     os.mkdir(sim_dir)
@@ -162,7 +163,7 @@ def test_load_simulation():
         settings = yaml.safe_load(f)["test_simulation"]
     assert (
         elmer.load_simulation(
-            "test_simulation", file_dir + "/test_data/simulations.yml"
+            "test_simulation", os.path.join(file_dir, "test_data", "simulations.yml")
         ).settings
         == settings
     )
@@ -174,7 +175,7 @@ def test_load_material():
     sim = elmer.Simulation()
     assert (
         elmer.load_material(
-            "test_material", sim, file_dir + "/test_data/materials.yml"
+            "test_material", sim, os.path.join(file_dir, "test_data", "materials.yml")
         ).get_data()
         == data
     )
@@ -186,7 +187,7 @@ def test_load_solver():
     sim = elmer.Simulation()
     assert (
         elmer.load_solver(
-            "test_solver", sim, file_dir + "/test_data/solvers.yml"
+            "test_solver", sim, os.path.join(file_dir, "test_data", "solvers.yml")
         ).get_data()
         == data
     )
@@ -198,7 +199,9 @@ def test_load_body_force():
     sim = elmer.Simulation()
     assert (
         elmer.load_body_force(
-            "test_body_force", sim, file_dir + "/test_data/body_forces.yml"
+            "test_body_force",
+            sim,
+            os.path.join(file_dir, "test_data", "body_forces.yml")
         ).get_data()
         == data
     )
@@ -209,7 +212,7 @@ def test_load_boundary():
         data = yaml.safe_load(f)["test_boundary"]
     sim = elmer.Simulation()
     assert elmer.load_boundary(
-        "test_boundary", sim, file_dir + "/test_data/boundaries.yml"
+        "test_boundary", sim, os.path.join(file_dir, "test_data", "boundaries.yml")
     ).get_data() == {
         "Target Boundaries(0)": "",
         "test_parameter": data["test_parameter"],
@@ -224,10 +227,131 @@ def test_load_initial_condition():
         elmer.load_initial_condition(
             "test_initial_condition",
             sim,
-            file_dir + "/test_data/initial_conditions.yml",
+            os.path.join(file_dir, "test_data", "initial_conditions.yml"),
         ).get_data()
         == data
     )
+
+
+def test_duplicate_body():
+    sim = elmer.Simulation()
+
+    obj1 = elmer.Body(sim, "duplicate", body_ids=[1], data={"test": 7})
+    obj2 = elmer.Body(sim, "duplicate", body_ids=[1], data={"test": 7})
+    assert obj1 is obj2
+
+    obj3 = elmer.Body(sim, "different")
+    assert obj1 is not obj3
+
+    with pytest.raises(ValueError):
+        elmer.Body(sim, "duplicate", body_ids=[1])
+
+    with pytest.raises(ValueError):
+        elmer.Body(sim, "duplicate", data={"test": 7})
+
+
+def test_duplicate_boundary():
+    sim = elmer.Simulation()
+
+    obj1 = elmer.Boundary(sim, "duplicate", geo_ids=[1], data={"test": 7})
+    obj2 = elmer.Boundary(sim, "duplicate", geo_ids=[1], data={"test": 7})
+    assert obj1 is obj2
+
+    obj3 = elmer.Boundary(sim, "different")
+    assert obj1 is not obj3
+
+    with pytest.raises(ValueError):
+        elmer.Boundary(sim, "duplicate", geo_ids=[1])
+
+    with pytest.raises(ValueError):
+        elmer.Boundary(sim, "duplicate", data={"test": 7})
+
+
+def test_duplicate_material():
+    sim = elmer.Simulation()
+
+    obj1 = elmer.Material(sim, "duplicate", data={"test": 7})
+    obj2 = elmer.Material(sim, "duplicate", data={"test": 7})
+    assert obj1 is obj2
+
+    obj3 = elmer.Material(sim, "different")
+    assert obj1 is not obj3
+
+    with pytest.raises(ValueError):
+        elmer.Material(sim, "duplicate")
+
+    with pytest.raises(ValueError):
+        elmer.Material(sim, "duplicate", data={"test": 8})
+
+
+def test_duplicate_body_force():
+    sim = elmer.Simulation()
+
+    obj1 = elmer.BodyForce(sim, "duplicate", data={"test": 7})
+    obj2 = elmer.BodyForce(sim, "duplicate", data={"test": 7})
+    assert obj1 is obj2
+
+    obj3 = elmer.BodyForce(sim, "different")
+    assert obj1 is not obj3
+
+    with pytest.raises(ValueError):
+        elmer.BodyForce(sim, "duplicate")
+
+    with pytest.raises(ValueError):
+        elmer.BodyForce(sim, "duplicate", data={"test": 8})
+
+
+def test_duplicate_initial_condition():
+    sim = elmer.Simulation()
+
+    obj1 = elmer.InitialCondition(sim, "duplicate", data={"test": 7})
+    obj2 = elmer.InitialCondition(sim, "duplicate", data={"test": 7})
+    assert obj1 is obj2
+
+    obj3 = elmer.InitialCondition(sim, "different")
+    assert obj1 is not obj3
+
+    with pytest.raises(ValueError):
+        elmer.InitialCondition(sim, "duplicate")
+
+    with pytest.raises(ValueError):
+        elmer.InitialCondition(sim, "duplicate", data={"test": 8})
+
+
+def test_duplicate_solver():
+    sim = elmer.Simulation()
+
+    obj1 = elmer.Solver(sim, "duplicate", data={"test": 7})
+    obj2 = elmer.Solver(sim, "duplicate", data={"test": 7})
+    assert obj1 is obj2
+
+    obj3 = elmer.Solver(sim, "different")
+    assert obj1 is not obj3
+
+    with pytest.raises(ValueError):
+        elmer.Solver(sim, "duplicate")
+
+    with pytest.raises(ValueError):
+        elmer.Solver(sim, "duplicate", data={"test": 8})
+
+
+def test_duplicate_equation():
+    sim = elmer.Simulation()
+    solver1 = elmer.Solver(sim, "solver1")
+    solver2 = elmer.Solver(sim, "solver2")
+
+    obj1 = elmer.Equation(sim, "duplicate", [solver1], data={"test": 7})
+    obj2 = elmer.Equation(sim, "duplicate", [solver1], data={"test": 7})
+    assert obj1 is obj2
+
+    obj3 = elmer.Equation(sim, "different", [solver1])
+    assert obj1 is not obj3
+
+    with pytest.raises(ValueError):
+        elmer.Equation(sim, "duplicate", [solver1])
+
+    with pytest.raises(ValueError):
+        elmer.Equation(sim, "duplicate", [solver2], data={"test": 7})
 
 
 def test_write_sif():
@@ -244,32 +368,34 @@ def test_write_sif():
 
     # setup simulation
     sim = elmer.load_simulation(
-        "test_simulation", file_dir + "/test_data/simulations.yml"
+        "test_simulation", os.path.join(file_dir, "test_data", "simulations.yml")
     )
 
     test_solver = elmer.load_solver(
-        "test_solver", sim, file_dir + "/test_data/solvers.yml"
+        "test_solver", sim, os.path.join(file_dir, "test_data", "solvers.yml")
     )
 
     test_post_solver = elmer.load_solver(
-        "test_post_solver", sim, file_dir + "/test_data/solvers.yml"
+        "test_post_solver", sim, os.path.join(file_dir, "test_data", "solvers.yml")
     )
 
     test_eqn = elmer.Equation(sim, "test_equation", [test_solver])
 
     test_initial_condtion = elmer.load_initial_condition(
-        "test_initial_condition", sim, file_dir + "/test_data/initial_conditions.yml"
+        "test_initial_condition",
+        sim,
+        os.path.join(file_dir, "test_data", "initial_conditions.yml")
     )
 
     test_body_force = elmer.load_body_force(
-        "test_body_force", sim, file_dir + "/test_data/body_forces.yml"
+        "test_body_force", sim, os.path.join(file_dir, "test_data", "body_forces.yml")
     )
     # setup body object
     test_body = elmer.Body(sim, "test_body", [ph_test_body])
 
     # initialize body data
     test_material = elmer.load_material(
-        "test_material", sim, file_dir + "/test_data/materials.yml"
+        "test_material", sim, os.path.join(file_dir, "test_data", "materials.yml")
     )
     test_body.material = test_material
     test_body.initial_condition = test_initial_condtion

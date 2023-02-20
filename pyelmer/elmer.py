@@ -121,7 +121,7 @@ class Simulation:
             simulation_dir (str): Path of simulation directory
         """
         data = {boundary.id: name for name, boundary in self.boundaries.items()}
-        with open(os.path.join(simulation_dir + "/boundaries.yml"), "w") as f:
+        with open(os.path.join(simulation_dir, "boundaries.yml"), "w") as f:
             yaml.dump(data, f, sort_keys=False)
 
     def _dict_to_str(self, dictionary, *, key_value_separator=" = "):
@@ -150,6 +150,18 @@ class Simulation:
 
 class Body:
     """Wrapper for bodies in sif-file."""
+
+    def __new__(cls, simulation, name, body_ids=None, data=None):
+        """Intercept object construction to return an existing object if possible."""
+        if name in simulation.bodies:
+            existing = simulation.bodies[name]
+            new_body_ids = [] if body_ids is None else body_ids
+            new_data = {} if data is None else data
+            if [new_body_ids, new_data] != [existing.body_ids, existing.data]:
+                raise ValueError(f'Body name clash: "{name}".')
+            return existing
+        else:
+            return super().__new__(cls)
 
     def __init__(self, simulation, name, body_ids=None, data=None):
         """Create body object.
@@ -209,6 +221,18 @@ class Body:
 class Boundary:
     """Wrapper for boundaries in sif-file."""
 
+    def __new__(cls, simulation, name, geo_ids=None, data=None):
+        """Intercept object construction to return an existing object if possible."""
+        if name in simulation.boundaries:
+            existing = simulation.boundaries[name]
+            new_geo_ids = [] if geo_ids is None else geo_ids
+            new_data = {} if data is None else data
+            if [new_geo_ids, new_data] != [existing.geo_ids, existing.data]:
+                raise ValueError(f'Boundary name clash: "{name}".')
+            return existing
+        else:
+            return super().__new__(cls)
+
     def __init__(self, simulation, name, geo_ids=None, data=None):
         """Create boundary object.
 
@@ -248,6 +272,17 @@ class Boundary:
 class Material:
     """Wrapper for materials in sif-file."""
 
+    def __new__(cls, simulation, name, data=None):
+        """Intercept object construction to return an existing object if possible."""
+        if name in simulation.materials:
+            existing = simulation.materials[name]
+            new_data = {} if data is None else data
+            if new_data != existing.data:
+                raise ValueError(f'Material name clash: "{name}".')
+            return existing
+        else:
+            return super().__new__(cls)
+
     def __init__(self, simulation, name, data=None):
         """Create material object
 
@@ -276,6 +311,17 @@ class Material:
 class BodyForce:
     """Wrapper for body forces in sif-file."""
 
+    def __new__(cls, simulation, name, data=None):
+        """Intercept object construction to return an existing object if possible."""
+        if name in simulation.body_forces:
+            existing = simulation.body_forces[name]
+            new_data = {} if data is None else data
+            if new_data != existing.data:
+                raise ValueError(f'BodyForce name clash: "{name}".')
+            return existing
+        else:
+            return super().__new__(cls)
+
     def __init__(self, simulation, name, data=None):
         """Create body force object.
 
@@ -303,6 +349,17 @@ class BodyForce:
 
 class InitialCondition:
     """Wrapper for initial condition in sif-file."""
+
+    def __new__(cls, simulation, name, data=None):
+        """Intercept object construction to return an existing object if possible."""
+        if name in simulation.initial_conditions:
+            existing = simulation.initial_conditions[name]
+            new_data = {} if data is None else data
+            if new_data != existing.data:
+                raise ValueError(f'InitialCondition name clash: "{name}".')
+            return existing
+        else:
+            return super().__new__(cls)
 
     def __init__(self, simulation, name, data=None):
         """Create initial condition object.
@@ -333,6 +390,17 @@ class InitialCondition:
 class Solver:
     """Wrapper for solver in sif-file."""
 
+    def __new__(cls, simulation, name, data=None):
+        """Intercept object construction to return an existing object if possible."""
+        if name in simulation.solvers:
+            existing = simulation.solvers[name]
+            new_data = {} if data is None else data
+            if new_data != existing.data:
+                raise ValueError(f'Solver name clash: "{name}".')
+            return existing
+        else:
+            return super().__new__(cls)
+
     def __init__(self, simulation, name, data=None):
         """Create solver object
 
@@ -360,6 +428,17 @@ class Solver:
 
 class Equation:
     """Wrapper for equations in sif-file."""
+
+    def __new__(cls, simulation, name, solvers, data=None):
+        """Intercept object construction to return an existing object if possible."""
+        if name in simulation.equations:
+            existing = simulation.equations[name]
+            new_data = {} if data is None else data
+            if [solvers, new_data] != [existing.solvers, existing.data]:
+                raise ValueError(f'Equation name clash: "{name}".')
+            return existing
+        else:
+            return super().__new__(cls)
 
     def __init__(self, simulation, name, solvers, data=None):
         """Create equation object
