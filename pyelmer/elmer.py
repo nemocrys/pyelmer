@@ -10,7 +10,6 @@ of a dictionary called data.
 import os
 import yaml
 
-
 data_dir = "./"
 
 
@@ -30,6 +29,7 @@ class Simulation:
         self.bodies = {}
         self.boundaries = {}
         self.body_forces = {}
+        self.components = {}
         self.initial_conditions = {}
         self.solvers = {}
         self.equations = {}
@@ -93,6 +93,12 @@ class Simulation:
                 f.write(self._dict_to_str(body_force.get_data()))
                 f.write("End\n\n")
             f.write("\n")
+            for component_name, component in self.components.items():
+                f.write("! " + component_name + "\n")
+                f.write("Component " + str(component.id) + "\n")
+                f.write(self._dict_to_str(component.get_data()))
+                f.write("End\n\n")
+            f.write("\n")
             for (
                 initial_condition_name,
                 initial_condition,
@@ -138,6 +144,7 @@ class Simulation:
             self.bodies,
             self.boundaries,
             self.body_forces,
+            self.components,
             self.initial_conditions,
         ]
         # give each object id
@@ -185,12 +192,12 @@ class Body:
         else:
             self.data = data
         # optional parameters
-        self.equation = None  #: optional reference to an Equation object
+        self.equation = None  # : optional reference to an Equation object
         self.initial_condition = (
-            None  #: optional reference to an InitialCondition object
+            None  # : optional reference to an InitialCondition object
         )
-        self.material = None  #: optional reference to a Material object
-        self.body_force = None  #: optional reference to a BodyForce object
+        self.material = None  # : optional reference to a Material object
+        self.body_force = None  # : optional reference to a BodyForce object
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -342,6 +349,57 @@ class BodyForce:
     def get_data(self):
         """Generate dictionary with data for sif-file."""
         return self.data
+
+    def __str__(self):
+        return str(self.id)
+
+
+class Component:
+    """Wrapper for components in sif-file."""
+
+    def __new__(cls, simulation, name, geo_ids=None, data=None):
+        """Intercept object construction to return an existing object if possible."""
+        if name in simulation.components:
+            existing = simulation.components[name]
+            new_geo_ids = [] if geo_ids is None else geo_ids
+            new_data = {} if data is None else data
+            if [new_geo_ids, new_data] != [existing.geo_ids, existing.data]:
+                raise ValueError(f'Component name clash: "{name}".')
+            return existing
+        else:
+            return super().__new__(cls)
+
+    def __init__(self, simulation, name, geo_ids=None, data=None):
+        """Create component object.
+
+        Args:
+            simulation (Simulation Object): The component is added to
+                                            this simulation object.
+            name (str): Name of the component
+            geo_ids (list of int, optional): Ids of bodies in mesh.
+            data (dict, optional): Component data as in sif-file.
+        """
+        simulation.components.update({name: self})
+        self.id = 0
+        self.name = name
+        if geo_ids is None:
+            self.geo_ids = []
+        else:
+            self.geo_ids = geo_ids
+        if data is None:
+            self.data = {}
+        else:
+            self.data = data
+
+    def get_data(self):
+        """Generate dictionary with data for sif-file."""
+        d = {
+            f"Master Bodies({len(self.geo_ids)})": " ".join(
+                [str(x) for x in self.geo_ids]
+            )
+        }
+        d.update(self.data)
+        return d
 
     def __str__(self):
         return str(self.id)
