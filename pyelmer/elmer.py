@@ -394,6 +394,7 @@ class Component:
     def get_data(self):
         """Generate dictionary with data for sif-file."""
         d = {
+            "Name": self.name,
             f"Master Bodies({len(self.geo_ids)})": " ".join(
                 [str(x) for x in self.geo_ids]
             )
