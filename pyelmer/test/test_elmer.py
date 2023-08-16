@@ -119,6 +119,23 @@ def test_body_force():
     assert empty_test_material.get_data() == {}
 
 
+def test_component():
+    # setup simulation
+    sim = elmer.Simulation()
+    # initialize data for test component
+    test_component = elmer.Component(sim, "test_component", [1, 2], data={"test_parameter": 1.0})
+    assert test_component.get_data() == {
+        "Name": "test_component",
+        "Master Bodies(2)": "1 2",
+        "test_parameter": 1.0
+    }
+    empty_test_component = elmer.Component(sim, "empty_test_component")
+    assert empty_test_component.get_data() == {
+        "Name": "empty_test_component",
+        "Master Bodies(0)": ""
+    }
+
+
 def test_initial_condition():
     # setup simulation
     sim = elmer.Simulation()
@@ -354,6 +371,23 @@ def test_duplicate_equation():
         elmer.Equation(sim, "duplicate", [solver2], data={"test": 7})
 
 
+def test_duplicate_component():
+    sim = elmer.Simulation()
+
+    obj1 = elmer.Component(sim, "duplicate", geo_ids=[1], data={"test": 7})
+    obj2 = elmer.Component(sim, "duplicate", geo_ids=[1], data={"test": 7})
+    assert obj1 is obj2
+
+    obj3 = elmer.Body(sim, "different")
+    assert obj1 is not obj3
+
+    with pytest.raises(ValueError):
+        elmer.Component(sim, "duplicate", geo_ids=[1])
+
+    with pytest.raises(ValueError):
+        elmer.Component(sim, "duplicate", data={"test": 7})
+
+
 def test_write_sif():
     # setup gmsh
     gmsh.initialize()
@@ -397,6 +431,10 @@ def test_write_sif():
     test_material = elmer.load_material(
         "test_material", sim, os.path.join(file_dir, "test_data", "materials.yml")
     )
+
+    # setup component object
+    test_component = elmer.Component(sim, "test_component", [1], {"test_parameter": "1.0"})
+
     test_body.material = test_material
     test_body.initial_condition = test_initial_condtion
     test_body.equation = test_eqn
@@ -429,6 +467,7 @@ def test_write_sif():
     bodies = {}
     boundaries = {}
     body_forces = {}
+    components = {}
     initial_conditions = {}
     names = [
         "Simulation",
@@ -439,6 +478,7 @@ def test_write_sif():
         "Body",
         "Boundary Condition",
         "Body Force",
+        "Component",
         "Initial Condition",
     ]
     objects = [
@@ -450,6 +490,7 @@ def test_write_sif():
         bodies,
         boundaries,
         body_forces,
+        components,
         initial_conditions,
     ]
 
@@ -484,7 +525,7 @@ def test_write_sif():
                 read_object = True
                 if any(map(str.isdigit, line)):
                     object_name, object_number, _ = map(
-                        str.strip, re.split("(\d+)", line)
+                        str.strip, re.split(r"(\d+)", line)
                     )
                     for i, name in enumerate(names):
                         if name == object_name:
@@ -512,6 +553,7 @@ def test_write_sif():
     assert bodies["test_body"] == test_body.get_data()
     assert boundaries["test_boundary"] == test_boundary.get_data()
     assert body_forces["test_body_force"] == test_body_force.get_data()
+    assert components["test_component"] == test_component.get_data()
     assert (
         initial_conditions["test_initial_condition"] == test_initial_condtion.get_data()
     )

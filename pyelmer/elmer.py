@@ -10,6 +10,7 @@ of a dictionary called data.
 import os
 import yaml
 
+
 data_dir = "./"
 
 
@@ -397,7 +398,7 @@ class Component:
             "Name": self.name,
             f"Master Bodies({len(self.geo_ids)})": " ".join(
                 [str(x) for x in self.geo_ids]
-            )
+            ),
         }
         d.update(self.data)
         return d
