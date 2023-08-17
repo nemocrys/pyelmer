@@ -1,3 +1,6 @@
+v1.2.0
+- add Component class
+
 v1.1.5
 - allow duplicate Materials, Solvers, etc. to be added
 
