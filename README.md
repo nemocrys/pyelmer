@@ -39,6 +39,7 @@ The basic working principle of pyelmer is the representation of sif-file entries
 - *Material*
 - *Body*
 - *Boundary*
+- *Component*
 - *BodyForce*
 - *InitialCondition*
 

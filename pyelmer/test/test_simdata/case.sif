@@ -56,6 +56,15 @@ Body Force 1
 End
 
 
+! test_component
+Component 1
+  Name = test_component
+  Master Bodies(1) = 1  ! test_body,
+  Master Boundaries(1) = 1  ! test_boundary,
+  test_parameter = 1.0
+End
+
+
 ! test_initial_condition
 Initial Condition 1
   test_parameter = 1.0

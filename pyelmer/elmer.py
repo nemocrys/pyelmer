@@ -30,6 +30,7 @@ class Simulation:
         self.bodies = {}
         self.boundaries = {}
         self.body_forces = {}
+        self.components = {}
         self.initial_conditions = {}
         self.solvers = {}
         self.equations = {}
@@ -93,6 +94,12 @@ class Simulation:
                 f.write(self._dict_to_str(body_force.get_data()))
                 f.write("End\n\n")
             f.write("\n")
+            for component_name, component in self.components.items():
+                f.write("! " + component_name + "\n")
+                f.write("Component " + str(component.id) + "\n")
+                f.write(self._dict_to_str(component.get_data()))
+                f.write("End\n\n")
+            f.write("\n")
             for (
                 initial_condition_name,
                 initial_condition,
@@ -138,6 +145,7 @@ class Simulation:
             self.bodies,
             self.boundaries,
             self.body_forces,
+            self.components,
             self.initial_conditions,
         ]
         # give each object id
@@ -185,12 +193,12 @@ class Body:
         else:
             self.data = data
         # optional parameters
-        self.equation = None  #: optional reference to an Equation object
+        self.equation = None  # : optional reference to an Equation object
         self.initial_condition = (
-            None  #: optional reference to an InitialCondition object
+            None  # : optional reference to an InitialCondition object
         )
-        self.material = None  #: optional reference to a Material object
-        self.body_force = None  #: optional reference to a BodyForce object
+        self.material = None  # : optional reference to a Material object
+        self.body_force = None  # : optional reference to a BodyForce object
 
     def get_data(self):
         """Generate dictionary with data for sif-file."""
@@ -342,6 +350,91 @@ class BodyForce:
     def get_data(self):
         """Generate dictionary with data for sif-file."""
         return self.data
+
+    def __str__(self):
+        return str(self.id)
+
+
+class Component:
+    """Wrapper for components in sif-file."""
+
+    def __new__(
+        cls, simulation, name, master_bodies=None, master_boundaries=None, data=None
+    ):
+        """Intercept object construction to return an existing object if possible."""
+        if name in simulation.components:
+            existing = simulation.components[name]
+            new_master_bodies = [] if master_bodies is None else master_bodies
+            new_master_boundaries = (
+                [] if master_boundaries is None else master_boundaries
+            )
+            new_data = {} if data is None else data
+            if [new_master_bodies, new_master_boundaries, new_data] != [
+                existing.master_bodies,
+                existing.master_boundaries,
+                existing.data,
+            ]:
+                raise ValueError(f'Component name clash: "{name}".')
+            return existing
+        else:
+            return super().__new__(cls)
+
+    def __init__(
+        self, simulation, name, master_bodies=None, master_boundaries=None, data=None
+    ):
+        """Create component object.
+
+        Args:
+            simulation (Simulation Object): The component is added to
+                                            this simulation object.
+            name (str): Name of the component
+            master_bodies (list of Body, optional): Master Body objects.
+            master_bodies (list of Boundary, optional): Master Boundary objects.
+            data (dict, optional): Component data as in sif-file.
+        """
+        simulation.components.update({name: self})
+        self.id = 0
+        self.name = name
+        if master_bodies is None:
+            self.master_bodies = []
+        else:
+            self.master_bodies = master_bodies
+        if master_boundaries is None:
+            self.master_boundaries = []
+        else:
+            self.master_boundaries = master_boundaries
+        if data is None:
+            self.data = {}
+        else:
+            self.data = data
+
+    def get_data(self):
+        """Generate dictionary with data for sif-file."""
+        d = {
+            "Name": self.name,
+        }
+        if self.master_bodies != []:
+            body_names = ""
+            for body in self.master_bodies:
+                body_names += f"{body.name}, "
+            body_names = body_names.strip()
+            d.update(
+                {
+                    f"Master Bodies({len(self.master_bodies)})": f"{' '.join([str(x) for x in self.master_bodies])}  ! {body_names}"
+                }
+            )
+        if self.master_boundaries != []:
+            boundary_names = ""
+            for boundary in self.master_boundaries:
+                boundary_names += f"{boundary.name}, "
+            boundary_names = boundary_names.strip()
+            d.update(
+                {
+                    f"Master Boundaries({len(self.master_boundaries)})": f"{' '.join([str(x) for x in self.master_boundaries])}  ! {boundary_names}"
+                }
+            )
+        d.update(self.data)
+        return d
 
     def __str__(self):
         return str(self.id)
