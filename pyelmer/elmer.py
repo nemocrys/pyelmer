@@ -358,35 +358,51 @@ class BodyForce:
 class Component:
     """Wrapper for components in sif-file."""
 
-    def __new__(cls, simulation, name, geo_ids=None, data=None):
+    def __new__(
+        cls, simulation, name, master_bodies=None, master_boundaries=None, data=None
+    ):
         """Intercept object construction to return an existing object if possible."""
         if name in simulation.components:
             existing = simulation.components[name]
-            new_geo_ids = [] if geo_ids is None else geo_ids
+            new_master_bodies = [] if master_bodies is None else master_bodies
+            new_master_boundaries = (
+                [] if master_boundaries is None else master_boundaries
+            )
             new_data = {} if data is None else data
-            if [new_geo_ids, new_data] != [existing.geo_ids, existing.data]:
+            if [new_master_bodies, new_master_boundaries, new_data] != [
+                existing.master_bodies,
+                existing.master_boundaries,
+                existing.data,
+            ]:
                 raise ValueError(f'Component name clash: "{name}".')
             return existing
         else:
             return super().__new__(cls)
 
-    def __init__(self, simulation, name, geo_ids=None, data=None):
+    def __init__(
+        self, simulation, name, master_bodies=None, master_boundaries=None, data=None
+    ):
         """Create component object.
 
         Args:
             simulation (Simulation Object): The component is added to
                                             this simulation object.
             name (str): Name of the component
-            geo_ids (list of int, optional): Ids of bodies in mesh.
+            master_bodies (list of Body, optional): Master Body objects.
+            master_bodies (list of Boundary, optional): Master Boundary objects.
             data (dict, optional): Component data as in sif-file.
         """
         simulation.components.update({name: self})
         self.id = 0
         self.name = name
-        if geo_ids is None:
-            self.geo_ids = []
+        if master_bodies is None:
+            self.master_bodies = []
         else:
-            self.geo_ids = geo_ids
+            self.master_bodies = master_bodies
+        if master_boundaries is None:
+            self.master_boundaries = []
+        else:
+            self.master_boundaries = master_boundaries
         if data is None:
             self.data = {}
         else:
@@ -396,10 +412,27 @@ class Component:
         """Generate dictionary with data for sif-file."""
         d = {
             "Name": self.name,
-            f"Master Bodies({len(self.geo_ids)})": " ".join(
-                [str(x) for x in self.geo_ids]
-            ),
         }
+        if self.master_bodies != []:
+            body_names = ""
+            for body in self.master_bodies:
+                body_names += f"{body.name}, "
+            body_names = body_names.strip()
+            d.update(
+                {
+                    f"Master Bodies({len(self.master_bodies)})": f"{' '.join([str(x) for x in self.master_bodies])}  ! {body_names}"
+                }
+            )
+        if self.master_boundaries != []:
+            boundary_names = ""
+            for boundary in self.master_boundaries:
+                boundary_names += f"{boundary.name}, "
+            boundary_names = boundary_names.strip()
+            d.update(
+                {
+                    f"Master Boundaries({len(self.master_boundaries)})": f"{' '.join([str(x) for x in self.master_boundaries])}  ! {boundary_names}"
+                }
+            )
         d.update(self.data)
         return d
 

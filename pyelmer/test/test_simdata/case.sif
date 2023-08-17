@@ -59,7 +59,8 @@ End
 ! test_component
 Component 1
   Name = test_component
-  Master Bodies(1) = 1
+  Master Bodies(1) = 1  ! test_body,
+  Master Boundaries(1) = 1  ! test_boundary,
   test_parameter = 1.0
 End
 
