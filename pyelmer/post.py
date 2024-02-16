@@ -257,4 +257,4 @@ def dat_to_dataframe(dat_file):
             or "Variables in columns of matrix" in line
         ):
             names_start = True
-    return pd.read_table(dat_file, names=names, delim_whitespace=True)
+    return pd.read_table(dat_file, names=names, sep='\s+')
